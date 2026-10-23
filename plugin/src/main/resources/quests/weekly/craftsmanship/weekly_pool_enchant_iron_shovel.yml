@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- craftsmanship
+name: '{lang:defaults.period-objectives.enchant_iron_shovel}'
+icon:
+  material: IRON_SHOVEL
+trigger: enchant_item
+amount: 8
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_item
+    match:
+      material:
+      - IRON_SHOVEL
+    item: TRIGGER_ITEM
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

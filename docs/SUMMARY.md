@@ -76,7 +76,6 @@
 * [🛡️ Anti-abuse](configs/anti-abuse.md)
 * [📊 Task limits](configs/task-limits.md)
 * [💾 Storage and saving](configs/storage.md)
-* [🛠️ In-game editor](configs/editor.md)
 * [❓ Configuration troubleshooting](info/faq.md)
 
 ## 📋 Shared formats

@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- craftsmanship
+name: '{lang:defaults.period-objectives.enchant_fishing_rod}'
+icon:
+  material: FISHING_ROD
+trigger: enchant_item
+amount: 1
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_item
+    match:
+      material:
+      - FISHING_ROD
+    item: TRIGGER_ITEM
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

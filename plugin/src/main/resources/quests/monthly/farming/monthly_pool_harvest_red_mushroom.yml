@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.period-objectives.harvest_red_mushroom}'
+icon:
+  material: RED_MUSHROOM
+trigger: block_break
+amount: 288
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - RED_MUSHROOM
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: false

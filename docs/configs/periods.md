@@ -40,6 +40,28 @@ Root `source` selects the objectives. Write a trigger directly, reference an [ob
 
 For several random assignments, create the candidates as described in the pool tutorial, then replace `source` with `pool` and `count`. Each drawn objective becomes a separate assignment with its own `task.rewards`. Drawing three objectives with an 8-bread reward allows a total of 24 bread if all three are completed.
 
+## Draw by category
+
+The bundled daily, weekly, and monthly pools each contain 100 objective templates. Daily and weekly tasks still draw three random objectives. Monthly tasks draw one objective from each of the eight existing categories:
+
+```yaml
+source:
+  pool: monthly
+  categories:
+    adventure: 1
+    building: 1
+    combat: 1
+    craftsmanship: 1
+    farming: 1
+    fishing: 1
+    gathering: 1
+    nether: 1
+```
+
+`source.categories` replaces `source.count`; do not configure both. Each value is a positive integer, and the combined quota must be at most 45. Categories refer to the objective templates' `categories` lists in `quests/`, even when `task.categories` overrides the categories displayed on generated assignments. Each objective is selected at most once across the whole batch, including objectives listed in multiple categories. A reload rejects quotas that cannot be filled with distinct candidates.
+
+Each generated assignment receives its own reward set. The default period slot limit is 28, allowing the 14 current daily/weekly/monthly assignments plus completed assignments in their claim grace period. Existing files are preserved during upgrades: update `pools/`, add the new `quests/` files, and update `periods/monthly.yml` and `task-limits.period.total` to apply these defaults to an existing server.
+
 ## Reset schedules
 
 Schedules use the server Java process's system timezone. Confirm that timezone instead of assuming it matches the player's location.

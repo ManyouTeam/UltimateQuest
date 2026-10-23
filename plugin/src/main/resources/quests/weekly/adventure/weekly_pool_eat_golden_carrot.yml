@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- adventure
+name: '{lang:defaults.period-objectives.eat_golden_carrot}'
+icon:
+  material: GOLDEN_CARROT
+trigger: consume
+amount: 32
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_item
+    match:
+      material:
+      - GOLDEN_CARROT
+    item: TRIGGER_ITEM
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- fishing
+name: '{lang:defaults.period-objectives.catch_tropical_fish}'
+icon:
+  material: TROPICAL_FISH
+trigger: fish
+amount: 1
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: catch_match_item
+    match:
+      material:
+      - TROPICAL_FISH
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- adventure
+name: '{lang:defaults.period-objectives.eat_apple}'
+icon:
+  material: APPLE
+trigger: consume
+amount: 96
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_item
+    match:
+      material:
+      - APPLE
+    item: TRIGGER_ITEM
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

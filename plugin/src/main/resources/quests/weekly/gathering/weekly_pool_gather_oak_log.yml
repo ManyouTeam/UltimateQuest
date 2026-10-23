@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- gathering
+name: '{lang:defaults.period-objectives.gather_oak_log}'
+icon:
+  material: OAK_LOG
+trigger: block_break
+amount: 192
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - OAK_LOG
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: true

@@ -5,11 +5,11 @@ import cn.superiormc.ultimatequest.managers.QuestManager;
 import java.time.Instant;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public final class QuestInstance {
@@ -30,9 +30,11 @@ public final class QuestInstance {
 
     private final Map<String, String> stageStates = new LinkedHashMap<>();
 
-    private final Map<String, String> stageSnapshots = new LinkedHashMap<>();
+    private final Map<String, List<String>> stageRewardKeys = new LinkedHashMap<>();
 
-    private final String rewardsSnapshot;
+    private final Map<String, Long> stageRequirements = new LinkedHashMap<>();
+
+    private final List<String> rewardKeys;
 
     private long total;
 
@@ -65,7 +67,7 @@ public final class QuestInstance {
         this.sourceId = sourceId;
         this.cycle = cycle;
         this.expiresAt = expiresAt;
-        rewardsSnapshot = drawRewards(definition);
+        rewardKeys = drawRewards(definition);
         validateSource();
     }
 
@@ -87,14 +89,12 @@ public final class QuestInstance {
         sourceId = section.getString("source-id", "");
         cycle = section.getString("cycle", "");
         expiresAt = section.getLong("expires-at", 0L);
-        String savedRewards = section.getString("rewards-snapshot");
-        if (savedRewards == null || savedRewards.isBlank()) {
-            rewardsSnapshot = drawRewards(definition);
-        } else {
-            YamlConfiguration parsed = new YamlConfiguration();
-            parsed.loadFromString(savedRewards);
-            RewardManager.rewardManager.validate(parsed.getConfigurationSection("rewards"));
-            rewardsSnapshot = savedRewards;
+        if (section.contains("rewards-snapshot") || section.contains("stage-snapshots")) {
+            throw new IllegalArgumentException("Unsupported reward snapshot format: " + id);
+        }
+        rewardKeys = section.contains("reward-keys") ? readRewardKeys(section, "reward-keys") : null;
+        if (rewardKeys == null && RewardManager.rewardManager.hasRandom(definition.rewards())) {
+            throw new IllegalArgumentException("Missing saved reward keys: " + id);
         }
         validateSource();
         if (!key().equals(id)) {
@@ -134,30 +134,28 @@ public final class QuestInstance {
             throw new IllegalArgumentException("Invalid progression total: " + id);
         }
         ConfigurationSection stages = section.getConfigurationSection("stage-states");
+        ConfigurationSection savedRewards = section.getConfigurationSection("stage-rewards");
         if (stages != null) {
             for (String key : stages.getKeys(false)) {
                 String value = stages.getString(key, "");
-                String snapshot = section.getString("stage-snapshots." + key);
+                ConfigurationSection reward = savedRewards == null ? null : savedRewards.getConfigurationSection(key);
                 if (!key.matches("(?:free|premium|default)/[1-9][0-9]*")
-                        || !Set.of("AVAILABLE", "CLAIMING", "CLAIMED", "REVIEW").contains(value) || snapshot == null) {
+                        || !Set.of("AVAILABLE", "CLAIMING", "CLAIMED", "REVIEW").contains(value) || reward == null) {
                     throw new IllegalArgumentException("Invalid progression reward state: " + key);
                 }
                 Integer.parseInt(key.split("/")[1]);
-                YamlConfiguration reward = new YamlConfiguration();
-                reward.loadFromString(snapshot);
+                long required = QuestDefinition.positiveLong(reward, "required", 0L);
                 if (!definition.growth() || !definition.tracks().contains(key.split("/")[0])
-                        || !reward.isConfigurationSection("rewards")
-                        || QuestDefinition.positiveLong(reward, "required", 0L) > Math.max(total, section.getLong("highest-total", total))) {
-                    throw new IllegalArgumentException("Invalid progression reward snapshot: " + key);
+                        || required > Math.max(total, section.getLong("highest-total", total))) {
+                    throw new IllegalArgumentException("Invalid progression reward: " + key);
                 }
-                RewardManager.rewardManager.validate(reward.getConfigurationSection("rewards"));
                 stageStates.put(key, value);
-                stageSnapshots.put(key, snapshot);
+                stageRewardKeys.put(key, readRewardKeys(reward, "reward-keys"));
+                stageRequirements.put(key, required);
             }
         }
-        ConfigurationSection snapshots = section.getConfigurationSection("stage-snapshots");
-        if (snapshots != null && !snapshots.getKeys(false).equals(stageStates.keySet())) {
-            throw new IllegalArgumentException("Progression snapshots do not match reward states: " + id);
+        if (savedRewards != null && !savedRewards.getKeys(false).equals(stageStates.keySet())) {
+            throw new IllegalArgumentException("Progression rewards do not match reward states: " + id);
         }
         if (definition.growth()) {
             unlockStages();
@@ -170,33 +168,35 @@ public final class QuestInstance {
         return instanceId;
     }
 
-    /**
-     * Rolls every random reward once so the outcome is fixed for this instance.
-     * Returns null when the definition has no random rewards to draw.
-     */
-    private static String drawRewards(QuestDefinition definition) {
+    private static List<String> drawRewards(QuestDefinition definition) {
         ConfigurationSection rewards = definition.rewards();
         if (!RewardManager.rewardManager.hasRandom(rewards)) {
             return null;
         }
-        return RewardManager.rewardManager.resolveSnapshot(rewards).saveToString();
+        return RewardManager.rewardManager.drawKeys(rewards);
     }
 
-    /**
-     * Returns the rewards that should actually be granted: the draw fixed at accept time,
-     * or the plain definition rewards when nothing had to be rolled.
-     */
+    private static List<String> readRewardKeys(ConfigurationSection section, String path) {
+        if (!(section.get(path) instanceof List<?> keys)) {
+            throw new IllegalArgumentException("Invalid saved reward keys: " + path);
+        }
+        for (Object key : keys) {
+            if (!(key instanceof String text) || text.isBlank()) {
+                throw new IllegalArgumentException("Invalid saved reward key: " + key);
+            }
+        }
+        List<String> result = section.getStringList(path);
+        if (result.stream().distinct().count() != result.size()) {
+            throw new IllegalArgumentException("Duplicate saved reward keys: " + path);
+        }
+        return List.copyOf(result);
+    }
+
     public ConfigurationSection rewards() {
-        if (rewardsSnapshot == null) {
+        if (rewardKeys == null) {
             return definition.rewards();
         }
-        try {
-            YamlConfiguration rewards = new YamlConfiguration();
-            rewards.loadFromString(rewardsSnapshot);
-            return rewards.getConfigurationSection("rewards");
-        } catch (Exception exception) {
-            throw new IllegalStateException("Invalid reward snapshot: " + definition.id(), exception);
-        }
+        return RewardManager.rewardManager.resolveKeys(definition.rewards(), rewardKeys).getConfigurationSection("rewards");
     }
 
     private void validateSource() {
@@ -388,23 +388,10 @@ public final class QuestInstance {
             }
             for (String track : definition.tracks()) {
                 String key = track + "/" + stage.getKey();
-                if (!stageSnapshots.containsKey(key)) {
-                    YamlConfiguration reward = new YamlConfiguration();
-                    reward.set("required", stage.getValue());
+                if (!stageRewardKeys.containsKey(key)) {
                     ConfigurationSection configured = definition.stageRewards(stage.getKey(), track);
-                    // Draw random rewards now so the outcome is fixed for this stage.
-                    if (RewardManager.rewardManager.hasRandom(configured)) {
-                        configured = RewardManager.rewardManager.resolveSnapshot(configured).getConfigurationSection("rewards");
-                    }
-                    ConfigurationSection target = reward.createSection("rewards");
-                    if (configured != null) {
-                        configured.getValues(true).forEach((path, value) -> {
-                            if (!(value instanceof ConfigurationSection)) {
-                                target.set(path, value);
-                            }
-                        });
-                    }
-                    stageSnapshots.put(key, reward.saveToString());
+                    stageRewardKeys.put(key, RewardManager.rewardManager.drawKeys(configured));
+                    stageRequirements.put(key, stage.getValue());
                     stageStates.put(key, "AVAILABLE");
                 }
             }
@@ -420,39 +407,29 @@ public final class QuestInstance {
     }
 
     public void stageState(String key, String value) {
-        if (!stageSnapshots.containsKey(key) || !Set.of("AVAILABLE", "CLAIMING", "CLAIMED", "REVIEW").contains(value)) {
+        if (!stageRewardKeys.containsKey(key) || !Set.of("AVAILABLE", "CLAIMING", "CLAIMED", "REVIEW").contains(value)) {
             throw new IllegalArgumentException("Invalid stage state: " + key);
         }
         stageStates.put(key, value);
     }
 
     public ConfigurationSection stageReward(String key) {
-        String snapshot = stageSnapshots.get(key);
-        if (snapshot == null) {
+        List<String> keys = stageRewardKeys.get(key);
+        if (keys == null) {
             throw new IllegalArgumentException("Stage is locked: " + key);
         }
-        try {
-            YamlConfiguration reward = new YamlConfiguration();
-            reward.loadFromString(snapshot);
-            return reward.getConfigurationSection("rewards");
-        } catch (Exception exception) {
-            throw new IllegalStateException("Invalid stage reward snapshot: " + key, exception);
-        }
+        String[] parts = key.split("/");
+        ConfigurationSection configured = definition.stageRewards(Integer.parseInt(parts[1]), parts[0]);
+        return RewardManager.rewardManager.resolveKeys(configured, keys).getConfigurationSection("rewards");
     }
 
     public long stageRequired(String key) {
-        String snapshot = stageSnapshots.get(key);
-        if (snapshot == null) {
-            String[] parts = key.split("/");
-            return definition.thresholds().getOrDefault(Integer.parseInt(parts[1]), 0L);
+        Long required = stageRequirements.get(key);
+        if (required != null) {
+            return required;
         }
-        try {
-            YamlConfiguration reward = new YamlConfiguration();
-            reward.loadFromString(snapshot);
-            return reward.getLong("required", 0L);
-        } catch (Exception exception) {
-            throw new IllegalStateException("Invalid stage reward snapshot: " + key, exception);
-        }
+        String[] parts = key.split("/");
+        return definition.thresholds().getOrDefault(Integer.parseInt(parts[1]), 0L);
     }
 
     public void write(ConfigurationSection section) {
@@ -462,8 +439,15 @@ public final class QuestInstance {
         if (source.equals("scroll")) {
             section.set("objective-ids", definition.objectives().stream().map(QuestObjective::getId).toList());
         }
-        if (rewardsSnapshot != null) {
-            section.set("rewards-snapshot", rewardsSnapshot);
+        section.set("rewards-snapshot", null);
+        section.set("reward-keys", rewardKeys);
+        section.set("stage-snapshots", null);
+        section.set("stage-rewards", null);
+        if (definition.growth()) {
+            stageRewardKeys.forEach((key, keys) -> {
+                section.set("stage-rewards." + key + ".required", stageRequirements.get(key));
+                section.set("stage-rewards." + key + ".reward-keys", keys);
+            });
         }
         section.set("state", state);
         if (!source.equals("normal")) {
@@ -479,7 +463,7 @@ public final class QuestInstance {
             section.set("total", total);
             section.set("total-remainder", totalRemainder.toPlainString());
             long highest = total;
-            for (String key : stageSnapshots.keySet()) {
+            for (String key : stageRewardKeys.keySet()) {
                 highest = Math.max(highest, stageRequired(key));
             }
             section.set("highest-total", highest);
@@ -487,7 +471,6 @@ public final class QuestInstance {
             section.set("booster.multiplier", booster);
             section.set("booster.expires-at", boosterUntil);
             stageStates.forEach((key, value) -> section.set("stage-states." + key, value));
-            stageSnapshots.forEach((key, value) -> section.set("stage-snapshots." + key, value));
         }
     }
 }

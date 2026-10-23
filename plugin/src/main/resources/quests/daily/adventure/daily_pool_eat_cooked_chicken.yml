@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- adventure
+name: '{lang:defaults.period-objectives.eat_cooked_chicken}'
+icon:
+  material: COOKED_CHICKEN
+trigger: consume
+amount: 4
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_item
+    match:
+      material:
+      - COOKED_CHICKEN
+    item: TRIGGER_ITEM
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

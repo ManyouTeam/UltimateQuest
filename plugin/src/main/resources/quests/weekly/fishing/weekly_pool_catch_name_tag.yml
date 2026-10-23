@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- fishing
+name: '{lang:defaults.period-objectives.catch_name_tag}'
+icon:
+  material: NAME_TAG
+trigger: fish
+amount: 8
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: catch_match_item
+    match:
+      material:
+      - NAME_TAG
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

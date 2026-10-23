@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- gathering
+name: '{lang:defaults.period-objectives.gather_copper_ore}'
+icon:
+  material: COPPER_ORE
+trigger: block_break
+amount: 12
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - COPPER_ORE
+    - DEEPSLATE_COPPER_ORE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: true

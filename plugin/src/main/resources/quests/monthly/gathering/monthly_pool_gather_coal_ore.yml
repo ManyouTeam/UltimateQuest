@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- gathering
+name: '{lang:defaults.period-objectives.gather_coal_ore}'
+icon:
+  material: COAL_ORE
+trigger: block_break
+amount: 288
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - COAL_ORE
+    - DEEPSLATE_COAL_ORE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: true

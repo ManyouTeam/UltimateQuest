@@ -6,9 +6,9 @@ All files are under `plugins/UltimateQuest/`. Choose the folder for the feature 
 
 | Path | Purpose |
 | --- | --- |
-| `config.yml` | Language, math, auto-save, task limits, database, editor, and category-menu defaults. |
+| `config.yml` | Language, math, auto-save, task limits, database, and category-menu defaults. |
 | `languages/*.yml` | Messages and `override-lang` text. Bundled locales: `en_US`, `zh_CN`. |
-| `quests/*.yml` | [Reusable objective templates](../configs/objectives.md), shared by tasks and other quest types. |
+| `quests/**/*.yml` | [Reusable objective templates](../configs/objectives.md), read recursively and shared by tasks and other quest types. |
 | `tasks/*.yml` | [Normal tasks](../configs/tasks.md). |
 | `categories/*.yml` | [Category names, icons, and order](../configs/categories.md). |
 | `pools/*.yml` | [Weighted objective pools](../configs/pools.md). |
@@ -39,7 +39,6 @@ The filename without `.yml` is the definition ID. Use lowercase letters, digits,
 | `auto-save` | Scheduled saving and messages | [Storage](../configs/storage.md) |
 | `database` | YAML / JDBC backend | Requires restart; does not automatically migrate records. |
 | `task-limits` | Simultaneous type and category limits | [Task limits](../configs/task-limits.md) |
-| `editor` | In-game editor switch | [Editor](../configs/editor.md) |
 | `objective-display.formats` | Fallback objective text | [Objectives](../configs/objectives.md) |
 | `task-display` | Prerequisite and administrative-task hints | Display text. |
 | `category-menu` | Shared category selector appearance | [Categories](../configs/categories.md) |

@@ -43,7 +43,7 @@ Only these types are accepted as rewards. Sounds and titles are menu [actions](.
 
 ## Reward resolution and persistence
 
-Resolved rewards are saved so that reopening a menu does not draw them again.
+Selected reward keys are saved so that reopening a menu does not draw them again. Player records do not store copies of item definitions, commands, or display text. Repeated and nested draws retain their full selection paths.
 
 | System | When random results are determined |
 | --- | --- |
@@ -52,7 +52,7 @@ Resolved rewards are saved so that reopening a menu does not draw them again.
 | Scrolls | Definitions are saved on issue; rewards are drawn on first activation. |
 | Pass levels and milestone stages | On stage unlock. |
 
-Reconnecting and reloading do not redraw these results. Test edits with new tasks, new scrolls, or stages that have not unlocked. Reuse definitions through [reward pools or the reward library](pools.md), which differ from objective `pools/`.
+Reconnecting and reloading do not redraw these results. Saved keys resolve against the loaded reward configuration, so changing an entry's item, amount, command, or display text takes effect when that configuration is loaded. Keep selected entry IDs stable: deleting one prevents reward delivery instead of drawing a replacement or skipping it. Old full reward snapshot records are not supported. Reuse definitions through [reward pools or the reward library](pools.md), which differ from objective `pools/`.
 
 ## Interrupted claims
 

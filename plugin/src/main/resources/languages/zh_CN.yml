@@ -1,5 +1,5 @@
 error:
-  args: '&#98FB98[UltimateQuest] &c用法：/uq [menu|help|accept|info|claim|abandon|battlepass|milestone|period|scroll|editor|reload]'
+  args: '&#98FB98[UltimateQuest] &c用法：/uq [menu|help|accept|info|claim|abandon|battlepass|milestone|period|scroll|reload]'
   in-game: '&#98FB98[UltimateQuest] &c此命令需要由玩家执行。'
   miss-permission: '&#98FB98[UltimateQuest] &c你没有执行权限。'
   player-not-found: '&#98FB98[UltimateQuest] &c玩家 {player} 不在线。'
@@ -15,7 +15,7 @@ command:
 give-save-item: '&#98FB98[UltimateQuest] &a已给予 {player} {amount} 份 {item}。'
 quests:
   help: '&#98FB98[UltimateQuest] &e/uq menu &7| &e/uq accept <任务> &7| &e/uq info <任务> &7| &e/uq claim <任务> &7| &e/uq abandon <任务> &7| &e/uq battlepass
-    &7| &e/uq milestone &7| &e/uq period &7| &e/uq scroll &7| &e/uq editor'
+    &7| &e/uq milestone &7| &e/uq period &7| &e/uq scroll'
   loading: '&#98FB98[UltimateQuest] &e任务数据加载中，请稍后重试。'
   load-failed: '&#98FB98[UltimateQuest] &c任务数据加载失败，已有数据已保留。'
   save-failed: '&#98FB98[UltimateQuest] &c任务数据保存失败，请稍后重试。'
@@ -262,6 +262,100 @@ override-lang:
       nether:
         name: '&4下界远征'
         description: '&7收集下界资源，迎战异界生物。'
+    period-objectives:
+      catch_bow: '&f钓取弓'
+      catch_cod: '&f钓取鳕鱼'
+      catch_name_tag: '&f钓取命名牌'
+      catch_pufferfish: '&f钓取河豚'
+      catch_salmon: '&f钓取鲑鱼'
+      catch_tropical_fish: '&f钓取热带鱼'
+      defeat_bogged: '&f击败沼骸'
+      defeat_cave_spider: '&f击败洞穴蜘蛛'
+      defeat_creeper: '&f击败苦力怕'
+      defeat_drowned: '&f击败溺尸'
+      defeat_enderman: '&f击败末影人'
+      defeat_husk: '&f击败尸壳'
+      defeat_phantom: '&f击败幻翼'
+      defeat_pillager: '&f击败掠夺者'
+      defeat_skeleton: '&f击败骷髅'
+      defeat_slime: '&f击败史莱姆'
+      defeat_spider: '&f击败蜘蛛'
+      defeat_stray: '&f击败流浪者'
+      defeat_vindicator: '&f击败卫道士'
+      defeat_witch: '&f击败女巫'
+      defeat_zombie: '&f击败僵尸'
+      eat_apple: '&f食用苹果'
+      eat_baked_potato: '&f食用烤马铃薯'
+      eat_bread: '&f食用面包'
+      eat_cooked_beef: '&f食用牛排'
+      eat_cooked_chicken: '&f食用熟鸡肉'
+      eat_cooked_cod: '&f食用熟鳕鱼'
+      eat_cooked_mutton: '&f食用熟羊肉'
+      eat_cooked_porkchop: '&f食用熟猪排'
+      eat_cooked_salmon: '&f食用熟鲑鱼'
+      eat_golden_carrot: '&f食用金胡萝卜'
+      enchant_book: '&f附魔书'
+      enchant_bow: '&f附魔弓'
+      enchant_diamond_pickaxe: '&f附魔钻石镐'
+      enchant_diamond_sword: '&f附魔钻石剑'
+      enchant_fishing_rod: '&f附魔钓鱼竿'
+      enchant_iron_axe: '&f附魔铁斧'
+      enchant_iron_chestplate: '&f附魔铁胸甲'
+      enchant_iron_pickaxe: '&f附魔铁镐'
+      enchant_iron_shovel: '&f附魔铁锹'
+      enchant_iron_sword: '&f附魔铁剑'
+      gather_andesite: '&f采集天然安山岩'
+      gather_coal_ore: '&f采集天然煤矿石'
+      gather_copper_ore: '&f采集天然铜矿石'
+      gather_deepslate: '&f采集天然深板岩'
+      gather_diamond_ore: '&f采集天然钻石矿石'
+      gather_diorite: '&f采集天然闪长岩'
+      gather_gold_ore: '&f采集天然金矿石'
+      gather_granite: '&f采集天然花岗岩'
+      gather_iron_ore: '&f采集天然铁矿石'
+      gather_lapis_ore: '&f采集天然青金石矿石'
+      gather_oak_log: '&f采集天然橡木原木'
+      gather_redstone_ore: '&f采集天然红石矿石'
+      gather_stone: '&f采集天然石头'
+      gather_tuff: '&f采集天然凝灰岩'
+      harvest_bamboo: '&f收获竹子'
+      harvest_beetroots: '&f收获成熟甜菜根'
+      harvest_brown_mushroom: '&f收获棕色蘑菇'
+      harvest_cactus: '&f收获仙人掌'
+      harvest_carrots: '&f收获成熟胡萝卜'
+      harvest_cocoa: '&f收获成熟可可果'
+      harvest_kelp: '&f收获海带'
+      harvest_melon: '&f收获西瓜'
+      harvest_nether_wart: '&f收获成熟下界疣'
+      harvest_potatoes: '&f收获成熟马铃薯'
+      harvest_pumpkin: '&f收获南瓜'
+      harvest_red_mushroom: '&f收获红色蘑菇'
+      harvest_sugar_cane: '&f收获甘蔗'
+      harvest_wheat: '&f收获成熟小麦'
+      hunt_blaze: '&f狩猎烈焰人'
+      hunt_ghast: '&f狩猎恶魂'
+      hunt_magma_cube: '&f狩猎岩浆怪'
+      hunt_wither_skeleton: '&f狩猎凋灵骷髅'
+      mine_basalt: '&f挖掘天然玄武岩'
+      mine_blackstone: '&f挖掘天然黑石'
+      mine_nether_gold_ore: '&f挖掘天然下界金矿石'
+      mine_nether_quartz_ore: '&f挖掘天然下界石英矿石'
+      mine_netherrack: '&f挖掘天然下界岩'
+      mine_soul_sand: '&f挖掘天然灵魂沙'
+      place_acacia_planks: '&f放置金合欢木板'
+      place_birch_planks: '&f放置白桦木板'
+      place_bricks: '&f放置红砖块'
+      place_cherry_planks: '&f放置樱花木板'
+      place_cobblestone: '&f放置圆石'
+      place_dark_oak_planks: '&f放置深色橡木木板'
+      place_deepslate_bricks: '&f放置深板岩砖'
+      place_glass: '&f放置玻璃'
+      place_jungle_planks: '&f放置丛林木板'
+      place_mangrove_planks: '&f放置红树木板'
+      place_oak_planks: '&f放置橡木木板'
+      place_sandstone: '&f放置砂岩'
+      place_spruce_planks: '&f放置云杉木板'
+      place_stone_bricks: '&f放置石砖'
     objectives:
       miner: '&f开采天然石料'
       hunter: '&f击杀僵尸'
@@ -559,7 +653,7 @@ override-lang:
         description: '&7每期随机3项目标，服务器时间每周一零点刷新。'
       monthly:
         name: '&e每月委托'
-        description: '&7每期随机3项目标，服务器时间每月1日零点刷新。'
+        description: '&7每个分类抽取一个目标；每月 1 日零点刷新（服务器时间）。'
     scroll-rewards:
       novice_common_stick: '&7• &f[普通] 木棍 &7x16'
       novice_common_oak_log: '&7• &f[普通] 橡木原木 &7x16'
@@ -1017,166 +1111,3 @@ objective-display:
     block_break: 方块
     fish: 物品
     consume: 物品
-editor:
-  category:
-    edit: '&e编辑任务分类'
-    select: '&e点击选择'
-    remove: '&a已选中，点击取消'
-  summary:
-    type: '&7类型：&f{value}'
-    section: 配置段
-    keys: '&7字段数：&f{value}'
-    list: 列表
-    size: '&7条目数：&f{value}'
-    value: '&7当前值：&f{value}'
-  message:
-    disabled: '&#98FB98[UltimateQuest] &c配置编辑器已关闭。'
-    target-not-found: '&#98FB98[UltimateQuest] &c找不到配置文件。'
-    invalid-number: '&#98FB98[UltimateQuest] &c请输入有效的有限数值。'
-    saved: '&#98FB98[UltimateQuest] &a已校验并保存 &f{value}'
-    save-failed: '&#98FB98[UltimateQuest] &c未应用更改：{value}'
-    invalid-key: '&#98FB98[UltimateQuest] &c字段名必须未被使用，且只能包含字母、数字、_ 或 -。'
-    invalid-new-child-value: '&#98FB98[UltimateQuest] &c字段值无效。'
-    command-usage: '&#98FB98[UltimateQuest] &c用法：/uq editor [quest|task|category|battlepass|milestone|period|scroll|pool|reward-pool|menu] [ID]'
-    invalid-integer: '&#98FB98[UltimateQuest] &c请输入有效整数。'
-  prompt:
-    description: '&#98FB98[UltimateQuest] &f{value}'
-    cancel-tip: '&#98FB98[UltimateQuest] &7输入 &fcancel &7取消本次输入。'
-    string: 请输入 &f{path} &7的新文本值
-    new-child: 请输入新字段的名称
-    new-child-value: 请输入 &f{path} &7的值：section/{} 建配置段，[] 建空列表，;; 分隔列表，string:文本 强制文本。
-    integer: 请输入 &f{path} &7的新整数
-    double: 请输入 &f{path} &7的新数值
-    integer-list-entry: 请输入 &f{path} &7的新整数列表条目
-    string-list-entry: 请输入 &f{path} &7的新列表条目
-    integer-list-entry-edit: 请输入列表第 &f{index} &7项的新整数
-    string-list-entry-edit: 请输入列表第 &f{index} &7项的新内容
-  root:
-    title: UltimateQuest 配置编辑器
-    close:
-      name: '&c关闭'
-  action:
-    open: '&a左键打开'
-    delete: '&c右键删除'
-    toggle: '&a左键切换开关'
-    increase-ten: '&a左键增加 10'
-    decrease-ten: '&c右键减少 10'
-    increase-one: '&aShift 左键增加 1'
-    decrease-one: '&cShift 右键减少 1'
-    middle-clear: '&e中键清除'
-    input-number: '&e按丢弃键输入准确数值'
-    edit: '&a左键编辑'
-  file-list:
-    title: 配置编辑器：{scope}
-    type: '&7类型：&f{value}'
-    file: '&7文件：&f{value}'
-    back: '&7返回编辑器首页'
-    refresh: '&7刷新文件列表（保留会话草稿）'
-  common:
-    back:
-      name: '&e返回'
-      desc: '&7返回上级页面'
-    refresh:
-      name: '&e刷新'
-    previous-page:
-      name: '&e上一页'
-      desc: '&7前往上一页'
-    next-page:
-      name: '&e下一页'
-      desc: '&7前往下一页'
-    reload:
-      name: '&a校验并应用'
-    clear:
-      name: '&c清除'
-      desc: '&7移除此字段'
-    root: 根配置
-  section:
-    path:
-      name: '&e当前路径'
-      desc: '&f{value}'
-    reload:
-      line-1: '&7更改仅保存在当前会话草稿中。'
-      line-2: '&7校验通过后备份、保存并重载生效。'
-    add-child:
-      name: '&e添加字段'
-      generic: '&7在当前配置段下添加字段'
-  discard:
-    name: '&c丢弃草稿'
-    desc: '&7Shift 点击丢弃更改，并重新读取此文件'
-  lore:
-    path: '&7路径：&f{value}'
-    kind: '&7字段类型：&f{value}'
-  item:
-    raw-hint: '&e右键：原始字段；Shift 右键：删除'
-    title: 物品编辑：{path}
-    slot:
-      name: '&e物品复制槽'
-      line-1: '&7从背包拿起物品后，点击第 13 号槽位。'
-      line-2: '&7仅复制物品，不会消耗；应用后更新草稿。'
-    raw:
-      name: '&e原始配置段'
-      desc: '&7查看此物品的全部字段'
-    apply:
-      name: '&a应用物品到草稿'
-      desc: '&7将第 13 号槽位的物品序列化到当前配置段'
-    clear:
-      name: '&c清空物品配置段'
-      desc: '&7移除此物品的整个配置段'
-    back:
-      desc: '&7返回上级配置段'
-  list:
-    title: 列表编辑：{path}
-    move-up: '&eShift 左键上移'
-    move-down: '&eShift 右键下移'
-    add:
-      name: '&e添加条目'
-      desc: '&7向列表添加一条新内容'
-    clear:
-      name: '&c清空列表'
-      desc: '&7移除列表内全部条目'
-    current: '&7当前值：&f{value}'
-  reset-time:
-    title: 重置时间：{path}
-    mode:
-      name: '&e当前重置模式'
-      value: '&7模式：&f{value}'
-      desc: '&7点击切换模式（Shift 反向），并填入默认时间值。'
-    preview:
-      name: '&e重置边界预览'
-      previous: '&7上次重置：&f{value}'
-      next: '&7下次重置：&f{value}'
-    add:
-      name: '&e添加时间'
-      desc: '&7添加一条重置时间'
-    manual:
-      name: '&e编辑时间值'
-    current: '&7当前值：&f{value}'
-    never:
-      name: '&e未知重置模式'
-      desc: '&7请点击模式按钮选择有效的重置模式。'
-    prompt-add: 请输入 &f{path} &7的新重置时间
-    prompt-edit: 请输入第 &f{index} &7条重置时间的新值
-    invalid: '&#98FB98[UltimateQuest] &c无效的重置时间：{value}'
-  sub-button:
-    not-set: <未设置>
-  scope:
-    reward_pool: 奖励池
-    quest: 目标库
-    task: 普通任务
-    category: 任务分类
-    battlepass: 战令
-    milestone: 里程碑
-    period: 周期任务
-    scroll: 任务卷轴
-    pool: 任务池
-    menu: 菜单
-  value-kind:
-    section: 配置段
-    item_section: 物品配置段
-    boolean: 开关
-    integer: 整数
-    double: 小数
-    string: 文本
-    string_list: 文本列表
-    integer_list: 整数列表
-    unknown: 未知类型

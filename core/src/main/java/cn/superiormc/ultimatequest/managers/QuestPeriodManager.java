@@ -1,6 +1,6 @@
 package cn.superiormc.ultimatequest.managers;
 
-import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
+import cn.superiormc.ultimatequest.utils.ConfigurationFileUtil;
 import cn.superiormc.ultimatequest.objects.quests.QuestObjective;
 import cn.superiormc.ultimatequest.objects.time.TimeWindow;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,7 +33,7 @@ public final class QuestPeriodManager extends AbstractManager {
 
     public Map<String, YamlConfiguration> load(Map<String, YamlConfiguration> pools,
             Map<String, YamlConfiguration> objectives, Map<String, YamlConfiguration> rewardPools) throws Exception {
-        Map<String, YamlConfiguration> loaded = QuestPoolManager.readFolder("periods");
+        Map<String, YamlConfiguration> loaded = ConfigurationFileUtil.readFolder("periods");
         for (Map.Entry<String, YamlConfiguration> entry : loaded.entrySet()) {
             YamlConfiguration config = entry.getValue();
             RewardManager.rewardManager.resolveReferences(config, rewardPools);
@@ -43,13 +44,11 @@ public final class QuestPeriodManager extends AbstractManager {
                         + " requires a source section");
             }
             if (source.contains("pool")) {
-                if (!pools.containsKey(source.getString("pool", ""))
-                        || QuestDefinition.positiveLong(source, "count", 1L) > 45L) {
-                    throw new IllegalArgumentException("Invalid periodic quest pool: " + entry.getKey());
-                }
-                if (pools.get(source.getString("pool")).getConfigurationSection("quests").getKeys(false).size()
-                        < source.getInt("count", 1)) {
-                    throw new IllegalArgumentException("Not enough quests for periodic configuration: " + entry.getKey());
+                try {
+                    QuestPoolManager.draw(source, pools, objectives, new Random(0L));
+                } catch (IllegalArgumentException exception) {
+                    throw new IllegalArgumentException("Invalid periodic quest pool in " + entry.getKey() + ": "
+                            + exception.getMessage(), exception);
                 }
             } else {
                 YamlConfiguration resolved = QuestObjective.resolve(

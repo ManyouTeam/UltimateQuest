@@ -1,8 +1,8 @@
 package cn.superiormc.ultimatequest.managers;
 
+import cn.superiormc.ultimatequest.utils.ConfigurationFileUtil;
 import java.math.BigDecimal;
 import cn.superiormc.ultimatequest.UltimateQuest;
-import cn.superiormc.ultimatequest.services.DefinitionEditor;
 import cn.superiormc.ultimatequest.gui.inv.ConfiguredMenuGUI;
 import cn.superiormc.ultimatequest.objects.QuestContext;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
@@ -76,8 +76,6 @@ public final class QuestManager extends AbstractManager {
 
     private final ProgressionManager progression = new ProgressionManager(this);
 
-    private final DefinitionEditor editor = new DefinitionEditor(this);
-
     private SchedulerUtil autosave;
 
     public QuestManager() {
@@ -91,7 +89,7 @@ public final class QuestManager extends AbstractManager {
     }
 
     public synchronized void reloadDefinitions() throws Exception {
-        Map<String, YamlConfiguration> loadedCategories = QuestPoolManager.readFolder("categories", true);
+        Map<String, YamlConfiguration> loadedCategories = ConfigurationFileUtil.readFolder("categories", true);
         for (Map.Entry<String, YamlConfiguration> entry : loadedCategories.entrySet()) {
             if (Set.of("all", "uncategorized").contains(entry.getKey())) {
                 throw new IllegalArgumentException("Reserved category ID: " + entry.getKey());
@@ -101,7 +99,7 @@ public final class QuestManager extends AbstractManager {
                 throw new IllegalArgumentException("categories/" + entry.getKey() + ".yml: order must be an integer");
             }
         }
-        Map<String, YamlConfiguration> loadedObjectives = QuestPoolManager.readFolder("quests");
+        Map<String, YamlConfiguration> loadedObjectives = ConfigurationFileUtil.readFolder("quests");
         validateTaskLimits(ConfigManager.configManager.getSection("task-limits"), loadedCategories.keySet());
         Object savePeriod = ConfigManager.configManager.config.get("auto-save.period-tick", 6000);
         if (!(savePeriod instanceof Integer || savePeriod instanceof Long) || ((Number) savePeriod).longValue() < 1L) {
@@ -652,8 +650,14 @@ public final class QuestManager extends AbstractManager {
             bulkClaims.remove(id);
             return;
         }
-        RewardManager.rewardManager.grant(player,
-                key == null ? quest.rewards() : quest.stageReward(key), quest.definition().id()).whenComplete((ignored, failure) -> {
+        CompletableFuture<Void> delivery;
+        try {
+            delivery = RewardManager.rewardManager.grant(player,
+                    key == null ? quest.rewards() : quest.stageReward(key), quest.definition().id());
+        } catch (RuntimeException exception) {
+            delivery = CompletableFuture.failedFuture(exception);
+        }
+        delivery.whenComplete((ignored, failure) -> {
             synchronized (this) {
                 claimState(quest, key, failure == null ? "CLAIMED" : "REVIEW");
                 changed(id);
@@ -815,8 +819,8 @@ public final class QuestManager extends AbstractManager {
         return progression;
     }
 
-    public DefinitionEditor editor() {
-        return editor;
+    public synchronized void editSeason(CommandSender sender, String type, String pass, String operation, List<String> values) {
+        seasons.editSeason(this, sender, type, pass, operation, values);
     }
 
     public synchronized void refreshSeasons() {
@@ -1151,8 +1155,7 @@ public final class QuestManager extends AbstractManager {
                 ConfigurationSection source = config.getConfigurationSection("source");
                 drawn = new ArrayList<>();
                 if (source.contains("pool")) {
-                    List<String> selected = QuestPoolManager.questPoolManager.draw(source.getString("pool"),
-                            source.getInt("count", 1), new Random(seed));
+                    List<String> selected = QuestPoolManager.questPoolManager.draw(source, new Random(seed));
                     for (String objective : selected) {
                         drawn.add(periodDefinition(group, objective, config));
                     }

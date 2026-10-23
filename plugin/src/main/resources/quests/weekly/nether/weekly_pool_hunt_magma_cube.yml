@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- nether
+name: '{lang:defaults.period-objectives.hunt_magma_cube}'
+icon:
+  material: MAGMA_CUBE_SPAWN_EGG
+trigger: kill
+amount: 48
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - MAGMA_CUBE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

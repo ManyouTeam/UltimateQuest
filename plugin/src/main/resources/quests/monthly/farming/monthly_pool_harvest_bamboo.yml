@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.period-objectives.harvest_bamboo}'
+icon:
+  material: BAMBOO
+trigger: block_break
+amount: 1152
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - BAMBOO
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: false

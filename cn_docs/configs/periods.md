@@ -40,6 +40,28 @@ task:
 
 要每期随机分配多项委托，先按目标池教程建立候选，再将 `source` 换为 `pool` 与 `count`。抽到的每个目标都会成为独立委托，各自使用 `task.rewards`。例如抽 3 项且配置 8 个面包，完成全部 3 项共可得 24 个面包。
 
+## 按分类抽取
+
+内置每日、每周、每月目标池各有 100 个候选目标。每日和每周仍随机抽取 3 个；每月从现有 8 个分类各抽 1 个：
+
+```yaml
+source:
+  pool: monthly
+  categories:
+    adventure: 1
+    building: 1
+    combat: 1
+    craftsmanship: 1
+    farming: 1
+    fishing: 1
+    gathering: 1
+    nether: 1
+```
+
+`source.categories` 与 `source.count` 二选一。分类对应 `quests/` 目标模板的 `categories`，不是生成任务的 `task.categories`。配额必须为正整数，合计不能超过 45。同一目标即使属于多个分类，一批任务也只会抽中一次；候选不足以满足全部配额时，配置重载会失败。
+
+每项委托仍有独立奖励。默认周期任务名额调整为 28，可容纳每日 3 项、每周 3 项、每月 8 项，以及处于领奖宽限期的已完成任务。更新插件不会覆盖现有配置；已有服务器需同步更新三个 `pools/` 文件、补充新增 `quests/` 文件，并更新 `periods/monthly.yml` 和 `task-limits.period.total`。
+
 ## 刷新时间
 
 刷新采用服务端 Java 进程的系统时区。请先确认服务器时区，不要默认它等于玩家所在地的时区。

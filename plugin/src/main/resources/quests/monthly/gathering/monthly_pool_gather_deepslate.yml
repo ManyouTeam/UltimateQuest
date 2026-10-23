@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- gathering
+name: '{lang:defaults.period-objectives.gather_deepslate}'
+icon:
+  material: DEEPSLATE
+trigger: block_break
+amount: 768
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - DEEPSLATE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: true

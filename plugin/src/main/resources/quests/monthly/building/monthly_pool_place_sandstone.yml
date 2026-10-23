@@ -1,0 +1,23 @@
+enabled: true
+categories:
+- building
+name: '{lang:defaults.period-objectives.place_sandstone}'
+icon:
+  material: SANDSTONE
+trigger: block_place
+amount: 768
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - SANDSTONE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

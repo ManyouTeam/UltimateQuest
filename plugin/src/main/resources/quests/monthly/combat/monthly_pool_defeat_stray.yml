@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- combat
+name: '{lang:defaults.period-objectives.defeat_stray}'
+icon:
+  material: STRAY_SPAWN_EGG
+trigger: kill
+amount: 144
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - STRAY
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

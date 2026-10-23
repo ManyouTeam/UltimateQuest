@@ -40,7 +40,8 @@ task-limits:
       gathering: 4
 
   period:
-    total: 12
+    # Daily 3 + weekly 3 + monthly 8, with room for completed tasks in claim grace.
+    total: 28
     categories: {}
 
   battlepass-task:
@@ -60,10 +61,6 @@ objective-display:
     block_break: '{lang:defaults.ui.objective-display.block_break}'
     fish: '{lang:defaults.ui.objective-display.fish}'
     consume: '{lang:defaults.ui.objective-display.consume}'
-
-# In-game configuration editor.
-editor:
-  enabled: true
 
 # Default category selector. Individual menus can override these settings.
 category-menu:

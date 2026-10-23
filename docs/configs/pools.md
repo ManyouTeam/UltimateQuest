@@ -56,6 +56,8 @@ Run `/uq reload` and test a newly generated assignment or newly issued scroll. `
 
 A period creates two independent assignments, each with its own rewards. A scroll combines both objectives into one item and gives one reward set after both are complete.
 
+Periodic tasks also support `source.categories` instead of `source.count` to draw a separate quota from each objective category. See [category draws](periods.md#draw-by-category). The bundled daily, weekly, and monthly pools each contain 100 candidates; a pool's size does not change how many assignments a player receives.
+
 ## Configuration limits
 
 | Setting | Requirement |

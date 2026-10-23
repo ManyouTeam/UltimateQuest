@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- nether
+name: '{lang:defaults.period-objectives.mine_blackstone}'
+icon:
+  material: BLACKSTONE
+trigger: block_break
+amount: 256
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - BLACKSTONE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: true

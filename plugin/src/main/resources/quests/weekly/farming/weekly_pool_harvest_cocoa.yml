@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.period-objectives.harvest_cocoa}'
+icon:
+  material: COCOA_BEANS
+trigger: block_break
+amount: 128
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - COCOA[age=2]
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: false

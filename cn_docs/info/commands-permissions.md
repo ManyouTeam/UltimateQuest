@@ -29,7 +29,6 @@
 
 ```text
 /uq reload
-/uq editor [quest|task|category|battlepass|milestone|period|scroll|pool|reward-pool|menu] [id]
 /uq accept <task> <online-player> [-b]
 /uq scroll give <online-player> <profile> [rarity] [difficulty]
 /uq battlepass addxp <player-or-UUID> <id> <amount>
@@ -39,10 +38,9 @@
 /uq battlepass premium <player-or-UUID> <id> <true|false>
 /uq battlepass boost <player-or-UUID> <id> <multiplier> <seconds>
 /uq battlepass resolve <player-or-UUID> <id> <track/stage> <AVAILABLE|CLAIMED>
-/uq battlepass editor <id>
 ```
 
-派发、编辑器、卷轴发放和成长管理需要 `ultimatequest.admin`。成长管理也适用于 `milestone`，可处理有记录的离线玩家。积分和等级命令修改对应记录，不代表重新分配所有挑战。
+派发、卷轴发放和成长管理需要 `ultimatequest.admin`。成长管理也适用于 `milestone`，可处理有记录的离线玩家。积分和等级命令修改对应记录，不代表重新分配所有挑战。
 
 `resolve` 处理处于 `CLAIMING` / `REVIEW` 的阶段。使用前先核对实际发奖结果；改回 AVAILABLE 可能让已发出的奖励再次发放。赛季命令见[战令](../configs/battlepasses.md)。
 
@@ -73,7 +71,7 @@ uq milestone [id] <player> [-b]
 | --- | --- | --- |
 | `ultimatequest.use` | 所有人 | 玩家命令与默认菜单。 |
 | `ultimatequest.reload` | OP | 重载。 |
-| `ultimatequest.admin` | OP | 编辑器、派发、卷轴发放、成长管理。 |
+| `ultimatequest.admin` | OP | 派发、卷轴发放、成长管理。 |
 | `ultimatequest.saveitem` | OP | `/uq saveitem <id> [bukkit\|itemformat]`。 |
 | `ultimatequest.givesaveitem` | OP | `/uq givesaveitem <id> [player] [amount]`；控制台必须指定玩家。 |
 | `ultimatequest.generateitemformat` | OP | 导出主手物品。 |

@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- nether
+name: '{lang:defaults.period-objectives.hunt_ghast}'
+icon:
+  material: GHAST_SPAWN_EGG
+trigger: kill
+amount: 2
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - GHAST
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

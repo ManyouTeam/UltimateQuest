@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- craftsmanship
+name: '{lang:defaults.period-objectives.enchant_iron_pickaxe}'
+icon:
+  material: IRON_PICKAXE
+trigger: enchant_item
+amount: 1
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_item
+    match:
+      material:
+      - IRON_PICKAXE
+    item: TRIGGER_ITEM
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

@@ -93,18 +93,17 @@ Random rewards are drawn on normal-task acceptance, periodic instance creation, 
 
 ---
 
-## 🧭 Configurable Menus, Editor, and Language
+## 🧭 Configurable Menus and Language
 
 Give players a place to browse tasks and manage their progression.
 
 - Normal-task, periodic-assignment, scroll, battle-pass, and milestone menus.
 - Categories, status views, periodic-profile filters, and scroll-profile filters.
 - Configurable layouts, item templates, state displays, and click actions.
-- In-game editing with drafts, validation, and rollback when application fails.
 - English and Chinese default text, per-player language selection, MiniMessage, and legacy colors.
 - PlaceholderAPI placeholders for task states and progression values.
 
-Players can open the main menu with `/uq`. Administrators can edit definitions with `/uq editor`.
+Players can open the main menu with `/uq`. Administrators can edit YAML configuration files and apply changes with `/uq reload`.
 
 ---
 

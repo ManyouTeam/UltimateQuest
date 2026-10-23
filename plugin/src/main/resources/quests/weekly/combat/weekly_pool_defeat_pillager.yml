@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- combat
+name: '{lang:defaults.period-objectives.defeat_pillager}'
+icon:
+  material: PILLAGER_SPAWN_EGG
+trigger: kill
+amount: 48
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - PILLAGER
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

@@ -15,7 +15,6 @@ import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.ListenerManager;
 import cn.superiormc.ultimatequest.managers.MatchEntityManager;
 import cn.superiormc.ultimatequest.managers.MatchItemManager;
-import cn.superiormc.ultimatequest.managers.MenuStatusManager;
 import cn.superiormc.ultimatequest.managers.QuestManager;
 import cn.superiormc.ultimatequest.managers.QuestPoolManager;
 import cn.superiormc.ultimatequest.managers.QuestPeriodManager;
@@ -98,7 +97,6 @@ public final class UltimateQuest extends JavaPlugin {
         new QuestPeriodManager();
         new QuestScrollManager();
         new QuestManager();
-        new MenuStatusManager();
         new CommandManager();
         new ListenerManager();
         AbstractManager.initializeManagers();

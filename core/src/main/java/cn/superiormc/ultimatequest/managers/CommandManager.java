@@ -3,7 +3,6 @@ package cn.superiormc.ultimatequest.managers;
 import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.commands.AbstractCommand;
 import cn.superiormc.ultimatequest.commands.SubHelp;
-import cn.superiormc.ultimatequest.commands.SubEditor;
 import cn.superiormc.ultimatequest.commands.SubMenu;
 import cn.superiormc.ultimatequest.commands.SubAccept;
 import cn.superiormc.ultimatequest.commands.SubInfo;
@@ -38,7 +37,6 @@ public final class CommandManager extends AbstractManager {
 
     private void registerObjectCommand() {
         registerNewSubCommand(new SubHelp());
-        registerNewSubCommand(new SubEditor());
         registerNewSubCommand(new SubMenu());
         registerNewSubCommand(new SubAccept());
         registerNewSubCommand(new SubInfo());

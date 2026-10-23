@@ -66,4 +66,4 @@ rewards:
 - Pool candidates need `rate` and nested `rewards`. The objective-weight mapping from `pools/` is a different format.
 - Missing, cyclic, or excessively deep references reject loading. Reloading validates enabled pools and their consumers.
 
-Use `/uq editor reward-pool` to edit a pool. Edits do not redraw existing task rewards or unlocked stage rewards; see [random rewards](random.md).
+Edit the pool in `reward-pools/*.yml`, then apply changes with `/uq reload`. Edits do not redraw existing task rewards or unlocked stage rewards; see [random rewards](random.md).

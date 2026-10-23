@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- combat
+name: '{lang:defaults.period-objectives.defeat_vindicator}'
+icon:
+  material: VINDICATOR_SPAWN_EGG
+trigger: kill
+amount: 3
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - VINDICATOR
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- fishing
+name: '{lang:defaults.period-objectives.catch_bow}'
+icon:
+  material: BOW
+trigger: fish
+amount: 24
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: catch_match_item
+    match:
+      material:
+      - BOW
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

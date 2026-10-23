@@ -1,0 +1,23 @@
+enabled: true
+categories:
+- building
+name: '{lang:defaults.period-objectives.place_spruce_planks}'
+icon:
+  material: SPRUCE_PLANKS
+trigger: block_place
+amount: 256
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - SPRUCE_PLANKS
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

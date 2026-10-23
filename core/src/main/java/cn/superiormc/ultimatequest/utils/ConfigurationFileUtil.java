@@ -1,5 +1,15 @@
 package cn.superiormc.ultimatequest.utils;
 
+import cn.superiormc.ultimatequest.UltimateQuest;
+import java.io.File;
+import java.nio.file.LinkOption;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Stream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -11,6 +21,49 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public final class ConfigurationFileUtil {
 
     private ConfigurationFileUtil() {
+    }
+
+    public static Map<String, YamlConfiguration> readFolder(String name) throws Exception {
+        return readFolder(name, false);
+    }
+
+    public static Map<String, YamlConfiguration> readFolder(String name, boolean includeDisabled) throws Exception {
+        Map<String, YamlConfiguration> result = new LinkedHashMap<>();
+        Map<String, File> locations = new HashMap<>();
+        Path directory = new File(UltimateQuest.instance.getDataFolder(), name).toPath();
+        Files.createDirectories(directory);
+        for (Path path : findDefinitionFiles(directory)) {
+            if (!name.equals("quests") && !path.getParent().equals(directory)) {
+                continue;
+            }
+            File file = path.toFile();
+            String id = file.getName().substring(0, file.getName().lastIndexOf('.')).toLowerCase(Locale.ROOT);
+            if (!id.matches("[a-z0-9_-]+")) {
+                throw new IllegalArgumentException("Invalid configuration id: " + id);
+            }
+            YamlConfiguration config = new YamlConfiguration();
+            config.load(file);
+            if (includeDisabled || config.getBoolean("enabled", true)) {
+                if (result.putIfAbsent(id, config) != null) {
+                    throw new IllegalArgumentException("Duplicate configuration id " + id + ": "
+                            + locations.get(id) + " and " + file);
+                }
+                locations.put(id, file);
+            }
+        }
+        return result;
+    }
+
+    public static List<Path> findDefinitionFiles(Path sourceDirectory) throws IOException {
+        try (Stream<Path> paths = Files.walk(sourceDirectory)) {
+            return paths.filter(path -> Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
+                    .filter(path -> {
+                        String name = path.getFileName().toString().toLowerCase(Locale.ROOT);
+                        return name.endsWith(".yml") || name.endsWith(".yaml");
+                    })
+                    .sorted(Comparator.comparing(path -> sourceDirectory.relativize(path).toString()))
+                    .toList();
+        }
     }
 
     public static void save(Path target, YamlConfiguration config, boolean backup) throws IOException {

@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- combat
+name: '{lang:defaults.period-objectives.defeat_phantom}'
+icon:
+  material: PHANTOM_SPAWN_EGG
+trigger: kill
+amount: 96
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - PHANTOM
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

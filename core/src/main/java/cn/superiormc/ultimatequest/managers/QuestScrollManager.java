@@ -1,5 +1,6 @@
 package cn.superiormc.ultimatequest.managers;
 
+import cn.superiormc.ultimatequest.utils.ConfigurationFileUtil;
 import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.methods.BuildItem;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
@@ -62,7 +63,7 @@ public final class QuestScrollManager extends AbstractManager {
 
     public Map<String, YamlConfiguration> load(Map<String, YamlConfiguration> pools,
             Map<String, YamlConfiguration> objectives, Map<String, YamlConfiguration> rewardPools) throws Exception {
-        Map<String, YamlConfiguration> loaded = QuestPoolManager.readFolder("scrolls");
+        Map<String, YamlConfiguration> loaded = ConfigurationFileUtil.readFolder("scrolls");
         for (Map.Entry<String, YamlConfiguration> entry : loaded.entrySet()) {
             YamlConfiguration config = entry.getValue();
             RewardManager.rewardManager.resolveReferences(config, rewardPools);

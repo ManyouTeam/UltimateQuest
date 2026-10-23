@@ -45,7 +45,7 @@ public final class InitManager extends AbstractManager {
         resourceOutputFolder("languages", true);
         resourceOutputFolder("menus", true);
         resourceOutputFolder("items", false);
-        resourceOutputFolder("quests", true);
+        resourceOutputFolder("quests", false);
         resourceOutputFolder("tasks", true);
         resourceOutputFolder("categories", true);
         resourceOutputFolder("battlepasses", true);

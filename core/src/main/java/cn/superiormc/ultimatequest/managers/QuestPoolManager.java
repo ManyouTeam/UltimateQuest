@@ -1,14 +1,15 @@
 package cn.superiormc.ultimatequest.managers;
 
-import cn.superiormc.ultimatequest.UltimateQuest;
-import java.io.File;
+import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
+import cn.superiormc.ultimatequest.utils.ConfigurationFileUtil;
+import cn.superiormc.ultimatequest.objects.quests.QuestObjective;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.random.RandomGenerator;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -25,37 +26,8 @@ public final class QuestPoolManager extends AbstractManager {
         questPoolManager = this;
     }
 
-    public static Map<String, YamlConfiguration> readFolder(String name) throws Exception {
-        return readFolder(name, false);
-    }
-
-    public static Map<String, YamlConfiguration> readFolder(String name, boolean includeDisabled) throws Exception {
-        File directory = new File(UltimateQuest.instance.getDataFolder(), name);
-        if (!directory.isDirectory() && !directory.mkdirs()) {
-            throw new IllegalStateException("Could not create configuration directory: " + name);
-        }
-        File[] files = directory.listFiles((ignored, file) -> file.endsWith(".yml"));
-        if (files == null) {
-            throw new IllegalStateException("Could not list configuration directory: " + name);
-        }
-        Arrays.sort(files, Comparator.comparing(File::getName));
-        Map<String, YamlConfiguration> result = new LinkedHashMap<>();
-        for (File file : files) {
-            String id = file.getName().substring(0, file.getName().length() - 4).toLowerCase(Locale.ROOT);
-            if (!id.matches("[a-z0-9_-]+")) {
-                throw new IllegalArgumentException("Invalid configuration id: " + id);
-            }
-            YamlConfiguration config = new YamlConfiguration();
-            config.load(file);
-            if ((includeDisabled || config.getBoolean("enabled", true)) && result.putIfAbsent(id, config) != null) {
-                throw new IllegalArgumentException("Duplicate configuration id: " + id);
-            }
-        }
-        return result;
-    }
-
     public Map<String, YamlConfiguration> load(Map<String, YamlConfiguration> definitions) throws Exception {
-        Map<String, YamlConfiguration> loaded = readFolder("pools");
+        Map<String, YamlConfiguration> loaded = ConfigurationFileUtil.readFolder("pools");
         for (Map.Entry<String, YamlConfiguration> entry : loaded.entrySet()) {
             ConfigurationSection quests = entry.getValue().getConfigurationSection("quests");
             validateWeights(quests);
@@ -121,6 +93,85 @@ public final class QuestPoolManager extends AbstractManager {
                 candidates.add(id);
             }
         }
+        return drawCandidates(pool, weights, candidates, count, random);
+    }
+
+    public synchronized List<String> draw(ConfigurationSection source, RandomGenerator random) {
+        return draw(source, pools, objectives, random);
+    }
+
+    public static List<String> draw(ConfigurationSection source, Map<String, YamlConfiguration> pools,
+            Map<String, YamlConfiguration> objectives, RandomGenerator random) {
+        String pool = source.getString("pool", "");
+        ConfigurationSection config = pools.get(pool);
+        if (config == null) {
+            throw new IllegalArgumentException("Unknown objective pool: " + pool);
+        }
+        ConfigurationSection weights = config.getConfigurationSection("quests");
+        validateWeights(weights);
+        List<String> candidates = new ArrayList<>();
+        for (String id : weights.getKeys(false)) {
+            if (objectives.containsKey(id)) {
+                candidates.add(id);
+            }
+        }
+        if (!source.contains("categories")) {
+            long count = QuestDefinition.positiveLong(source, "count", 1L);
+            if (count > 45L) {
+                throw new IllegalArgumentException("Too many objectives requested from pool: " + pool);
+            }
+            return drawCandidates(pool, weights, candidates, (int) count, random);
+        }
+        ConfigurationSection categories = source.getConfigurationSection("categories");
+        if (categories == null || categories.getKeys(false).isEmpty() || source.contains("count")) {
+            throw new IllegalArgumentException("Pool categories require a nonempty category/count section without count: " + pool);
+        }
+        Map<String, List<String>> objectiveCategories = new HashMap<>();
+        for (String id : candidates) {
+            objectiveCategories.put(id, QuestObjective.resolve(id, objectives.get(id), objectives).getStringList("categories"));
+        }
+        List<List<String>> slots = new ArrayList<>();
+        for (String category : categories.getKeys(false)) {
+            long count = QuestDefinition.positiveLong(categories, category, 0L);
+            if (!category.matches("[a-z0-9_-]+") || count > 45L || slots.size() + count > 45L) {
+                throw new IllegalArgumentException("Invalid category quota in pool " + pool + ": " + category);
+            }
+            List<String> eligible = candidates.stream().filter(id -> objectiveCategories.get(id).contains(category)).toList();
+            if (eligible.size() < count) {
+                throw new IllegalArgumentException("Not enough objectives in pool " + pool + " for category: " + category);
+            }
+            for (int index = 0; index < count; index++) {
+                slots.add(drawCandidates(pool, weights, new ArrayList<>(eligible), eligible.size(), random));
+            }
+        }
+        Map<String, Integer> assigned = new HashMap<>();
+        for (int slot = 0; slot < slots.size(); slot++) {
+            if (!assignCategory(slot, slots, assigned, new HashSet<>())) {
+                throw new IllegalArgumentException("Not enough distinct objectives for category quotas in pool: " + pool);
+            }
+        }
+        List<String> result = new ArrayList<>(Collections.nCopies(slots.size(), ""));
+        assigned.forEach((id, slot) -> result.set(slot, id));
+        return List.copyOf(result);
+    }
+
+    private static boolean assignCategory(int slot, List<List<String>> slots,
+            Map<String, Integer> assigned, Set<String> visited) {
+        for (String id : slots.get(slot)) {
+            if (!visited.add(id)) {
+                continue;
+            }
+            Integer previous = assigned.get(id);
+            if (previous == null || assignCategory(previous, slots, assigned, visited)) {
+                assigned.put(id, slot);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static List<String> drawCandidates(String pool, ConfigurationSection weights,
+            List<String> candidates, int count, RandomGenerator random) {
         if (candidates.size() < count) {
             throw new IllegalArgumentException("Not enough eligible quests in pool: " + pool);
         }

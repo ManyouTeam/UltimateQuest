@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- craftsmanship
+name: '{lang:defaults.period-objectives.enchant_diamond_sword}'
+icon:
+  material: DIAMOND_SWORD
+trigger: enchant_item
+amount: 24
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_item
+    match:
+      material:
+      - DIAMOND_SWORD
+    item: TRIGGER_ITEM
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

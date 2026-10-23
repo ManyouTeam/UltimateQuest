@@ -1,0 +1,23 @@
+enabled: true
+categories:
+- building
+name: '{lang:defaults.period-objectives.place_cobblestone}'
+icon:
+  material: COBBLESTONE
+trigger: block_place
+amount: 768
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - COBBLESTONE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

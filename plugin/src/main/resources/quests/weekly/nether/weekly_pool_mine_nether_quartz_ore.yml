@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- nether
+name: '{lang:defaults.period-objectives.mine_nether_quartz_ore}'
+icon:
+  material: NETHER_QUARTZ_ORE
+trigger: block_break
+amount: 128
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - NETHER_QUARTZ_ORE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: true

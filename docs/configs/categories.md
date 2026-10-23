@@ -43,4 +43,4 @@ The selector layout uses `Q` for category slots, `P` and `N` for pages, `B` to r
 
 A task in several categories counts toward each category cap but only once toward its type total. Normal tasks and passes use current category definitions; generated periodic tasks and scrolls keep their generated category data. See [task limits](task-limits.md).
 
-Administrators can edit categories with `/uq editor category`. Period editing changes `task.categories`. See [menu configuration](menus.md) for a complete interface example.
+Edit categories in `categories/*.yml` and periodic-task categories at `task.categories` in `periods/*.yml`, then apply changes with `/uq reload`. See [menu configuration](menus.md) for a complete interface example.

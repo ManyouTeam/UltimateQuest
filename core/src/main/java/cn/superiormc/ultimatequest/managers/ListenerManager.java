@@ -3,7 +3,6 @@ package cn.superiormc.ultimatequest.managers;
 import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.listeners.AntiAbuseListener;
 import cn.superiormc.ultimatequest.listeners.GUIListener;
-import cn.superiormc.ultimatequest.listeners.PromptListener;
 import cn.superiormc.ultimatequest.listeners.QuestListener;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -16,7 +15,6 @@ public final class ListenerManager extends AbstractManager {
     public ListenerManager() {
         listenerManager = this;
         Bukkit.getPluginManager().registerEvents(new GUIListener(), UltimateQuest.instance);
-        Bukkit.getPluginManager().registerEvents(new PromptListener(), UltimateQuest.instance);
         Bukkit.getPluginManager().registerEvents(new AntiAbuseListener(), UltimateQuest.instance);
         Bukkit.getPluginManager().registerEvents(new QuestListener(TriggerManager.triggerManager), UltimateQuest.instance);
         if (UltimateQuest.methodUtil.methodID().equals("paper")) {

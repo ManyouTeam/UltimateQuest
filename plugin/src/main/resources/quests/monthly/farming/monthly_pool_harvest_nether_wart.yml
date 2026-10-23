@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.period-objectives.harvest_nether_wart}'
+icon:
+  material: NETHER_WART
+trigger: block_break
+amount: 576
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - NETHER_WART[age=3]
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: false

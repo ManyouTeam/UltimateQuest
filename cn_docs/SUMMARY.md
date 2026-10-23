@@ -76,7 +76,6 @@
 * [🛡️ 防刷](configs/anti-abuse.md)
 * [📊 任务名额](configs/task-limits.md)
 * [💾 存储与保存](configs/storage.md)
-* [🛠️ 游戏内编辑器](configs/editor.md)
 * [❓ 配置问题排查](info/faq.md)
 
 ## 📋 公共格式

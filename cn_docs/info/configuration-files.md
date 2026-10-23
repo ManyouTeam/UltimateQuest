@@ -6,9 +6,9 @@
 
 | 路径 | 用途 |
 | --- | --- |
-| `config.yml` | 语言、数学计算、自动保存、任务名额、数据库、编辑器与分类菜单默认值。 |
+| `config.yml` | 语言、数学计算、自动保存、任务名额、数据库与分类菜单默认值。 |
 | `languages/*.yml` | 消息与 `override-lang` 文案；内置 `en_US`、`zh_CN`。 |
-| `quests/*.yml` | [可复用目标模板](../configs/objectives.md)，供普通任务、周期任务等引用。 |
+| `quests/**/*.yml` | [可复用目标模板](../configs/objectives.md)，递归读取子目录，供普通任务、周期任务等引用。 |
 | `tasks/*.yml` | [普通任务](../configs/tasks.md)。 |
 | `categories/*.yml` | [分类名称、图标和排序](../configs/categories.md)。 |
 | `pools/*.yml` | [加权目标池](../configs/pools.md)。 |
@@ -39,7 +39,6 @@
 | `auto-save` | 定时保存与提示 | [存储与保存](../configs/storage.md) |
 | `database` | YAML / JDBC 后端选择 | 修改后需要完整重启，不会自动迁移数据。 |
 | `task-limits` | 各类型与分类的同时进行数量 | [任务名额](../configs/task-limits.md) |
-| `editor` | 游戏内配置编辑器 | [编辑器](../configs/editor.md) |
 | `objective-display.formats` | 未自定义目标名称时的显示格式 | [目标](../configs/objectives.md) |
 | `task-display` | 前置要求和管理任务提示 | 显示文本。 |
 | `category-menu` | 分类选择页公共外观 | [分类](../configs/categories.md) |

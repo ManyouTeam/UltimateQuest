@@ -43,4 +43,4 @@ order: 10
 
 多分类任务分别计入各分类限制，但类型总量只计一次。普通任务和战令使用当前分类定义，已经生成的周期任务、卷轴保留生成时的分类。详见[名额设置](task-limits.md)。
 
-管理员也可用 `/uq editor category` 编辑分类；周期编辑器中的分类修改的是 `task.categories`。完整界面示例见[菜单配置](menus.md)。
+管理员可修改 `categories/*.yml` 中的分类配置，以及 `periods/*.yml` 中的 `task.categories`，再使用 `/uq reload` 应用更改。完整界面示例见[菜单配置](menus.md)。

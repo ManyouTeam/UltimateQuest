@@ -1,6 +1,6 @@
 # 🎉 UltimateQuest
 
-UltimateQuest adds configurable quests to Minecraft servers. Ask players to mine, fight, fish, or take part in other activities, then reward them for reaching a goal. Edit the content, rewards, and menus in YAML files or use the in-game editor.
+UltimateQuest adds configurable quests to Minecraft servers. Ask players to mine, fight, fish, or take part in other activities, then reward them for reaching a goal. Edit the content, rewards, and menus in YAML files, then apply changes with `/uq reload`.
 
 ## Feature overview
 

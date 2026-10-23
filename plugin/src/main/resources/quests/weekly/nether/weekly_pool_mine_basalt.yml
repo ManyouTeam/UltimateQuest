@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- nether
+name: '{lang:defaults.period-objectives.mine_basalt}'
+icon:
+  material: BASALT
+trigger: block_break
+amount: 256
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - BASALT
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: true

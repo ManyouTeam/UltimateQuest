@@ -21,6 +21,8 @@ conditions:
 
 `quests/` 存目标模板；`tasks/` 存玩家可以接取的完整任务。模板不会单独出现在普通任务列表里，也不负责发放任务奖励。
 
+`quests/` 支持递归读取子文件夹中的 `.yml` 和 `.yaml`。内置模板按 `common/`、`daily/<分类>/`、`weekly/<分类>/`、`monthly/<分类>/` 整理。目标 ID 始终是去掉扩展名的文件名，例如 `quests/monthly/farming/monthly_crops.yml` 仍通过 `monthly_crops` 引用；不同子目录不能使用相同 ID。原来直接放在 `quests/` 下的模板仍可读取。默认文件参照 ER 的策略，仅首次启动时释放，后续保留管理员的目录布局，不再在新位置重新生成默认目标。
+
 在普通任务中，将原来的 `source` 替换成：
 
 ```yaml

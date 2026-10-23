@@ -29,7 +29,6 @@ The shared handler also supports `claimall`, `history`, `challenges`, and `stats
 
 ```text
 /uq reload
-/uq editor [quest|task|category|battlepass|milestone|period|scroll|pool|reward-pool|menu] [id]
 /uq accept <task> <online-player> [-b]
 /uq scroll give <online-player> <profile> [rarity] [difficulty]
 /uq battlepass addxp <player-or-UUID> <id> <amount>
@@ -39,10 +38,9 @@ The shared handler also supports `claimall`, `history`, `challenges`, and `stats
 /uq battlepass premium <player-or-UUID> <id> <true|false>
 /uq battlepass boost <player-or-UUID> <id> <multiplier> <seconds>
 /uq battlepass resolve <player-or-UUID> <id> <track/stage> <AVAILABLE|CLAIMED>
-/uq battlepass editor <id>
 ```
 
-Assignment, the editor, scroll issue, and progression administration require `ultimatequest.admin`. Progression administration also applies to `milestone` and supports offline players with existing records. Point/level edits change the corresponding record rather than redistributing every challenge.
+Assignment, scroll issue, and progression administration require `ultimatequest.admin`. Progression administration also applies to `milestone` and supports offline players with existing records. Point/level edits change the corresponding record rather than redistributing every challenge.
 
 `resolve` handles stages in `CLAIMING` / `REVIEW`. Check actual payouts first; returning a stage to AVAILABLE can issue already paid rewards again. See [battle passes](../configs/battlepasses.md) for season commands.
 
@@ -73,7 +71,7 @@ Menu `-b` skips the menu's own permission and is retained during that navigation
 | --- | --- | --- |
 | `ultimatequest.use` | Everyone | Player commands and bundled menus. |
 | `ultimatequest.reload` | OP | Reload. |
-| `ultimatequest.admin` | OP | Editor, dispatch, scroll issuance, progression management. |
+| `ultimatequest.admin` | OP | Dispatch, scroll issuance, progression management. |
 | `ultimatequest.saveitem` | OP | `/uq saveitem <id> [bukkit\|itemformat]`. |
 | `ultimatequest.givesaveitem` | OP | `/uq givesaveitem <id> [player] [amount]`; console requires player. |
 | `ultimatequest.generateitemformat` | OP | Export main-hand item. |

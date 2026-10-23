@@ -5,7 +5,15 @@ reset-time: 0 0 0 1 * ?
 claim-grace-seconds: 259200
 source:
   pool: monthly
-  count: 3
+  categories:
+    adventure: 1
+    building: 1
+    combat: 1
+    craftsmanship: 1
+    farming: 1
+    fishing: 1
+    gathering: 1
+    nether: 1
 task:
   auto-claim: false
   description:

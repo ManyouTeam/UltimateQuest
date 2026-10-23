@@ -1,5 +1,6 @@
 package cn.superiormc.ultimatequest.managers;
 
+import cn.superiormc.ultimatequest.utils.ConfigurationFileUtil;
 import cn.superiormc.ultimatequest.methods.BuildItem;
 import cn.superiormc.ultimatequest.objects.ObjectSingleAction;
 import cn.superiormc.ultimatequest.objects.QuestContext;
@@ -42,7 +43,7 @@ public final class RewardManager extends AbstractManager {
 
     public Map<String, YamlConfiguration> loadPools() throws Exception {
         try {
-            Map<String, YamlConfiguration> loaded = QuestPoolManager.readFolder("reward-pools");
+            Map<String, YamlConfiguration> loaded = ConfigurationFileUtil.readFolder("reward-pools");
             for (Map.Entry<String, YamlConfiguration> entry : loaded.entrySet()) {
                 ConfigurationSection choices = entry.getValue().getConfigurationSection("rewards");
                 if (choices == null || choices.getKeys(false).isEmpty()) {
@@ -261,24 +262,72 @@ public final class RewardManager extends AbstractManager {
         return false;
     }
 
-    /**
-     * Rolls every random reward and flattens the outcome into concrete reward entries.
-     * Keys keep the full draw path so nested rolls stay traceable in error messages.
-     * The result is stored under a `rewards` root so it can be validated and reloaded
-     * exactly like any other rewards section.
-     */
     public YamlConfiguration resolveSnapshot(ConfigurationSection section) {
+        return resolveKeys(section, drawKeys(section));
+    }
+
+    public List<String> drawKeys(ConfigurationSection section) {
+        return List.copyOf(resolveRandom(section).keySet());
+    }
+
+    public YamlConfiguration resolveKeys(ConfigurationSection section, List<String> keys) {
         YamlConfiguration snapshot = new YamlConfiguration();
         ConfigurationSection root = snapshot.createSection("rewards");
-        for (Map.Entry<String, ConfigurationSection> entry : resolveRandom(section).entrySet()) {
-            ConfigurationSection target = root.createSection(entry.getKey());
-            for (Map.Entry<String, Object> value : entry.getValue().getValues(true).entrySet()) {
+        for (String key : keys) {
+            ConfigurationSection reward = findReward(section, key, 0);
+            if (reward == null) {
+                throw new IllegalArgumentException("Saved reward key no longer exists: " + key);
+            }
+            ConfigurationSection target = root.createSection(key);
+            for (Map.Entry<String, Object> value : reward.getValues(true).entrySet()) {
                 if (!(value.getValue() instanceof ConfigurationSection)) {
                     target.set(value.getKey(), value.getValue());
                 }
             }
         }
+        validate(root);
         return snapshot;
+    }
+
+    private ConfigurationSection findReward(ConfigurationSection section, String path, int depth) {
+        if (section == null || depth > MAX_RANDOM_DEPTH) {
+            return null;
+        }
+        for (String key : section.getKeys(false)) {
+            ConfigurationSection reward = section.getConfigurationSection(key);
+            if (reward == null) {
+                continue;
+            }
+            if (!reward.getString("type", "").equals(RANDOM_TYPE)) {
+                if (path.equals(key)) {
+                    return reward;
+                }
+                continue;
+            }
+            if (!path.startsWith(key + "/")) {
+                continue;
+            }
+            String remaining = path.substring(key.length() + 1);
+            int separator = remaining.indexOf('/');
+            if (separator < 1 || !remaining.substring(0, separator).matches("[1-9][0-9]*")) {
+                continue;
+            }
+            remaining = remaining.substring(separator + 1);
+            ConfigurationSection choices = reward.getConfigurationSection("random");
+            if (choices == null) {
+                continue;
+            }
+            for (String choice : choices.getKeys(false)) {
+                if (remaining.startsWith(choice + "/")) {
+                    ConfigurationSection resolved = findReward(choices.getConfigurationSection(choice + ".rewards"),
+                            remaining.substring(choice.length() + 1), depth + 1);
+                    if (resolved != null) {
+                        return resolved;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public List<String> preview(Player player, ConfigurationSection section) {

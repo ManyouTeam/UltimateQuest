@@ -1,5 +1,5 @@
 error:
-  args: '&#98FB98[UltimateQuest] &cUsage: /uq [menu|help|accept|info|claim|abandon|battlepass|milestone|period|scroll|editor|reload]'
+  args: '&#98FB98[UltimateQuest] &cUsage: /uq [menu|help|accept|info|claim|abandon|battlepass|milestone|period|scroll|reload]'
   in-game: '&#98FB98[UltimateQuest] &cThis command requires a player.'
   miss-permission: '&#98FB98[UltimateQuest] &cYou do not have permission.'
   player-not-found: '&#98FB98[UltimateQuest] &cPlayer {player} is not online.'
@@ -15,7 +15,7 @@ command:
 give-save-item: '&#98FB98[UltimateQuest] &aGave {amount} x {item} to {player}.'
 quests:
   help: '&#98FB98[UltimateQuest] &e/uq menu &7| &e/uq accept <quest> &7| &e/uq info <quest> &7| &e/uq claim <quest> &7| &e/uq abandon <quest> &7|
-    &e/uq battlepass &7| &e/uq milestone &7| &e/uq period &7| &e/uq scroll &7| &e/uq editor'
+    &e/uq battlepass &7| &e/uq milestone &7| &e/uq period &7| &e/uq scroll'
   loading: '&#98FB98[UltimateQuest] &eYour quest data is loading. Try again shortly.'
   load-failed: '&#98FB98[UltimateQuest] &cQuest data could not be loaded. Existing data has been preserved.'
   save-failed: '&#98FB98[UltimateQuest] &cQuest data could not be saved. Try again later.'
@@ -263,6 +263,100 @@ override-lang:
       nether:
         name: '&4Nether Expeditions'
         description: '&7Gather Nether resources and confront its inhabitants.'
+    period-objectives:
+      catch_bow: '&fFish for a bow'
+      catch_cod: '&fFish for cod'
+      catch_name_tag: '&fFish for a name tag'
+      catch_pufferfish: '&fFish for pufferfish'
+      catch_salmon: '&fFish for salmon'
+      catch_tropical_fish: '&fFish for tropical fish'
+      defeat_bogged: '&fDefeat bogged'
+      defeat_cave_spider: '&fDefeat cave spiders'
+      defeat_creeper: '&fDefeat creepers'
+      defeat_drowned: '&fDefeat drowned'
+      defeat_enderman: '&fDefeat endermen'
+      defeat_husk: '&fDefeat husks'
+      defeat_phantom: '&fDefeat phantoms'
+      defeat_pillager: '&fDefeat pillagers'
+      defeat_skeleton: '&fDefeat skeletons'
+      defeat_slime: '&fDefeat slimes'
+      defeat_spider: '&fDefeat spiders'
+      defeat_stray: '&fDefeat strays'
+      defeat_vindicator: '&fDefeat vindicators'
+      defeat_witch: '&fDefeat witches'
+      defeat_zombie: '&fDefeat zombies'
+      eat_apple: '&fEat apples'
+      eat_baked_potato: '&fEat baked potatoes'
+      eat_bread: '&fEat bread'
+      eat_cooked_beef: '&fEat cooked beef'
+      eat_cooked_chicken: '&fEat cooked chicken'
+      eat_cooked_cod: '&fEat cooked cod'
+      eat_cooked_mutton: '&fEat cooked mutton'
+      eat_cooked_porkchop: '&fEat cooked porkchops'
+      eat_cooked_salmon: '&fEat cooked salmon'
+      eat_golden_carrot: '&fEat golden carrots'
+      enchant_book: '&fEnchant books'
+      enchant_bow: '&fEnchant bows'
+      enchant_diamond_pickaxe: '&fEnchant diamond pickaxes'
+      enchant_diamond_sword: '&fEnchant diamond swords'
+      enchant_fishing_rod: '&fEnchant fishing rods'
+      enchant_iron_axe: '&fEnchant iron axes'
+      enchant_iron_chestplate: '&fEnchant iron chestplates'
+      enchant_iron_pickaxe: '&fEnchant iron pickaxes'
+      enchant_iron_shovel: '&fEnchant iron shovels'
+      enchant_iron_sword: '&fEnchant iron swords'
+      gather_andesite: '&fGather natural andesite'
+      gather_coal_ore: '&fGather natural coal ore'
+      gather_copper_ore: '&fGather natural copper ore'
+      gather_deepslate: '&fGather natural deepslate'
+      gather_diamond_ore: '&fGather natural diamond ore'
+      gather_diorite: '&fGather natural diorite'
+      gather_gold_ore: '&fGather natural gold ore'
+      gather_granite: '&fGather natural granite'
+      gather_iron_ore: '&fGather natural iron ore'
+      gather_lapis_ore: '&fGather natural lapis ore'
+      gather_oak_log: '&fGather natural oak logs'
+      gather_redstone_ore: '&fGather natural redstone ore'
+      gather_stone: '&fGather natural stone'
+      gather_tuff: '&fGather natural tuff'
+      harvest_bamboo: '&fHarvest bamboo'
+      harvest_beetroots: '&fHarvest ripe beetroots'
+      harvest_brown_mushroom: '&fHarvest brown mushrooms'
+      harvest_cactus: '&fHarvest cacti'
+      harvest_carrots: '&fHarvest ripe carrots'
+      harvest_cocoa: '&fHarvest ripe cocoa pods'
+      harvest_kelp: '&fHarvest kelp'
+      harvest_melon: '&fHarvest melons'
+      harvest_nether_wart: '&fHarvest ripe nether wart'
+      harvest_potatoes: '&fHarvest ripe potatoes'
+      harvest_pumpkin: '&fHarvest pumpkins'
+      harvest_red_mushroom: '&fHarvest red mushrooms'
+      harvest_sugar_cane: '&fHarvest sugar cane'
+      harvest_wheat: '&fHarvest ripe wheat'
+      hunt_blaze: '&fHunt blazes'
+      hunt_ghast: '&fHunt ghasts'
+      hunt_magma_cube: '&fHunt magma cubes'
+      hunt_wither_skeleton: '&fHunt wither skeletons'
+      mine_basalt: '&fMine natural basalt'
+      mine_blackstone: '&fMine natural blackstone'
+      mine_nether_gold_ore: '&fMine natural Nether gold ore'
+      mine_nether_quartz_ore: '&fMine natural Nether quartz ore'
+      mine_netherrack: '&fMine natural netherrack'
+      mine_soul_sand: '&fMine natural soul sand'
+      place_acacia_planks: '&fBuild with acacia planks'
+      place_birch_planks: '&fBuild with birch planks'
+      place_bricks: '&fBuild with bricks'
+      place_cherry_planks: '&fBuild with cherry planks'
+      place_cobblestone: '&fBuild with cobblestone'
+      place_dark_oak_planks: '&fBuild with dark oak planks'
+      place_deepslate_bricks: '&fBuild with deepslate bricks'
+      place_glass: '&fBuild with glass'
+      place_jungle_planks: '&fBuild with jungle planks'
+      place_mangrove_planks: '&fBuild with mangrove planks'
+      place_oak_planks: '&fBuild with oak planks'
+      place_sandstone: '&fBuild with sandstone'
+      place_spruce_planks: '&fBuild with spruce planks'
+      place_stone_bricks: '&fBuild with stone bricks'
     objectives:
       miner: '&fMine natural stone'
       hunter: '&fDefeat zombies'
@@ -560,7 +654,7 @@ override-lang:
         description: '&7Three random objectives; refresh at midnight every Monday (server time).'
       monthly:
         name: '&eMonthly Quests'
-        description: '&7Three random objectives; refresh at midnight on the first day of each month (server time).'
+        description: '&7One objective per category; refresh at midnight on the first day of each month (server time).'
     scroll-rewards:
       novice_common_stick: '&7• &f[Common] Stick &7x16'
       novice_common_oak_log: '&7• &f[Common] Oak Log &7x16'
@@ -1018,166 +1112,3 @@ objective-display:
     block_break: blocks
     fish: items
     consume: items
-editor:
-  category:
-    edit: '&eEdit categories'
-    select: '&eClick to select'
-    remove: '&aSelected; click to remove'
-  summary:
-    type: '&7Type: &f{value}'
-    section: Section
-    keys: '&7Keys: &f{value}'
-    list: List
-    size: '&7Size: &f{value}'
-    value: '&7Value: &f{value}'
-  message:
-    disabled: '&#98FB98[UltimateQuest] &cThe configuration editor is disabled.'
-    target-not-found: '&#98FB98[UltimateQuest] &cTarget file not found.'
-    invalid-number: '&#98FB98[UltimateQuest] &cThat is not a valid finite number.'
-    saved: '&#98FB98[UltimateQuest] &aValidated and saved &f{value}'
-    save-failed: '&#98FB98[UltimateQuest] &cNot applied: {value}'
-    invalid-key: '&#98FB98[UltimateQuest] &cUse a new key containing letters, numbers, _ or -.'
-    invalid-new-child-value: '&#98FB98[UltimateQuest] &cInvalid value.'
-    command-usage: '&#98FB98[UltimateQuest] &cUse /uq editor [quest|task|category|battlepass|milestone|period|scroll|pool|reward-pool|menu] [id]'
-    invalid-integer: '&#98FB98[UltimateQuest] &cThat is not a valid integer.'
-  prompt:
-    description: '&#98FB98[UltimateQuest] &f{value}'
-    cancel-tip: '&#98FB98[UltimateQuest] &7Type &fcancel &7to abort this edit.'
-    string: Input the new string for &f{path}
-    new-child: Input the new child key
-    new-child-value: Input a value for &f{path}&7. Use section/{}, boolean, number, ;; list, [] or string:text.
-    integer: Input the new integer for &f{path}
-    double: Input the new number for &f{path}
-    integer-list-entry: Input the new integer list entry for &f{path}
-    string-list-entry: Input the new list entry for &f{path}
-    integer-list-entry-edit: Input the new integer for list entry &f#{index}
-    string-list-entry-edit: Input the new value for list entry &f#{index}
-  root:
-    title: UltimateQuest Editor
-    close:
-      name: '&cClose'
-  action:
-    open: '&aLeft click to open'
-    delete: '&cRight click to delete'
-    toggle: '&aLeft click to toggle'
-    increase-ten: '&aLeft click to add 10'
-    decrease-ten: '&cRight click to subtract 10'
-    increase-one: '&aShift-left to add 1'
-    decrease-one: '&cShift-right to subtract 1'
-    middle-clear: '&eMiddle click to clear'
-    input-number: '&eDrop key to enter an exact number'
-    edit: '&aLeft click to edit'
-  file-list:
-    title: 'Editor: {scope}'
-    type: '&7Type: &f{value}'
-    file: '&7File: &f{value}'
-    back: '&7Return to editor home'
-    refresh: '&7Reload the file list'
-  common:
-    back:
-      name: '&eBack'
-      desc: '&7Return to the previous screen'
-    refresh:
-      name: '&eRefresh'
-    previous-page:
-      name: '&ePrevious Page'
-      desc: '&7Go to the previous page'
-    next-page:
-      name: '&eNext Page'
-      desc: '&7Go to the next page'
-    reload:
-      name: '&aValidate and Apply'
-    clear:
-      name: '&cClear'
-      desc: '&7Remove this value'
-    root: root
-  section:
-    path:
-      name: '&eCurrent Path'
-      desc: '&f{value}'
-    reload:
-      line-1: '&7Changes are held in this session draft.'
-      line-2: '&7Validate, back up, save and rebuild live definitions.'
-    add-child:
-      name: '&eAdd Child'
-      generic: '&7Add a new child node under this section'
-  discard:
-    name: '&cDiscard Draft'
-    desc: '&7Shift-click to discard changes and reload this file'
-  lore:
-    path: '&7Path: &f{value}'
-    kind: '&7Kind: &f{value}'
-  item:
-    raw-hint: '&eRight click: raw fields; shift-right: delete'
-    title: 'Item Editor: {path}'
-    slot:
-      name: '&eItemFormat Slot'
-      line-1: '&7Click slot 13 while holding an item on your cursor.'
-      line-2: '&7The item is copied, never taken. Apply to update the draft.'
-    raw:
-      name: '&eRaw Section'
-      desc: '&7Open all keys inside this item section'
-    apply:
-      name: '&aApply Item'
-      desc: '&7Serialize slot 13 into the current section'
-    clear:
-      name: '&cClear Section'
-      desc: '&7Delete this entire item section'
-    back:
-      desc: '&7Return to the parent section'
-  list:
-    title: 'List Editor: {path}'
-    move-up: '&eShift-left to move up'
-    move-down: '&eShift-right to move down'
-    add:
-      name: '&eAdd Line'
-      desc: '&7Add a new line to this list'
-    clear:
-      name: '&cClear List'
-      desc: '&7Remove all entries from this list'
-    current: '&7Current: &f{value}'
-  reset-time:
-    title: 'Reset Time: {path}'
-    mode:
-      name: '&eCurrent Mode'
-      value: '&7Mode: &f{value}'
-      desc: '&7Click to cycle modes (shift: reverse); sets a default value.'
-    preview:
-      name: '&eSchedule Preview'
-      previous: '&7Previous: &f{value}'
-      next: '&7Next: &f{value}'
-    add:
-      name: '&eAdd Time'
-      desc: '&7Add a new reset time entry'
-    manual:
-      name: '&eEdit Value'
-    current: '&7Current: &f{value}'
-    never:
-      name: '&eNo Reset Time Needed'
-      desc: '&7This reset mode does not use a time value.'
-    prompt-add: Input the new reset time for &f{path}
-    prompt-edit: Input the new reset time for entry &f#{index}
-    invalid: '&#98FB98[UltimateQuest] &cInvalid schedule: {value}'
-  sub-button:
-    not-set: <not set>
-  scope:
-    reward_pool: Reward Pools
-    quest: Objectives
-    task: Tasks
-    category: Categories
-    battlepass: Battle Passes
-    milestone: Milestones
-    period: Periods
-    scroll: Scrolls
-    pool: Pools
-    menu: Menus
-  value-kind:
-    section: SECTION
-    item_section: ITEM_SECTION
-    boolean: BOOLEAN
-    integer: INTEGER
-    double: DOUBLE
-    string: STRING
-    string_list: STRING_LIST
-    integer_list: INTEGER_LIST
-    unknown: UNKNOWN

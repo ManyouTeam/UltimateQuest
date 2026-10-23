@@ -1,0 +1,23 @@
+enabled: true
+categories:
+- building
+name: '{lang:defaults.period-objectives.place_birch_planks}'
+icon:
+  material: BIRCH_PLANKS
+trigger: block_place
+amount: 768
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: block_type
+    types:
+    - BIRCH_PLANKS
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

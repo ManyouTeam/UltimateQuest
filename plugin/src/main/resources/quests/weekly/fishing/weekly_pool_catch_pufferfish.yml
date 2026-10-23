@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- fishing
+name: '{lang:defaults.period-objectives.catch_pufferfish}'
+icon:
+  material: PUFFERFISH
+trigger: fish
+amount: 16
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: catch_match_item
+    match:
+      material:
+      - PUFFERFISH
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

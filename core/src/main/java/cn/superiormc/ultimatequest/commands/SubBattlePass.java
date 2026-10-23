@@ -1,8 +1,6 @@
 package cn.superiormc.ultimatequest.commands;
 
 import cn.superiormc.ultimatequest.gui.inv.ConfiguredMenuGUI;
-import cn.superiormc.ultimatequest.editor.EditorScope;
-import cn.superiormc.ultimatequest.managers.MenuStatusManager;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.QuestManager;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
@@ -57,7 +55,7 @@ public final class SubBattlePass extends AbstractCommand {
                 QuestManager.questManager.growthDefinitions(type).forEach(definition -> result.add(definition.id()));
             }
             if (sender.hasPermission("ultimatequest.admin")) {
-                result.addAll(List.of("addxp", "setxp", "removexp", "setlevel", "premium", "boost", "resolve", "season", "editor"));
+                result.addAll(List.of("addxp", "setxp", "removexp", "setlevel", "premium", "boost", "resolve", "season"));
                 if (!(sender instanceof Player)) {
                     Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
                 }
@@ -112,18 +110,6 @@ public final class SubBattlePass extends AbstractCommand {
     public static void executeProgression(CommandSender sender, String[] args, String type) {
         String operation = args.length < 2 ? "" : args[1].toLowerCase(Locale.ROOT);
         QuestManager manager = QuestManager.questManager;
-        if (operation.equals("editor")) {
-            if (!(sender instanceof Player player) || !sender.hasPermission("ultimatequest.admin")) {
-                LanguageManager.languageManager.sendStringText(sender, "error.miss-permission");
-                return;
-            }
-            if (args.length != 3 || manager.growthDefinition(type, args[2]) == null) {
-                LanguageManager.languageManager.sendStringText(sender, "battlepass.admin-usage");
-                return;
-            }
-            MenuStatusManager.menuStatusManager.openFile(player, EditorScope.ofName(type), args[2]);
-            return;
-        }
         if (operation.equals("season")) {
             if (!sender.hasPermission("ultimatequest.admin")) {
                 LanguageManager.languageManager.sendStringText(sender, "error.miss-permission");
@@ -136,7 +122,7 @@ public final class SubBattlePass extends AbstractCommand {
             String[] target = args[3].toLowerCase(Locale.ROOT).split(":", 2);
             String targetType = target.length == 2 ? target[0] : type;
             String targetId = target.length == 2 ? target[1] : target[0];
-            manager.editor().editSeason(sender, targetType, targetId, args[2].toLowerCase(Locale.ROOT),
+            manager.editSeason(sender, targetType, targetId, args[2].toLowerCase(Locale.ROOT),
                     Arrays.asList(args).subList(4, args.length));
             return;
         }
