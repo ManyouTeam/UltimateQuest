@@ -16,6 +16,13 @@ rotation:
   reset-time: 0 0 0 1 * ?
 premium-by-permission: true
 premium-permission: ultimatequest.battlepass.example.premium
+permission-boosters:
+  vip:
+    permission: ultimatequest.battlepass.example.booster.vip
+    multiplier: 1.5
+  svip:
+    permission: ultimatequest.battlepass.example.booster.svip
+    multiplier: 2.0
 cap-experience: true
 claim-grace-seconds: 604800
 auto-claim: false

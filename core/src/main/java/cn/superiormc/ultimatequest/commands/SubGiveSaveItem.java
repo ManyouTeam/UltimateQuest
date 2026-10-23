@@ -78,7 +78,7 @@ public class SubGiveSaveItem extends AbstractCommand {
     }
 
     @Override
-    public List<String> getTabResult(String[] args, Player player) {
+    protected List<String> getConsoleTabResult(String[] args) {
         List<String> tempVal1 = new ArrayList<>();
         int length = args.length;
         if (length == 2) {
@@ -88,7 +88,7 @@ public class SubGiveSaveItem extends AbstractCommand {
                 tempVal1.add(p.getName());
             }
         } else if (length == 4) {
-            tempVal1.add("[amount]");
+            tempVal1.addAll(List.of("1", "16", "64"));
         }
         return tempVal1;
     }

@@ -73,9 +73,14 @@ public final class SubMenu extends AbstractCommand {
             suggestions.addAll(ConfigManager.configManager.getMenuIds());
             Bukkit.getOnlinePlayers().forEach(player -> suggestions.add(player.getName()));
         } else if (args.length == 3) {
-            Bukkit.getOnlinePlayers().forEach(player -> suggestions.add(player.getName()));
-            suggestions.add("-b");
-        } else if (args.length == 4) {
+            if (ConfigManager.configManager.hasMenu(args[1])) {
+                Bukkit.getOnlinePlayers().forEach(player -> suggestions.add(player.getName()));
+            }
+            if (Bukkit.getPlayerExact(args[1]) != null) {
+                suggestions.add("-b");
+            }
+        } else if (args.length == 4 && ConfigManager.configManager.hasMenu(args[1])
+                && Bukkit.getPlayerExact(args[2]) != null) {
             suggestions.add("-b");
         }
         return suggestions;

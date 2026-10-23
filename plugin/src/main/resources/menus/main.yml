@@ -79,6 +79,7 @@ contents:
         - '{lang:menu-abandon-confirm-loss}'
         - '{lang:defaults.ui.blank}'
         - '{lang:menu-abandon-confirm-action}'
+        - '{lang:menu-abandon-confirm-cancel}'
         - '{lang:menu-abandon-confirm-timeout}'
     empty-item:
       material: MINECART

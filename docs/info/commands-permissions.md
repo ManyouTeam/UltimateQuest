@@ -23,7 +23,9 @@ The default player permission is `ultimatequest.use`. Definition IDs are filenam
 | `/uq battlepass challenges <id>` | Open challenges. |
 | `/uq battlepass stats <id>` | Show progression stats. |
 
-The shared handler also supports `claimall`, `history`, `challenges`, and `stats` under `milestone`. Select a saved season with `<id>@<season-id>`.
+The shared handler also supports `claimall`, `history`, and `stats` under `milestone`. Challenges belong to battle passes. Select a saved season with `<id>@<season-id>`; these references appear in Tab completion only after explicitly typing `<id>@`. Ordinary completion shows plain definition IDs. History displays the season name, date range, level and progress, followed by a command for viewing details. Permanent milestones are identified as permanent instead of displaying an empty season suffix.
+
+Tab completion follows each command's argument order. For example, `/uq battlepass premium ` suggests online players, then pass IDs, then `true` / `false`. `true` unlocks premium access and `false` revokes it. Level commands suggest configured levels; boosts suggest a multiplier followed by a duration in seconds; `resolve` suggests unresolved reward stages for loaded players, followed by `AVAILABLE` / `CLAIMED`. Season operations also complete their target, new season ID, duration or UTC timestamps. Completion suggestions are examples for numeric values; other valid values can be entered manually. Offline player names and UUIDs can also be entered manually.
 
 ## Administration commands
 

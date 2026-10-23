@@ -28,6 +28,10 @@ public final class MainCommandTab implements TabCompleter {
                 if (permission != null && !permission.isEmpty() && !sender.hasPermission(permission)) {
                     continue;
                 }
+                if ((object instanceof SubBattlePass || object instanceof SubMilestone || object instanceof SubScroll)
+                        && !sender.hasPermission("ultimatequest.use") && !sender.hasPermission("ultimatequest.admin")) {
+                    continue;
+                }
                 results.add(object.getId());
             }
             String input = args.length == 0 ? "" : args[0].toLowerCase(Locale.ROOT);

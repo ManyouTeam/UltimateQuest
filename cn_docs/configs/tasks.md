@@ -47,6 +47,9 @@ rewards:
 | `source` | 与 `objectives` 二选一 | 单目标简写，包含触发器、数量和条件。 |
 | `rewards` | 可省略 | 领奖时发放的奖励，见[奖励配置](rewards/README.md)。 |
 | `auto-claim` | 默认 `false` | 完成后自动尝试领奖。 |
+| `allow-abandon` | 默认 `true` | 仅普通任务生效；设为 `false` 后，命令和菜单均不能放弃该任务。 |
+| `hide-in-menu` | 默认 `false` | 仅普通任务生效；设为 `true` 后，所有状态均从菜单隐藏，仍可通过命令接取、查看及领奖。 |
+| `auto-hide` | 默认 `false` | 仅普通任务生效；设为 `true` 后，未接取且不满足接取条件的任务自动隐藏，满足条件后显示；已接取任务继续显示。 |
 | `categories` | 默认空列表 | 分类 ID，见[分类](categories.md)。 |
 | `prerequisites` | 默认空列表 | 只有这些普通任务已领奖，才能接取本任务。 |
 | `accept-mode` | 默认 `player` | `admin` 表示只能由管理员派发。 |
@@ -54,6 +57,16 @@ rewards:
 | `conditions` | 可省略 | 根节点条件在接取时检查，只能使用当时可用的玩家数据。 |
 
 `source.conditions` 检查每次行为；根节点 `conditions` 检查能否接取。两者配置位置不同。检查接取玩家状态时，显式写 `target: PLAYER`。
+
+`hide-in-menu` 优先于 `auto-hide`。`auto-hide` 使用菜单已有的接取资格判定，包括根节点条件、前置任务、活动时间和接取模式，不检查任务名额。它不因目标条件暂时不满足而隐藏已接取任务。`listed: false` 仅隐藏尚未接取的任务；需要始终隐藏时使用 `hide-in-menu: true`。
+
+例如，在普通任务配置顶层添加以下字段，可禁止放弃，并在接取条件不满足时自动隐藏：
+
+```yaml
+allow-abandon: false
+hide-in-menu: false
+auto-hide: true
+```
 
 ## 多目标任务
 
@@ -96,3 +109,5 @@ objectives:
 任务在接取时保存当时的目标和确定的奖励。重载不会改写已接任务。请用尚未接过该任务的测试玩家，或在允许放弃的情况下放弃后重新接取。
 
 完成但未领奖的任务仍占[任务名额](task-limits.md)。允许放弃的普通任务可以使用 `/uq abandon <任务ID>` 放弃，已有进度会丢失。
+
+`allow-abandon`、`hide-in-menu` 和 `auto-hide` 在 `/uq reload` 后读取当前配置，无需重新接取任务。接取和放弃成功提示分别使用语言键 `quests.accepted`、`quests.abandoned`，可用 `{quest}` 显示对应任务名称。

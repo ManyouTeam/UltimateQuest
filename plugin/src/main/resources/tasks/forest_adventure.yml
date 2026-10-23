@@ -8,6 +8,9 @@ categories:
 - combat
 - gathering
 auto-claim: false
+allow-abandon: true
+hide-in-menu: false
+auto-hide: false
 prerequisites:
 - miner
 objectives:

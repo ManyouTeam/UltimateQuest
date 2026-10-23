@@ -3,8 +3,14 @@ package cn.superiormc.ultimatequest.commands;
 import cn.superiormc.ultimatequest.gui.inv.ConfiguredMenuGUI;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.QuestManager;
+import cn.superiormc.ultimatequest.managers.QuestPeriodManager;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
+import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -48,59 +54,173 @@ public final class SubBattlePass extends AbstractCommand {
 
     public static List<String> suggestions(String[] args, CommandSender sender, String type) {
         List<String> result = new ArrayList<>();
+        if (args.length < 2) {
+            return result;
+        }
+        boolean admin = sender.hasPermission("ultimatequest.admin");
+        boolean console = !(sender instanceof Player);
+        if (console ? !admin : !admin && !sender.hasPermission("ultimatequest.use")) {
+            return result;
+        }
+        QuestManager manager = QuestManager.questManager;
+        String operation = args[1].toLowerCase(Locale.ROOT);
+        List<String> playerOperations = new ArrayList<>(List.of("claim", "claimall", "history", "stats"));
+        if (type.equals("battlepass")) {
+            playerOperations.add("challenges");
+        }
+        Set<String> adminOperations = Set.of("addxp", "setxp", "removexp", "setlevel", "premium", "boost", "resolve");
         if (args.length == 2) {
-            if (sender.hasPermission("ultimatequest.use") || sender.hasPermission("ultimatequest.admin")) {
-                result.add("claim");
-                result.addAll(List.of("claimall", "history", "challenges", "stats"));
-                QuestManager.questManager.growthDefinitions(type).forEach(definition -> result.add(definition.id()));
+            result.addAll(playerOperations);
+            for (QuestDefinition definition : manager.growthDefinitions(type)) {
+                result.add(definition.id());
+                if (sender instanceof Player player && !definition.season().isEmpty() && args[1].contains("@")) {
+                    result.addAll(manager.seasons(player.getUniqueId(), type, definition.id()));
+                }
             }
-            if (sender.hasPermission("ultimatequest.admin")) {
+            if (admin) {
                 result.addAll(List.of("addxp", "setxp", "removexp", "setlevel", "premium", "boost", "resolve", "season"));
-                if (!(sender instanceof Player)) {
+                if (console) {
                     Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
                 }
             }
-        } else if (args[1].equalsIgnoreCase("addxp") && sender.hasPermission("ultimatequest.admin")) {
+        } else if (adminOperations.contains(operation)) {
+            if (!admin) {
+                return result;
+            }
+            Player target = Bukkit.getPlayerExact(args[2]);
             if (args.length == 3) {
                 Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
             } else if (args.length == 4) {
-                QuestManager.questManager.growthDefinitions(type).forEach(definition -> result.add(definition.id()));
-            } else if (args.length == 5) {
-                result.add("100");
+                for (QuestDefinition definition : manager.growthDefinitions(type)) {
+                    result.add(definition.id());
+                    if (target != null && !definition.season().isEmpty() && args[3].contains("@")) {
+                        result.addAll(manager.seasons(target.getUniqueId(), type, definition.id()));
+                    }
+                }
+            } else {
+                QuestDefinition definition = manager.growthDefinition(type, args[3].split("@", 2)[0]);
+                if (definition == null) {
+                    return result;
+                }
+                if (args.length == 5) {
+                    switch (operation) {
+                        case "premium" -> {
+                            result.addAll(List.of("true", "false"));
+                        }
+                        case "setlevel" -> {
+                            result.add("0");
+                            definition.thresholds().keySet().forEach(level -> result.add(String.valueOf(level)));
+                        }
+                        case "boost" -> {
+                            result.addAll(List.of("1.5", "2.0"));
+                        }
+                        case "resolve" -> {
+                            var quest = target == null ? null : manager.growthInstance(target.getUniqueId(), type, args[3]);
+                            if (quest != null) {
+                                quest.stageStates().forEach((stage, state) -> {
+                                    if (Set.of("CLAIMING", "REVIEW").contains(state)) {
+                                        result.add(stage);
+                                    }
+                                });
+                            } else {
+                                for (String track : definition.tracks()) {
+                                    definition.thresholds().keySet().forEach(level -> result.add(track + "/" + level));
+                                }
+                            }
+                        }
+                        default -> {
+                            result.addAll(operation.equals("setxp") ? List.of("0", "100", "1000") : List.of("100", "1000"));
+                        }
+                    }
+                } else if (args.length == 6 && operation.equals("boost")) {
+                    result.addAll(List.of("3600", "86400"));
+                } else if (args.length == 6 && operation.equals("resolve")) {
+                    result.addAll(List.of("AVAILABLE", "CLAIMED"));
+                }
             }
-        } else if (args[1].equalsIgnoreCase("claim") && (sender.hasPermission("ultimatequest.use") || sender.hasPermission("ultimatequest.admin"))) {
+        } else if (operation.equals("season")) {
+            if (!admin) {
+                return result;
+            }
+            Set<String> seasonOperations = Set.of("pause", "resume", "end", "start", "schedule", "globalboost");
+            String action = args[2].toLowerCase(Locale.ROOT);
             if (args.length == 3) {
-                QuestManager.questManager.growthDefinitions(type).forEach(definition -> result.add(definition.id()));
+                result.addAll(List.of("pause", "resume", "end", "start", "schedule", "globalboost"));
+            } else if (!seasonOperations.contains(action)) {
+                return result;
             } else if (args.length == 4) {
-                QuestDefinition definition = QuestManager.questManager.growthDefinition(type, args[2]);
-                if (definition != null) {
+                manager.growthDefinitions(type).forEach(definition -> result.add(definition.id()));
+                for (String targetType : List.of("battlepass", "milestone")) {
+                    manager.growthDefinitions(targetType).forEach(definition -> result.add(targetType + ":" + definition.id()));
+                }
+                manager.templates().values().stream().filter(definition -> !definition.growth()
+                        && !definition.settings().contains("challenge.pass"))
+                        .forEach(definition -> result.add("normal:" + definition.id()));
+                QuestPeriodManager.questPeriodManager.definitions().keySet().forEach(id -> result.add("period:" + id));
+            } else if (args.length == 5) {
+                if (Set.of("start", "schedule").contains(action)) {
+                    result.add("season_" + Instant.now().getEpochSecond());
+                } else if (action.equals("globalboost")) {
+                    result.addAll(List.of("1.5", "2.0"));
+                }
+            } else if (args.length == 6) {
+                if (action.equals("start")) {
+                    result.addAll(List.of("2592000", "604800", "86400"));
+                } else if (action.equals("globalboost")) {
+                    result.addAll(List.of("3600", "86400"));
+                } else if (action.equals("schedule")) {
+                    result.add(Instant.now().truncatedTo(ChronoUnit.SECONDS).plus(1L, ChronoUnit.DAYS).toString());
+                }
+            } else if (args.length == 7 && action.equals("schedule")) {
+                try {
+                    result.add(Instant.parse(args[5]).plus(30L, ChronoUnit.DAYS).toString());
+                } catch (DateTimeParseException exception) {
+                    result.add(Instant.now().truncatedTo(ChronoUnit.SECONDS).plus(31L, ChronoUnit.DAYS).toString());
+                }
+            }
+        } else if (playerOperations.contains(operation)) {
+            if (args.length == 3) {
+                for (QuestDefinition definition : manager.growthDefinitions(type)) {
+                    result.add(definition.id());
+                    if (sender instanceof Player player && !definition.season().isEmpty()
+                            && !Set.of("history", "challenges").contains(operation) && args[2].contains("@")) {
+                        result.addAll(manager.seasons(player.getUniqueId(), type, definition.id()));
+                    }
+                }
+            } else if (operation.equals("claim")) {
+                QuestDefinition definition = manager.growthDefinition(type, args[2].split("@", 2)[0]);
+                if (definition == null) {
+                    return result;
+                }
+                if (args.length == 4) {
                     definition.thresholds().keySet().forEach(level -> result.add(String.valueOf(level)));
-                }
-            } else if (args.length == 5) {
-                result.addAll(List.of("free", "premium"));
-                if (!(sender instanceof Player)) {
+                } else if (args.length == 5) {
+                    result.addAll(definition.tracks());
+                    if (console) {
+                        Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
+                    }
+                } else if (args.length == 6 && console && definition.tracks().contains(args[4].toLowerCase(Locale.ROOT))) {
                     Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
                 }
-            } else if (args.length == 6 && !(sender instanceof Player)) {
+            } else if (args.length == 4 && console) {
                 Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
-            }
-        } else if (Set.of("claimall", "history", "challenges", "stats").contains(args[1].toLowerCase(Locale.ROOT))) {
-            if (args.length == 3) {
-                QuestManager.questManager.growthDefinitions(type).forEach(definition -> result.add(definition.id()));
-            } else if (args.length == 4 && !(sender instanceof Player) && sender.hasPermission("ultimatequest.admin")) {
-                Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
-            } else if (args.length == 5 && args[1].equalsIgnoreCase("challenges") && !(sender instanceof Player)) {
+            } else if (args.length == 5 && operation.equals("challenges") && console) {
                 result.add("-b");
             }
-        } else if (!(sender instanceof Player) && sender.hasPermission("ultimatequest.admin")) {
+        } else if (console && admin) {
             if (args.length == 3) {
-                Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
-                result.add("-b");
-            } else if (args.length == 4) {
+                if (manager.growthDefinition(type, operation.split("@", 2)[0]) != null) {
+                    Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
+                }
+                if (Bukkit.getPlayerExact(args[1]) != null) {
+                    result.add("-b");
+                }
+            } else if (args.length == 4 && manager.growthDefinition(type, operation.split("@", 2)[0]) != null
+                    && Bukkit.getPlayerExact(args[2]) != null) {
                 result.add("-b");
             }
         }
-        return result;
+        return result.stream().distinct().toList();
     }
 
     private void execute(CommandSender sender, String[] args) {
@@ -115,8 +235,17 @@ public final class SubBattlePass extends AbstractCommand {
                 LanguageManager.languageManager.sendStringText(sender, "error.miss-permission");
                 return;
             }
-            if (args.length < 4) {
-                LanguageManager.languageManager.sendStringText(sender, "battlepass.admin-usage");
+            String action = args.length > 2 ? args[2].toLowerCase(Locale.ROOT) : "";
+            int length = switch (action) {
+                case "pause", "resume", "end" -> 4;
+                case "start", "globalboost" -> 6;
+                case "schedule" -> 7;
+                default -> 0;
+            };
+            if (length == 0 || args.length != length) {
+                String usage = Set.of("pause", "resume", "end", "start", "schedule", "globalboost").contains(action)
+                        ? "battlepass.season-usages." + action : "battlepass.admin-usages.season";
+                LanguageManager.languageManager.sendStringText(sender, usage, "type", type);
                 return;
             }
             String[] target = args[3].toLowerCase(Locale.ROOT).split(":", 2);
@@ -133,7 +262,7 @@ public final class SubBattlePass extends AbstractCommand {
             }
             int length = Set.of("boost", "resolve").contains(operation) ? 6 : 5;
             if (args.length != length) {
-                LanguageManager.languageManager.sendStringText(sender, "battlepass.admin-usage");
+                LanguageManager.languageManager.sendStringText(sender, "battlepass.admin-usages." + operation, "type", type);
                 return;
             }
             UUID target = resolvePlayer(args[2]);
@@ -191,7 +320,8 @@ public final class SubBattlePass extends AbstractCommand {
         }
         if (Set.of("claimall", "history", "challenges", "stats").contains(operation)) {
             if (args.length != 3) {
-                LanguageManager.languageManager.sendStringText(player, "battlepass.player-usage");
+                LanguageManager.languageManager.sendStringText(player, "battlepass.usage", "type", type,
+                        "actions", type.equals("battlepass") ? "claimall|history|challenges|stats" : "claimall|history|stats");
                 return;
             }
             String pass = args[2].toLowerCase(Locale.ROOT);
@@ -200,8 +330,41 @@ public final class SubBattlePass extends AbstractCommand {
                     manager.claimAll(player, type, pass);
                 }
                 case "history" -> {
-                    LanguageManager.languageManager.sendStringText(player, "battlepass.history", "seasons",
-                            String.join(", ", manager.seasons(player.getUniqueId(), type, pass)));
+                    QuestDefinition definition = manager.growthDefinition(type, pass);
+                    if (definition == null) {
+                        LanguageManager.languageManager.sendStringText(player, "quests.not-found");
+                        return;
+                    }
+                    List<String> seasons = manager.seasons(player.getUniqueId(), type, pass);
+                    if (seasons.isEmpty()) {
+                        LanguageManager.languageManager.sendStringText(player, "battlepass.history-empty", "name", definition.name(player));
+                    } else if (definition.season().isEmpty() && seasons.stream().noneMatch(season -> season.contains("@"))) {
+                        var quest = manager.growthInstance(player.getUniqueId(), type, pass);
+                        LanguageManager.languageManager.sendStringText(player, "battlepass.history-permanent",
+                                "name", definition.name(player), "level", String.valueOf(quest.level()),
+                                "total", quest.totalAmount().stripTrailingZeros().toPlainString());
+                    } else {
+                        LanguageManager.languageManager.sendStringText(player, "battlepass.history-title",
+                                "name", definition.name(player), "count", String.valueOf(seasons.size()));
+                        for (String season : seasons) {
+                            var quest = manager.growthInstance(player.getUniqueId(), type, season);
+                            if (quest == null) {
+                                continue;
+                            }
+                            QuestDefinition saved = quest.definition();
+                            String period = LanguageManager.languageManager.getStringText(player, "menu-time.unlimited");
+                            if (saved.startsAt() != null && saved.endsAt() != null) {
+                                period = saved.startsAt().atZone(ZoneId.systemDefault()).toLocalDate() + " ~ "
+                                        + saved.endsAt().atZone(ZoneId.systemDefault()).toLocalDate();
+                            }
+                            LanguageManager.languageManager.sendStringText(player, "battlepass.history-entry",
+                                    "season", CommonUtil.parseLang(player, saved.settings().getString("season-name", saved.season())),
+                                    "period", period, "level", String.valueOf(quest.level()),
+                                    "total", quest.totalAmount().stripTrailingZeros().toPlainString());
+                            LanguageManager.languageManager.sendStringText(player, "battlepass.history-details",
+                                    "type", type, "id", season);
+                        }
+                    }
                 }
                 case "challenges" -> {
                     if (type.equals("battlepass")) {
@@ -211,9 +374,17 @@ public final class SubBattlePass extends AbstractCommand {
                 case "stats" -> {
                     var quest = manager.growthInstance(player.getUniqueId(), type, pass);
                     if (quest != null) {
-                        LanguageManager.languageManager.sendStringText(player, "battlepass.stats", "name", quest.definition().name(player),
-                                "season", quest.definition().season(), "level", String.valueOf(quest.level()),
-                                "total", String.valueOf(quest.total()), "premium", String.valueOf(quest.premium(player)));
+                        String season = quest.definition().season().isEmpty()
+                                ? LanguageManager.languageManager.getStringText(player, "battlepass.permanent")
+                                : CommonUtil.parseLang(player, quest.definition().settings().getString("season-name", quest.definition().season()));
+                        LanguageManager.languageManager.sendStringText(player,
+                                type.equals("milestone") ? "battlepass.milestone-stats" : "battlepass.stats",
+                                "name", quest.definition().name(player), "season", season, "level", String.valueOf(quest.level()),
+                                "total", quest.totalAmount().stripTrailingZeros().toPlainString(), "premium",
+                                LanguageManager.languageManager.getStringText(player, quest.premium(player)
+                                        ? "battlepass.premium-unlocked" : "battlepass.premium-locked"));
+                    } else {
+                        LanguageManager.languageManager.sendStringText(player, "quests.not-found");
                     }
                 }
                 default -> {
@@ -237,11 +408,13 @@ public final class SubBattlePass extends AbstractCommand {
                         : type.equals("milestone") ? "default" : "free";
                 QuestManager.questManager.claimStage(player, type, args[2], level, track);
             } catch (NumberFormatException exception) {
-                LanguageManager.languageManager.sendStringText(player, "progression.usage");
+                LanguageManager.languageManager.sendStringText(player, "battlepass.claim-usage", "type", type,
+                        "tracks", type.equals("milestone") ? "default" : "free|premium");
             }
             return;
         }
-        LanguageManager.languageManager.sendStringText(player, "progression.usage");
+        LanguageManager.languageManager.sendStringText(player, "battlepass.usage", "type", type,
+                "actions", type.equals("battlepass") ? "claimall|history|challenges|stats" : "claimall|history|stats");
     }
 
     private static UUID resolvePlayer(String name) {

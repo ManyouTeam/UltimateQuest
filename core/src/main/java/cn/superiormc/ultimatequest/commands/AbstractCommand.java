@@ -57,7 +57,7 @@ public abstract class AbstractCommand {
     }
 
     protected List<String> getTabResult(String[] args, Player player) {
-        return new ArrayList<>();
+        return !onlyInGame && getLengthCorrect(args.length, player) ? getConsoleTabResult(args) : List.of();
     }
 
     public List<String> filterTabResult(String[] args, Player player) {

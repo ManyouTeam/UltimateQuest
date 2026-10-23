@@ -81,11 +81,14 @@ public final class SubScroll extends AbstractCommand {
             } else if (args.length == 4) {
                 result.addAll(QuestScrollManager.questScrollManager.definitions().keySet());
             } else if (args.length == 5 || args.length == 6) {
-                var profile = QuestScrollManager.questScrollManager.definitions().get(args[3]);
+                var profile = QuestScrollManager.questScrollManager.definitions().get(args[3].toLowerCase(Locale.ROOT));
                 if (profile != null) {
                     var choices = profile.getConfigurationSection(args.length == 5 ? "rarities" : "difficulties");
                     if (choices != null) {
                         result.addAll(choices.getKeys(false));
+                    } else {
+                        result.add(profile.getString(args.length == 5 ? "rarity" : "difficulty",
+                                args.length == 5 ? "common" : "normal"));
                     }
                 }
             }

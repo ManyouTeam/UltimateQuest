@@ -58,6 +58,9 @@ public final class SubAbandon extends AbstractCommand {
 
     @Override
     protected List<String> getTabResult(String[] args, Player player) {
+        if (args.length != 2) {
+            return List.of();
+        }
         List<String> ids = new ArrayList<>();
         QuestManager.questManager.instances(player.getUniqueId()).forEach(quest -> ids.add(quest.key()));
         return ids;

@@ -23,7 +23,9 @@
 | `/uq battlepass challenges <id>` | 打开挑战。 |
 | `/uq battlepass stats <id>` | 查看成长统计。 |
 
-`milestone` 也支持共用处理器的 `claimall`、`history`、`challenges` 和 `stats` 子命令。保存的赛季使用 `<ID>@<赛季ID>` 指定。
+`milestone` 也支持共用处理器的 `claimall`、`history` 和 `stats` 子命令；挑战任务属于战令。保存的赛季使用 `<ID>@<赛季ID>` 指定，只有明确输入 `<ID>@` 后才会在 Tab 中提示这些赛季引用，普通补全只显示配置 ID。历史记录会显示赛季名称、日期范围、等级及累计进度，并给出查看详情的命令；永久里程碑会明确标注“永久”，不会显示空赛季后缀。
+
+Tab 按实际参数顺序补全。例如 `/uq battlepass premium ` 会依次提示在线玩家、战令 ID、`true` / `false`，其中 `true` 解锁高级资格，`false` 取消。等级命令提示已配置等级；倍率命令依次提示倍率和持续秒数；`resolve` 为已加载玩家提示待处理奖励阶段，再提示 `AVAILABLE` / `CLAIMED`。赛季操作也会提示目标、新赛季 ID、持续秒数或 UTC 时间。数值补全提供示例，可手动输入其他合法数值；离线玩家名称和 UUID 也可手动输入。
 
 ## 管理命令
 

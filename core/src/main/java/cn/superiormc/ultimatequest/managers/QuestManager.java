@@ -534,12 +534,31 @@ public final class QuestManager extends AbstractManager {
         changed(id);
         persist(id, () -> {
             rebuildIndex(id);
-            notifyPlayer(player, "quests.accepted");
+            notifyPlayer(player, "quests.accepted", "quest", definition.name(player));
         }, () -> {
             quests.remove(definition.id());
             changed(id);
             notifyPlayer(player, "quests.save-failed");
         });
+    }
+
+    public synchronized boolean canAbandon(QuestInstance quest) {
+        if (quest == null || quest.definition().growth() || !quest.source().equals("normal")
+                || !Set.of("ACTIVE", "COMPLETED").contains(quest.state())) {
+            return false;
+        }
+        QuestDefinition definition = definitions.getOrDefault(quest.definition().catalogKey(), quest.definition());
+        return definition.settings().getBoolean("allow-abandon", true);
+    }
+
+    public synchronized boolean visibleInMenu(Player player, QuestDefinition definition, QuestInstance quest) {
+        if (definition.growth() || quest != null && !quest.source().equals("normal")) {
+            return true;
+        }
+        QuestDefinition current = definitions.getOrDefault(definition.catalogKey(), definition);
+        return !current.settings().getBoolean("hide-in-menu", false)
+                && (quest != null || !current.settings().getBoolean("auto-hide", false)
+                || meetsRequirements(player, current));
     }
 
     public synchronized void abandon(Player player, String rawId) {
@@ -548,7 +567,7 @@ public final class QuestManager extends AbstractManager {
             return;
         }
         QuestInstance quest = instance(id, rawId);
-        if (quest == null || quest.definition().growth() || !quest.source().equals("normal") || !Set.of("ACTIVE", "COMPLETED").contains(quest.state())) {
+        if (!canAbandon(quest)) {
             LanguageManager.languageManager.sendStringText(player, "quests.cannot-abandon");
             return;
         }
@@ -557,7 +576,7 @@ public final class QuestManager extends AbstractManager {
         changed(id);
         persist(id, () -> {
             rebuildIndex(id);
-            notifyPlayer(player, "quests.abandoned");
+            notifyPlayer(player, "quests.abandoned", "quest", quest.definition().name(player));
         }, () -> {
             players.get(id).put(questId, quest);
             changed(id);
@@ -902,7 +921,7 @@ public final class QuestManager extends AbstractManager {
     public synchronized List<String> seasons(UUID playerId, String type, String pass) {
         return players.getOrDefault(playerId, Map.of()).values().stream()
                 .filter(quest -> quest.definition().type().equals(type) && quest.definition().id().equals(pass))
-                .map(quest -> pass + "@" + quest.definition().season()).toList();
+                .map(quest -> quest.definition().season().isEmpty() ? pass : pass + "@" + quest.definition().season()).toList();
     }
 
     public synchronized void claimAll(Player player, String type, String pass) {
@@ -912,6 +931,24 @@ public final class QuestManager extends AbstractManager {
         QuestInstance quest = growthInstance(player.getUniqueId(), type, pass);
         if (quest == null) {
             LanguageManager.languageManager.sendStringText(player, "quests.not-found");
+            return;
+        }
+        if (!claimableGrowth(quest)) {
+            LanguageManager.languageManager.sendStringText(player, "progression.claim-unavailable");
+            return;
+        }
+        boolean premium = quest.premium(player);
+        boolean claimable = quest.stageStates().entrySet().stream().anyMatch(entry -> entry.getValue().equals("AVAILABLE")
+                && (!entry.getKey().startsWith("premium/") || premium));
+        if (!claimable) {
+            if (quest.stageStates().values().stream().anyMatch(state -> Set.of("CLAIMING", "REVIEW").contains(state))) {
+                LanguageManager.languageManager.sendStringText(player, "quests.review-needed");
+            } else if (!premium && quest.stageStates().entrySet().stream().anyMatch(entry ->
+                    entry.getKey().startsWith("premium/") && entry.getValue().equals("AVAILABLE"))) {
+                LanguageManager.languageManager.sendStringText(player, "progression.premium-required");
+            } else {
+                LanguageManager.languageManager.sendStringText(player, "quests.cannot-claim");
+            }
             return;
         }
         bulkClaims.put(player.getUniqueId(), quest.key());
@@ -1464,10 +1501,13 @@ public final class QuestManager extends AbstractManager {
         }
     }
 
-    private void notifyPlayer(Player player, String key) {
+    private void notifyPlayer(Player player, String key, String... args) {
+        String[] messageArgs = new String[args.length + 1];
+        messageArgs[0] = key;
+        System.arraycopy(args, 0, messageArgs, 1, args.length);
         SchedulerUtil.runSync(player, () -> {
             if (player.isOnline()) {
-                LanguageManager.languageManager.sendStringText(player, key);
+                LanguageManager.languageManager.sendStringText(player, messageArgs);
                 if (player.getOpenInventory().getTopInventory().getHolder() instanceof ConfiguredMenuGUI gui) {
                     gui.refresh();
                 }

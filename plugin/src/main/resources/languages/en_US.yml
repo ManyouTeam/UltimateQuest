@@ -26,8 +26,8 @@ quests:
   admin-only: '&#98FB98[UltimateQuest] &cThis quest must be assigned by an administrator.'
   limit: '&#98FB98[UltimateQuest] &cYou have reached the active quest limit.'
   requirements: '&#98FB98[UltimateQuest] &cYou do not meet this quest’s requirements.'
-  accepted: '&#98FB98[UltimateQuest] &aQuest accepted.'
-  abandoned: '&#98FB98[UltimateQuest] &eQuest abandoned.'
+  accepted: '&#98FB98[UltimateQuest] &aQuest accepted: {quest}'
+  abandoned: '&#98FB98[UltimateQuest] &eQuest abandoned: {quest}'
   completed: '&#98FB98[UltimateQuest] &aA quest is complete. Open /uq to claim its rewards.'
   claimed: '&#98FB98[UltimateQuest] &aQuest rewards claimed.'
   cannot-claim: '&#98FB98[UltimateQuest] &cThis quest has no reward available to claim.'
@@ -61,6 +61,7 @@ progression:
   inactive: '&#98FB98[UltimateQuest] &cThis progression is outside its active period.'
   unlocked: '&#98FB98[UltimateQuest] &aNew stage rewards unlocked. Open /uq to claim them.'
   premium-required: '&#98FB98[UltimateQuest] &cThe premium track requires premium access.'
+  claim-unavailable: '&#98FB98[UltimateQuest] &cRewards are not currently open for claiming, or the claim period has ended.'
   unavailable: '&#98FB98[UltimateQuest] &cBattle pass unavailable, not loaded, or already at the points cap.'
   xp-added: '&#98FB98[UltimateQuest] &aBattle pass points added and saved.'
   xp-save-failed: '&#98FB98[UltimateQuest] &cPoints are retained in memory and will be saved again. Do not repeat the grant.'
@@ -95,8 +96,8 @@ menu-claim: '&aLeft click to claim'
 menu-active: '&7Left click for progress; right click to abandon'
 menu-locked: '&cYou have not met the requirements'
 menu-unavailable: '&7This quest is unavailable'
-menu-abandon-confirm: '&#98FB98[UltimateQuest] &eRight click {name} again to confirm abandonment.'
-menu-abandon-confirm-hint: '&cRight click again to confirm abandonment'
+menu-abandon-confirm: '&#98FB98[UltimateQuest] &eRight click {name} again to confirm abandonment; left click to cancel.'
+menu-abandon-confirm-hint: '&cRight click to confirm; &7left click to cancel'
 menu-view:
   claimable: Claimable
   claimed: Claimed
@@ -137,6 +138,34 @@ battlepass:
   player-usage: '&#98FB98[UltimateQuest] &e/uq battlepass <claimall|history|challenges|stats> <pass> | /uq battlepass <pass@season>'
   history: '&#98FB98[UltimateQuest] &eSaved seasons: &f{seasons}'
   stats: '&#98FB98[UltimateQuest] &e{name} &7[{season}] Level: &f{level} &7Points: &f{total} &7Premium: &f{premium}'
+  usage: '&#98FB98[UltimateQuest] &e/uq {type} <{actions}> <ID> &7or &e/uq {type} <ID>'
+  claim-usage: '&#98FB98[UltimateQuest] &e/uq {type} claim <ID> <level> [{tracks}]'
+  history-title: '&#98FB98[UltimateQuest] &e{name} &7— saved seasons: &f{count}'
+  history-empty: '&#98FB98[UltimateQuest] &7No season progress has been saved for &f{name}&7.'
+  history-permanent: '&#98FB98[UltimateQuest] &e{name} &7is a permanent milestone, with no separate seasons. Reached stage: &f{level}&7; total progress: &f{total}&7.'
+  history-entry: '&7• &e{season} &7({period}) — level &f{level}&7, progress &f{total}'
+  history-details: '&7  View details: &e/uq {type} stats {id}'
+  permanent: Permanent
+  premium-unlocked: Unlocked
+  premium-locked: Locked
+  milestone-stats: '&#98FB98[UltimateQuest] &e{name} &7[{season}] Reached stage: &f{level}&7; total progress: &f{total}'
+  admin-usages:
+    addxp: '&#98FB98[UltimateQuest] &e/uq {type} addxp <player/UUID> <ID> <positive points>'
+    setxp: '&#98FB98[UltimateQuest] &e/uq {type} setxp <player/UUID> <ID> <points, 0 or greater>'
+    removexp: '&#98FB98[UltimateQuest] &e/uq {type} removexp <player/UUID> <ID> <positive points>'
+    setlevel: '&#98FB98[UltimateQuest] &e/uq {type} setlevel <player/UUID> <ID> <level, 0 or greater>'
+    premium: '&#98FB98[UltimateQuest] &e/uq {type} premium <player/UUID> <ID> <true|false> &7— true unlocks premium; false revokes it.'
+    boost: '&#98FB98[UltimateQuest] &e/uq {type} boost <player/UUID> <ID> <multiplier, at least 1> <duration in seconds>'
+    resolve: '&#98FB98[UltimateQuest] &e/uq {type} resolve <player/UUID> <ID> <track/level> <AVAILABLE|CLAIMED> &7— AVAILABLE permits claiming; CLAIMED marks it as already claimed.'
+    season: '&#98FB98[UltimateQuest] &e/uq {type} season <pause|resume|end|start|schedule|globalboost> <ID or type:ID> &7— Tab completes the required arguments.'
+  season-usages:
+    pause: '&#98FB98[UltimateQuest] &e/uq {type} season pause <ID or type:ID> &7— pause the activity.'
+    resume: '&#98FB98[UltimateQuest] &e/uq {type} season resume <ID or type:ID> &7— resume the activity.'
+    end: '&#98FB98[UltimateQuest] &e/uq {type} season end <ID or type:ID> &7— end the activity now.'
+    start: '&#98FB98[UltimateQuest] &e/uq {type} season start <ID or type:ID> <new season ID> <duration in seconds>'
+    schedule: '&#98FB98[UltimateQuest] &e/uq {type} season schedule <ID or type:ID> <new season ID> <UTC start> <UTC end> &7— example time: 2026-11-01T00:00:00Z.'
+    globalboost: '&#98FB98[UltimateQuest] &e/uq {type} season globalboost <ID or type:ID> <multiplier, at least 1> <duration in seconds>'
+
 override-lang:
   auto-save:
     message: '&#98FB98[UltimateQuest] Automatically saving player quest data...'
@@ -236,6 +265,7 @@ override-lang:
   menu-abandon-confirm-title: '&c&lAbandon {name}?'
   menu-abandon-confirm-loss: '&7All progress on this quest will be lost.'
   menu-abandon-confirm-action: '&cRight click again to confirm'
+  menu-abandon-confirm-cancel: '&7Left click to cancel'
   menu-abandon-confirm-timeout: '&8Confirmation expires after 5 seconds'
   defaults:
     categories:

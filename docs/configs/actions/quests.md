@@ -22,6 +22,10 @@ type: quest_info
 
 Abandons an eligible ACTIVE or COMPLETED normal task and discards progress. By default, a second click within five seconds confirms; confirm-seconds is at least 1. Generated assignments and progression rewards are not general abandonable tasks.
 
+Left-click the confirmation item to cancel abandonment and restore its normal display. That click does not inspect the task or claim rewards. A later abandonment attempt requires a new right-click confirmation.
+
+With root `allow-abandon: false` in the normal task configuration, this action and the abandon command reject the operation without a confirmation step.
+
 | Field | Default | Description |
 | --- | --- | --- |
 | `confirm` | true | Require a second click. |

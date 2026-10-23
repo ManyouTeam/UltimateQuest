@@ -216,6 +216,12 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             return true;
         }
         MenuEntry entry = shownEntries.get(slot);
+        if (entry != null && type.isLeftClick() && awaitingAbandonConfirmation(entry)) {
+            pendingAbandonKey = null;
+            pendingAbandonUntil = 0L;
+            constructGUI();
+            return true;
+        }
         ConfigurationSection button = entry == null ? shownStaticItems.get(slot) : entry.content();
         GUIActionManager.INSTANCE.executeButtonActions(button, player,
                 new GUIActionContext(this, inventory, type, slot, menuId,
@@ -291,8 +297,10 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             manager.definitions().forEach(definition -> available.put(definition.id(), definition));
             manager.instances(player.getUniqueId()).forEach(quest -> available.put(quest.definition().id(), quest.definition()));
             for (QuestDefinition definition : available.values()) {
-                result.add(new MenuEntry(definition, manager.instance(player.getUniqueId(), definition.id()),
-                        "normal", null, content));
+                QuestInstance quest = manager.instance(player.getUniqueId(), definition.id());
+                if (manager.visibleInMenu(player, definition, quest)) {
+                    result.add(new MenuEntry(definition, quest, "normal", null, content));
+                }
             }
         } else if (Set.of("period", "scroll", "challenge").contains(type)) {
             manager.refreshPeriods(player);
@@ -931,6 +939,12 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             SubInfo.showInfo(player, entry.instance().key());
             return;
         }
+        if (!QuestManager.questManager.canAbandon(entry.instance())) {
+            pendingAbandonKey = null;
+            pendingAbandonUntil = 0L;
+            QuestManager.questManager.abandon(player, entry.instance().key());
+            return;
+        }
         String key = entry.instance().key();
         long now = System.currentTimeMillis();
         if (action.getBoolean("confirm", true)
@@ -1090,7 +1104,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         String key = switch (state) {
             case "AVAILABLE" -> "menu-accept";
             case "COMPLETED" -> "menu-claim";
-            case "ACTIVE" -> entry.kind().equals("normal") ? "menu-active" : "menu-assigned-active";
+            case "ACTIVE" -> QuestManager.questManager.canAbandon(entry.instance()) ? "menu-active" : "menu-assigned-active";
             case "LOCKED" -> "menu-locked";
             default -> "menu-unavailable";
         };
@@ -1126,7 +1140,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     private boolean awaitingAbandonConfirmation(MenuEntry entry) {
-        return entry.instance() != null && entry.instance().key().equals(pendingAbandonKey)
+        return QuestManager.questManager.canAbandon(entry.instance()) && entry.instance().key().equals(pendingAbandonKey)
                 && System.currentTimeMillis() <= pendingAbandonUntil;
     }
 

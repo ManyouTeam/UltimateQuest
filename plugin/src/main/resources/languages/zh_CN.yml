@@ -26,8 +26,8 @@ quests:
   admin-only: '&#98FB98[UltimateQuest] &c这个任务只能由管理员派发。'
   limit: '&#98FB98[UltimateQuest] &c已达到同时进行的任务数量上限。'
   requirements: '&#98FB98[UltimateQuest] &c尚未满足这个任务的接取条件。'
-  accepted: '&#98FB98[UltimateQuest] &a任务已接取。'
-  abandoned: '&#98FB98[UltimateQuest] &e任务已放弃。'
+  accepted: '&#98FB98[UltimateQuest] &a已接取任务：{quest}'
+  abandoned: '&#98FB98[UltimateQuest] &e已放弃任务：{quest}'
   completed: '&#98FB98[UltimateQuest] &a有任务已完成，打开 /uq 领取奖励。'
   claimed: '&#98FB98[UltimateQuest] &a任务奖励已领取。'
   cannot-claim: '&#98FB98[UltimateQuest] &c这个任务当前没有可领取的奖励。'
@@ -61,6 +61,7 @@ progression:
   inactive: '&#98FB98[UltimateQuest] &c当前不在开放时间内。'
   unlocked: '&#98FB98[UltimateQuest] &a新的阶段奖励已解锁，打开 /uq 领取。'
   premium-required: '&#98FB98[UltimateQuest] &c领取高级奖励需要高级战令权限。'
+  claim-unavailable: '&#98FB98[UltimateQuest] &c当前未开放领奖，或已超过领奖期限。'
   unavailable: '&#98FB98[UltimateQuest] &c战令不可用、数据尚未加载或积分已达到上限。'
   xp-added: '&#98FB98[UltimateQuest] &a战令积分已增加并保存。'
   xp-save-failed: '&#98FB98[UltimateQuest] &c积分已保留在内存中，系统将重试保存，请勿重复发放。'
@@ -95,8 +96,8 @@ menu-claim: '&a左键领取奖励'
 menu-active: '&7左键查看进度，右键放弃任务'
 menu-locked: '&c尚未满足接取条件'
 menu-unavailable: '&7这个任务当前不可操作'
-menu-abandon-confirm: '&#98FB98[UltimateQuest] &e再次右键任务 {name} 以确认放弃。'
-menu-abandon-confirm-hint: '&c再次右键确认放弃'
+menu-abandon-confirm: '&#98FB98[UltimateQuest] &e再次右键任务 {name} 以确认放弃，左键取消。'
+menu-abandon-confirm-hint: '&c右键确认放弃，&7左键取消'
 menu-view:
   claimable: 可领取
   claimed: 已领取
@@ -136,6 +137,34 @@ battlepass:
   player-usage: '&#98FB98[UltimateQuest] &e/uq battlepass <claimall|history|challenges|stats> <战令> | /uq battlepass <战令@赛季>'
   history: '&#98FB98[UltimateQuest] &e已保存赛季：&f{seasons}'
   stats: '&#98FB98[UltimateQuest] &e{name} &7[{season}] 等级：&f{level} &7积分：&f{total} &7高级资格：&f{premium}'
+  usage: '&#98FB98[UltimateQuest] &e/uq {type} <{actions}> <ID> &7或 &e/uq {type} <ID>'
+  claim-usage: '&#98FB98[UltimateQuest] &e/uq {type} claim <ID> <等级> [{tracks}]'
+  history-title: '&#98FB98[UltimateQuest] &e{name} &7的赛季记录（共 &f{count} &7条）：'
+  history-empty: '&#98FB98[UltimateQuest] &e{name} &7暂无已保存的赛季进度。'
+  history-permanent: '&#98FB98[UltimateQuest] &e{name} &7是永久里程碑，不划分赛季。已达阶段：&f{level}&7；累计进度：&f{total}&7。'
+  history-entry: '&7• &e{season} &7（{period}）— 等级 &f{level}&7，累计进度 &f{total}'
+  history-details: '&7  查看详情：&e/uq {type} stats {id}'
+  permanent: 永久
+  premium-unlocked: 已解锁
+  premium-locked: 未解锁
+  milestone-stats: '&#98FB98[UltimateQuest] &e{name} &7[{season}] 已达阶段：&f{level}&7；累计进度：&f{total}'
+  admin-usages:
+    addxp: '&#98FB98[UltimateQuest] &e/uq {type} addxp <玩家/UUID> <ID> <增加的正整数积分>'
+    setxp: '&#98FB98[UltimateQuest] &e/uq {type} setxp <玩家/UUID> <ID> <积分，允许0>'
+    removexp: '&#98FB98[UltimateQuest] &e/uq {type} removexp <玩家/UUID> <ID> <扣除的正整数积分>'
+    setlevel: '&#98FB98[UltimateQuest] &e/uq {type} setlevel <玩家/UUID> <ID> <等级，允许0>'
+    premium: '&#98FB98[UltimateQuest] &e/uq {type} premium <玩家/UUID> <ID> <true|false> &7— true 解锁高级资格，false 取消高级资格。'
+    boost: '&#98FB98[UltimateQuest] &e/uq {type} boost <玩家/UUID> <ID> <倍率，至少1> <持续秒数>'
+    resolve: '&#98FB98[UltimateQuest] &e/uq {type} resolve <玩家/UUID> <ID> <奖励轨道/等级> <AVAILABLE|CLAIMED> &7— AVAILABLE 允许领取，CLAIMED 标记为已领取。'
+    season: '&#98FB98[UltimateQuest] &e/uq {type} season <pause|resume|end|start|schedule|globalboost> <ID或类型:ID> &7— 用 Tab 查看后续参数。'
+  season-usages:
+    pause: '&#98FB98[UltimateQuest] &e/uq {type} season pause <ID或类型:ID> &7— 暂停活动。'
+    resume: '&#98FB98[UltimateQuest] &e/uq {type} season resume <ID或类型:ID> &7— 恢复活动。'
+    end: '&#98FB98[UltimateQuest] &e/uq {type} season end <ID或类型:ID> &7— 立即结束活动。'
+    start: '&#98FB98[UltimateQuest] &e/uq {type} season start <ID或类型:ID> <新赛季ID> <持续秒数>'
+    schedule: '&#98FB98[UltimateQuest] &e/uq {type} season schedule <ID或类型:ID> <新赛季ID> <UTC开始时间> <UTC结束时间> &7— 时间示例：2026-11-01T00:00:00Z。'
+    globalboost: '&#98FB98[UltimateQuest] &e/uq {type} season globalboost <ID或类型:ID> <倍率，至少1> <持续秒数>'
+
 override-lang:
   auto-save:
     message: '&#98FB98[UltimateQuest] 正在自动保存玩家任务数据……'
@@ -235,6 +264,7 @@ override-lang:
   menu-abandon-confirm-title: '&c&l确认放弃：{name}'
   menu-abandon-confirm-loss: '&7任务进度将永久丢失。'
   menu-abandon-confirm-action: '&c再次右键确认放弃'
+  menu-abandon-confirm-cancel: '&7左键取消放弃'
   menu-abandon-confirm-timeout: '&8确认会在 5 秒后失效'
   defaults:
     categories:

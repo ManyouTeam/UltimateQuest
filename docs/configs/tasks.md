@@ -47,6 +47,9 @@ Mining before acceptance is not counted. This example only matches `STONE`; deep
 | `source` | Use this or `objectives` | Shorthand for one objective, including its trigger, amount, and conditions. |
 | `rewards` | Optional | Rewards issued on claim; see [rewards](rewards/README.md). |
 | `auto-claim` | `false` | Automatically attempt a claim when complete. |
+| `allow-abandon` | `true` | Normal tasks only. Set to `false` to prevent abandonment through commands and menus. |
+| `hide-in-menu` | `false` | Normal tasks only. Set to `true` to hide every state from menus. Commands can still accept, inspect, and claim the task. |
+| `auto-hide` | `false` | Normal tasks only. Hide unaccepted tasks while acceptance requirements are unmet; show them when eligible. Accepted tasks remain visible. |
 | `categories` | Empty list | Category IDs; see [categories](categories.md). |
 | `prerequisites` | Empty list | Normal tasks whose rewards must be claimed first. |
 | `accept-mode` | `player` | Use `admin` for administrator assignment only. |
@@ -54,6 +57,16 @@ Mining before acceptance is not counted. This example only matches `STONE`; deep
 | `conditions` | Optional | Root conditions check acceptance using available player data. |
 
 `source.conditions` checks each matching event. Root `conditions` checks whether the player can accept the task. Use `target: PLAYER` when checking the accepting player's state.
+
+`hide-in-menu` takes priority over `auto-hide`. Automatic hiding uses the menu's existing acceptance check, including root conditions, prerequisites, activity windows, and acceptance mode, without checking task slots. Objective conditions do not hide accepted tasks. `listed: false` only hides unaccepted tasks; use `hide-in-menu: true` to hide every state.
+
+For example, add these root fields to prevent abandonment and automatically hide a normal task until its acceptance requirements are met:
+
+```yaml
+allow-abandon: false
+hide-in-menu: false
+auto-hide: true
+```
 
 ## Multiple objectives
 
@@ -96,3 +109,5 @@ For an event, set root `starts-at` and `ends-at` to ISO-8601 instants with a tim
 Acceptance saves the current objectives and resolved rewards. Reloading does not rewrite them. Test with a player who has not accepted the task, or abandon and accept it again where abandonment is allowed.
 
 Completed tasks still use [task slots](task-limits.md) until claimed. `/uq abandon <task-id>` discards the progress of an eligible normal task.
+
+`allow-abandon`, `hide-in-menu`, and `auto-hide` use the current configuration after `/uq reload`; players do not need to accept the task again. The `quests.accepted` and `quests.abandoned` language messages support `{quest}` for the corresponding task's display name.

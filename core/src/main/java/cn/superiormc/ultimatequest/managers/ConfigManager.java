@@ -20,6 +20,8 @@ public class ConfigManager extends AbstractManager {
 
     private volatile YamlConfiguration menuConfig = new YamlConfiguration();
 
+    private volatile List<String> menuIds = List.of();
+
     private static final List<String> MENU_FILES = List.of("main", "battlepass", "milestone", "period", "scroll");
 
     public ConfigManager() {
@@ -75,7 +77,7 @@ public class ConfigManager extends AbstractManager {
     }
 
     public ConfigurationSection getMenu(String id) {
-        if (id == null) {
+        if (!hasMenu(id)) {
             return new MemoryConfiguration();
         }
         ConfigurationSection section = menuConfig.getConfigurationSection(id.toLowerCase(Locale.ROOT));
@@ -83,11 +85,11 @@ public class ConfigManager extends AbstractManager {
     }
 
     public boolean hasMenu(String id) {
-        return id != null && menuConfig.isConfigurationSection(id.toLowerCase(Locale.ROOT));
+        return id != null && menuIds.contains(id.toLowerCase(Locale.ROOT));
     }
 
     public Collection<String> getMenuIds() {
-        return menuConfig.getKeys(false).stream().filter(menuConfig::isConfigurationSection).toList();
+        return menuIds;
     }
 
     private void loadMenus() {
@@ -131,6 +133,7 @@ public class ConfigManager extends AbstractManager {
             }
         }
         menuConfig = candidate;
+        menuIds = List.copyOf(ids);
     }
 
     private void loadMenuFile(File directory, String fileName, String sectionName, YamlConfiguration candidate) throws Exception {
