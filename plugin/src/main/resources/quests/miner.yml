@@ -1,0 +1,29 @@
+enabled: true
+categories:
+- gathering
+name: '{lang:defaults.objectives.miner}'
+icon:
+  material: STONE_PICKAXE
+trigger: block_break
+amount: 16
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  blocks:
+    type: block_type
+    types:
+    - STONE
+    - DEEPSLATE
+    - ANDESITE
+    - DIORITE
+    - GRANITE
+    - TUFF
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: true

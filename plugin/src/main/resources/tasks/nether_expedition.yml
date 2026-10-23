@@ -1,0 +1,36 @@
+enabled: true
+name: '{lang:defaults.tasks.nether_expedition.name}'
+description:
+- '{lang:defaults.tasks.nether_expedition.description}'
+icon:
+  material: NETHERRACK
+categories:
+- nether
+- combat
+auto-claim: false
+prerequisites:
+- deep_miner
+objectives:
+  nether_miner:
+    source:
+      quest: nether_miner
+      amount: 128
+  blaze:
+    source:
+      quest: blaze
+      amount: 8
+rewards:
+  gold_ingot:
+    type: item
+    item:
+      material: GOLD_INGOT
+      amount: 8
+    display:
+      name: '{lang:defaults.rewards.gold_ingot_8}'
+  experience_bottle:
+    type: item
+    item:
+      material: EXPERIENCE_BOTTLE
+      amount: 12
+    display:
+      name: '{lang:defaults.rewards.experience_bottle_12}'

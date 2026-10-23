@@ -1,0 +1,19 @@
+enabled: true
+categories:
+- combat
+name: '{lang:defaults.objectives.archer}'
+icon:
+  material: BOW
+trigger: shoot_bow
+amount: 16
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

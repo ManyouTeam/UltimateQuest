@@ -1,0 +1,29 @@
+enabled: true
+name: '{lang:defaults.tasks.sustainable_farm.name}'
+description:
+- '{lang:defaults.tasks.sustainable_farm.description}'
+icon:
+  material: CARROT
+categories:
+- farming
+auto-claim: false
+prerequisites:
+- grain_barn
+source:
+  quest: crops
+  amount: 128
+rewards:
+  emerald:
+    type: item
+    item:
+      material: EMERALD
+      amount: 6
+    display:
+      name: '{lang:defaults.rewards.emerald_6}'
+  experience_bottle:
+    type: item
+    item:
+      material: EXPERIENCE_BOTTLE
+      amount: 6
+    display:
+      name: '{lang:defaults.rewards.experience_bottle_6}'

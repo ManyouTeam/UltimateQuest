@@ -1,0 +1,29 @@
+enabled: true
+name: '{lang:defaults.tasks.grain_barn.name}'
+description:
+- '{lang:defaults.tasks.grain_barn.description}'
+icon:
+  material: HAY_BLOCK
+categories:
+- farming
+auto-claim: false
+prerequisites:
+- farmer
+source:
+  quest: wheat
+  amount: 64
+rewards:
+  bread:
+    type: item
+    item:
+      material: BREAD
+      amount: 16
+    display:
+      name: '{lang:defaults.rewards.bread_16}'
+  emerald:
+    type: item
+    item:
+      material: EMERALD
+      amount: 3
+    display:
+      name: '{lang:defaults.rewards.emerald_3}'

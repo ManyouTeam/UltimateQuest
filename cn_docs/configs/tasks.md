@@ -1,0 +1,98 @@
+# 📄 普通任务
+
+普通任务适合“先接取，再完成，最后领奖”的玩法。一项任务可以要求玩家做一件事，也可以同时完成几个目标。普通任务成功领奖后结束；需要自动刷新的内容请使用[周期任务](periods.md)。
+
+## 配置示例：采石任务
+
+在 `plugins/UltimateQuest/tasks/` 新建 `tutorial_mining.yml`，填入以下完整内容。这个例子不引用其他任务、目标模板、分类或语言键。
+
+```yaml
+enabled: true
+name: '&a采石入门'
+description:
+  - '挖掘 16 块天然石头，领取 8 个面包。'
+icon:
+  material: STONE_PICKAXE
+source:
+  name: '挖掘石头'
+  trigger: block_break
+  amount: 16
+  conditions:
+    stone:
+      type: block_type
+      types: [STONE]
+rewards:
+  bread:
+    type: item
+    item:
+      material: BREAD
+      amount: 8
+```
+
+文件名决定任务 ID：这里是 `tutorial_mining`，命令中不写 `.yml`。`name` 是显示名称，可以自由修改。
+
+1. 执行 `/uq reload`，确认没有配置错误。
+2. 执行 `/uq accept tutorial_mining`，或在 `/uq` 中找到并接取它。
+3. 挖掘 16 块天然石头。默认防刷会排除插件已记录的玩家放置方块。
+4. 执行 `/uq info tutorial_mining` 查看进度，完成后执行 `/uq claim tutorial_mining` 领取面包。
+
+接取前的挖矿不会补算。示例只筛选 `STONE`，深板岩等其他方块不会计数。
+
+## 配置项说明
+
+| 字段 | 是否必填 / 默认值 | 作用 |
+| --- | --- | --- |
+| `enabled` | 默认 `true` | 设为 `false` 停用定义。 |
+| `name`、`description`、`icon` | 显示设置 | 分别是名称、描述列表和菜单图标。 |
+| `source` | 与 `objectives` 二选一 | 单目标简写，包含触发器、数量和条件。 |
+| `rewards` | 可省略 | 领奖时发放的奖励，见[奖励配置](rewards/README.md)。 |
+| `auto-claim` | 默认 `false` | 完成后自动尝试领奖。 |
+| `categories` | 默认空列表 | 分类 ID，见[分类](categories.md)。 |
+| `prerequisites` | 默认空列表 | 只有这些普通任务已领奖，才能接取本任务。 |
+| `accept-mode` | 默认 `player` | `admin` 表示只能由管理员派发。 |
+| `listed` | 默认 `true` | 设为 `false` 隐藏尚未派发的任务。 |
+| `conditions` | 可省略 | 根节点条件在接取时检查，只能使用当时可用的玩家数据。 |
+
+`source.conditions` 检查每次行为；根节点 `conditions` 检查能否接取。两者配置位置不同。检查接取玩家状态时，显式写 `target: PLAYER`。
+
+## 多目标任务
+
+将完整示例中的 `source` 替换为下面的 `objectives`。保留名称、图标和奖励等其余字段。此时需要同时挖 16 块石头、击杀 5 只僵尸才能领奖。
+
+```yaml
+objectives:
+  mining:
+    source:
+      trigger: block_break
+      amount: 16
+      conditions:
+        stone:
+          type: block_type
+          types: [STONE]
+  hunting:
+    source:
+      trigger: kill
+      amount: 5
+      conditions:
+        zombie:
+          type: match_entity
+          target: TARGET
+          match:
+            entity-types: [ZOMBIE]
+```
+
+`mining` 和 `hunting` 是这项任务内部的目标 ID，不是其他文件名。重复使用同一要求时，可以改成引用[目标模板](objectives.md)。
+
+## 前置任务、派发与活动时间
+
+写入 `prerequisites: [tutorial_mining]` 会要求玩家先给前一个任务领奖。仅完成但没领奖仍不能解锁。被引用的任务必须存在，前置关系不能循环。
+
+管理员可以用 `/uq accept <任务ID> <在线玩家>` 派发任务，适用于 `accept-mode: admin` 或隐藏任务。加 `-b` 可跳过前置、接取条件和活动时间检查，仍会检查名额和重复接取。
+
+限时活动可在根节点设置 `starts-at`、`ends-at`，使用带时区的 ISO-8601 时间，例如 `'2026-11-01T00:00:00Z'`。`claim-grace-seconds` 默认为 `0`，只延长活动结束后的领奖时间，不延长做任务的时间。`paused: true` 暂停活动和领奖。
+
+## 配置修改与已有任务
+
+任务在接取时保存当时的目标和确定的奖励。重载不会改写已接任务。请用尚未接过该任务的测试玩家，或在允许放弃的情况下放弃后重新接取。
+
+完成但未领奖的任务仍占[任务名额](task-limits.md)。允许放弃的普通任务可以使用 `/uq abandon <任务ID>` 放弃，已有进度会丢失。

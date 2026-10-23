@@ -1,0 +1,48 @@
+enabled: true
+name: '{lang:defaults.tasks.survivalist.name}'
+description:
+- '{lang:defaults.tasks.survivalist.description}'
+icon:
+  material: CHEST
+categories:
+- adventure
+auto-claim: false
+prerequisites:
+- forest_adventure
+objectives:
+  miner:
+    source:
+      quest: miner
+      amount: 256
+  veteran:
+    source:
+      quest: veteran
+      amount: 128
+  food:
+    source:
+      quest: food
+      amount: 16
+  angler:
+    source:
+      quest: angler
+      amount: 12
+rewards:
+  emerald:
+    type: item
+    item:
+      material: EMERALD
+      amount: 12
+    display:
+      name: '{lang:defaults.rewards.emerald_12}'
+  cooked_beef:
+    type: item
+    item:
+      material: COOKED_BEEF
+      amount: 16
+    display:
+      name: '{lang:defaults.rewards.cooked_beef_16}'
+  scroll:
+    type: console_command
+    command: uq scroll give {player} adventure
+    display:
+      name: '{lang:defaults.rewards.scroll_adventure}'

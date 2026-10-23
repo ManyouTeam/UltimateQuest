@@ -1,0 +1,29 @@
+enabled: true
+name: '{lang:defaults.tasks.night_watch.name}'
+description:
+- '{lang:defaults.tasks.night_watch.description}'
+icon:
+  material: SHIELD
+categories:
+- combat
+auto-claim: false
+prerequisites:
+- hunter
+source:
+  quest: champion
+  amount: 24
+rewards:
+  shield:
+    type: item
+    item:
+      material: SHIELD
+      amount: 1
+    display:
+      name: '{lang:defaults.rewards.shield_1}'
+  cooked_beef:
+    type: item
+    item:
+      material: COOKED_BEEF
+      amount: 8
+    display:
+      name: '{lang:defaults.rewards.cooked_beef_8}'

@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- combat
+name: '{lang:defaults.objectives.hunter}'
+icon:
+  material: ROTTEN_FLESH
+trigger: kill
+amount: 12
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - ZOMBIE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

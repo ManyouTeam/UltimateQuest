@@ -1,0 +1,32 @@
+package cn.superiormc.ultimatequest.objects.matchitem;
+
+import cn.superiormc.ultimatequest.objects.ObjectSingleMatchItem;
+import java.util.ArrayList;
+import java.util.List;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+public class Material extends AbstractMatchItemRule {
+
+    public Material() {
+        super();
+    }
+
+    @Override
+    public boolean getMatch(ObjectSingleMatchItem match) {
+        ConfigurationSection section = match.getSection();
+        ItemStack item = match.getItem();
+        ItemMeta meta = match.getItemMeta();
+        List<String> materials = new ArrayList<>();
+        for (String singleMaterial : section.getStringList("material")) {
+            materials.add(singleMaterial.toLowerCase());
+        }
+        return materials.contains(item.getType().getKey().getKey());
+    }
+
+    @Override
+    public boolean configNotContains(ConfigurationSection section) {
+        return section.getStringList("material").isEmpty();
+    }
+}

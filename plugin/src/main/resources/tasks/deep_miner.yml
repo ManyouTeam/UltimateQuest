@@ -1,0 +1,40 @@
+enabled: true
+name: '{lang:defaults.tasks.deep_miner.name}'
+description:
+- '{lang:defaults.tasks.deep_miner.description}'
+icon:
+  material: IRON_PICKAXE
+categories:
+- gathering
+auto-claim: false
+prerequisites:
+- iron_supply
+objectives:
+  miner:
+    source:
+      quest: miner
+      amount: 256
+  iron:
+    source:
+      quest: iron
+      amount: 24
+rewards:
+  iron_pickaxe:
+    type: item
+    item:
+      material: IRON_PICKAXE
+      amount: 1
+    display:
+      name: '{lang:defaults.rewards.iron_pickaxe_1}'
+  torch:
+    type: item
+    item:
+      material: TORCH
+      amount: 32
+    display:
+      name: '{lang:defaults.rewards.torch_32}'
+  scroll:
+    type: console_command
+    command: uq scroll give {player} mining
+    display:
+      name: '{lang:defaults.rewards.scroll_mining}'

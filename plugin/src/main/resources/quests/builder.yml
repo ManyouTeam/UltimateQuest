@@ -1,0 +1,29 @@
+enabled: true
+categories:
+- building
+name: '{lang:defaults.objectives.builder}'
+icon:
+  material: BRICKS
+trigger: block_place
+amount: 32
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  blocks:
+    type: block_type
+    types:
+    - OAK_PLANKS
+    - SPRUCE_PLANKS
+    - BIRCH_PLANKS
+    - COBBLESTONE
+    - STONE_BRICKS
+    - BRICKS
+    - GLASS
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

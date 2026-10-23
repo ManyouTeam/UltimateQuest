@@ -1,0 +1,7 @@
+enabled: true
+name: '{lang:defaults.categories.nether.name}'
+description:
+- '{lang:defaults.categories.nether.description}'
+icon:
+  material: NETHERRACK
+order: 80

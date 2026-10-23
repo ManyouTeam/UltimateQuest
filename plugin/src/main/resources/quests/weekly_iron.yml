@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- gathering
+name: '{lang:defaults.objectives.iron}'
+icon:
+  material: RAW_IRON
+trigger: block_break
+amount: 48
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  blocks:
+    type: block_type
+    types:
+    - IRON_ORE
+    - DEEPSLATE_IRON_ORE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: true

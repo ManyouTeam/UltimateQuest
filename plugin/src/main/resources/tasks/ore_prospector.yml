@@ -1,0 +1,35 @@
+enabled: true
+name: '{lang:defaults.tasks.ore_prospector.name}'
+description:
+- '{lang:defaults.tasks.ore_prospector.description}'
+icon:
+  material: RAW_GOLD
+categories:
+- gathering
+auto-claim: false
+prerequisites:
+- iron_supply
+objectives:
+  gold:
+    source:
+      quest: gold
+      amount: 8
+  redstone:
+    source:
+      quest: redstone
+      amount: 32
+rewards:
+  gold_ingot:
+    type: item
+    item:
+      material: GOLD_INGOT
+      amount: 4
+    display:
+      name: '{lang:defaults.rewards.gold_ingot_4}'
+  experience_bottle:
+    type: item
+    item:
+      material: EXPERIENCE_BOTTLE
+      amount: 6
+    display:
+      name: '{lang:defaults.rewards.experience_bottle_6}'

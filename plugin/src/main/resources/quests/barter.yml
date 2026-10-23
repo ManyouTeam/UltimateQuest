@@ -1,0 +1,20 @@
+enabled: true
+categories:
+- craftsmanship
+- nether
+name: '{lang:defaults.objectives.barter}'
+icon:
+  material: GOLD_INGOT
+trigger: piglin_barter
+amount: 6
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

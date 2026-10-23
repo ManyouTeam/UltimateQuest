@@ -1,0 +1,7 @@
+enabled: true
+name: '{lang:defaults.categories.fishing.name}'
+description:
+- '{lang:defaults.categories.fishing.description}'
+icon:
+  material: FISHING_ROD
+order: 50

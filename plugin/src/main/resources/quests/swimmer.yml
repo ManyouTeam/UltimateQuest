@@ -1,0 +1,36 @@
+enabled: true
+categories:
+- adventure
+name: '{lang:defaults.objectives.swimmer}'
+icon:
+  material: TROPICAL_FISH
+trigger: move
+amount: 128
+count: distance
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  swimming:
+    type: swimming
+    target: PLAYER
+    value: true
+  not_riding:
+    type: riding
+    target: PLAYER
+    value: false
+  not_flying:
+    type: flying
+    target: PLAYER
+    value: false
+  not_gliding:
+    type: gliding
+    target: PLAYER
+    value: false
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  cooldown-ms: 0

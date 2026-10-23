@@ -1,0 +1,28 @@
+enabled: true
+name: '{lang:defaults.tasks.sprinter.name}'
+description:
+- '{lang:defaults.tasks.sprinter.description}'
+icon:
+  material: LEATHER_BOOTS
+categories:
+- adventure
+auto-claim: false
+prerequisites: []
+source:
+  quest: sprinter
+  amount: 256
+rewards:
+  bread:
+    type: item
+    item:
+      material: BREAD
+      amount: 8
+    display:
+      name: '{lang:defaults.rewards.bread_8}'
+  torch:
+    type: item
+    item:
+      material: TORCH
+      amount: 16
+    display:
+      name: '{lang:defaults.rewards.torch_16}'

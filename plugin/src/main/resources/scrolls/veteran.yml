@@ -1,0 +1,38 @@
+enabled: true
+name: '{lang:defaults.scrolls.veteran.name}'
+description:
+- '{lang:defaults.scrolls.carry}'
+- '{lang:defaults.scrolls.veteran.duration}'
+- '{lang:defaults.scrolls.reward-note}'
+- '{lang:defaults.scrolls.claim}'
+categories:
+- adventure
+- combat
+item:
+  material: MAP
+  lore:
+  - '{lang:defaults.scrolls.carry}'
+  - '{lang:defaults.scrolls.veteran.duration}'
+  - '{lang:defaults.scrolls.reward-note}'
+  - '{lang:defaults.scrolls.claim}'
+icon:
+  material: MAP
+source:
+  pool: veteran
+  count: 3
+tasks:
+  required_champion:
+    source:
+      quest: champion
+      amount: 32
+duration-seconds: 259200
+rarity: rare
+difficulty: normal
+rewards:
+  supply:
+    type: random
+    pool: scroll_veteran
+    count: 3
+    repeat: false
+    display:
+      name: '{lang:defaults.rewards.scroll_pack_veteran}'

@@ -1,0 +1,37 @@
+enabled: true
+name: '{lang:defaults.scrolls.mining.name}'
+description:
+- '{lang:defaults.scrolls.carry}'
+- '{lang:defaults.scrolls.mining.duration}'
+- '{lang:defaults.scrolls.reward-note}'
+- '{lang:defaults.scrolls.claim}'
+categories:
+- gathering
+item:
+  material: MAP
+  lore:
+  - '{lang:defaults.scrolls.carry}'
+  - '{lang:defaults.scrolls.mining.duration}'
+  - '{lang:defaults.scrolls.reward-note}'
+  - '{lang:defaults.scrolls.claim}'
+icon:
+  material: MAP
+source:
+  pool: mining
+  count: 3
+tasks:
+  required_miner:
+    source:
+      quest: miner
+      amount: 64
+duration-seconds: 172800
+rarity: rare
+difficulty: normal
+rewards:
+  supply:
+    type: random
+    pool: scroll_mining
+    count: 3
+    repeat: false
+    display:
+      name: '{lang:defaults.rewards.scroll_pack_mining}'

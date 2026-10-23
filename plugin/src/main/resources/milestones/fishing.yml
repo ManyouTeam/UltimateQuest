@@ -1,0 +1,76 @@
+enabled: true
+name: '{lang:defaults.milestones.fishing.name}'
+description:
+- '{lang:defaults.milestones.description}'
+icon:
+  material: FISHING_ROD
+categories:
+- fishing
+sources:
+  angler:
+    source:
+      quest: angler
+    value: 1
+stages:
+  '1':
+    required: 10
+    rewards:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 2
+        display:
+          name: '{lang:defaults.rewards.emerald_2}'
+  '2':
+    required: 50
+    rewards:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 6
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_6}'
+  '3':
+    required: 200
+    rewards:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.emerald_8}'
+  '4':
+    required: 500
+    rewards:
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 2
+        display:
+          name: '{lang:defaults.rewards.diamond_2}'
+  '5':
+    required: 1500
+    rewards:
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.diamond_4}'
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_16}'
+      scroll:
+        type: console_command
+        command: uq scroll give {player} veteran
+        display:
+          name: '{lang:defaults.rewards.scroll_veteran}'

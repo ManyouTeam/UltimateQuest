@@ -1,0 +1,37 @@
+enabled: true
+name: '{lang:defaults.scrolls.adventure.name}'
+description:
+- '{lang:defaults.scrolls.carry}'
+- '{lang:defaults.scrolls.adventure.duration}'
+- '{lang:defaults.scrolls.reward-note}'
+- '{lang:defaults.scrolls.claim}'
+categories:
+- adventure
+item:
+  material: MAP
+  lore:
+  - '{lang:defaults.scrolls.carry}'
+  - '{lang:defaults.scrolls.adventure.duration}'
+  - '{lang:defaults.scrolls.reward-note}'
+  - '{lang:defaults.scrolls.claim}'
+icon:
+  material: MAP
+source:
+  pool: adventure
+  count: 2
+tasks:
+  required_hunt:
+    source:
+      quest: hunter
+      amount: 5
+duration-seconds: 86400
+rarity: rare
+difficulty: normal
+rewards:
+  supply:
+    type: random
+    pool: scroll_adventure
+    count: 3
+    repeat: false
+    display:
+      name: '{lang:defaults.rewards.scroll_pack_adventure}'

@@ -1,0 +1,9 @@
+enabled: true
+quests:
+  weekly_miner: 10
+  weekly_veteran: 10
+  weekly_champion: 10
+  weekly_angler: 10
+  weekly_crops: 10
+  weekly_iron: 10
+  weekly_walker: 10

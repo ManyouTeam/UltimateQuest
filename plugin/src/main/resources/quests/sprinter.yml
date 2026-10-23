@@ -1,0 +1,40 @@
+enabled: true
+categories:
+- adventure
+name: '{lang:defaults.objectives.sprinter}'
+icon:
+  material: LEATHER_BOOTS
+trigger: move
+amount: 256
+count: distance
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  sprinting:
+    type: sprinting
+    target: PLAYER
+    value: true
+  not_swimming:
+    type: swimming
+    target: PLAYER
+    value: false
+  not_riding:
+    type: riding
+    target: PLAYER
+    value: false
+  not_flying:
+    type: flying
+    target: PLAYER
+    value: false
+  not_gliding:
+    type: gliding
+    target: PLAYER
+    value: false
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  cooldown-ms: 0

@@ -1,0 +1,1183 @@
+error:
+  args: '&#98FB98[UltimateQuest] &cUsage: /uq [menu|help|accept|info|claim|abandon|battlepass|milestone|period|scroll|editor|reload]'
+  in-game: '&#98FB98[UltimateQuest] &cThis command requires a player.'
+  miss-permission: '&#98FB98[UltimateQuest] &cYou do not have permission.'
+  player-not-found: '&#98FB98[UltimateQuest] &cPlayer {player} is not online.'
+  save-item-not-found: '&#98FB98[UltimateQuest] &cSaved item {item} was not found.'
+plugin:
+  reloaded: '&#98FB98[UltimateQuest] &aUltimateQuest configuration reloaded. Database changes require a restart.'
+  saved: '&#98FB98[UltimateQuest] &aItem saved.'
+  generated: '&#98FB98[UltimateQuest] &aItem format generated.'
+command-tab:
+  type-item-id: '[item-id]'
+command:
+  console-usage: '&#98FB98[UltimateQuest] &cConsole: uq menu [menu] <player> [-b] | uq accept <task> <player> [-b] | uq <info|claim|abandon> <task> <player> | uq <period|scroll> <player> [-b] | uq <battlepass|milestone> [id] <player> [-b]'
+give-save-item: '&#98FB98[UltimateQuest] &aGave {amount} x {item} to {player}.'
+quests:
+  help: '&#98FB98[UltimateQuest] &e/uq menu &7| &e/uq accept <quest> &7| &e/uq info <quest> &7| &e/uq claim <quest> &7| &e/uq abandon <quest> &7|
+    &e/uq battlepass &7| &e/uq milestone &7| &e/uq period &7| &e/uq scroll &7| &e/uq editor'
+  loading: '&#98FB98[UltimateQuest] &eYour quest data is loading. Try again shortly.'
+  load-failed: '&#98FB98[UltimateQuest] &cQuest data could not be loaded. Existing data has been preserved.'
+  save-failed: '&#98FB98[UltimateQuest] &cQuest data could not be saved. Try again later.'
+  review-needed: '&#98FB98[UltimateQuest] &cA reward claim needs administrator review. It will not be delivered again automatically.'
+  busy: '&#98FB98[UltimateQuest] &eYour previous quest operation is still being saved.'
+  not-found: '&#98FB98[UltimateQuest] &cQuest not found.'
+  already-accepted: '&#98FB98[UltimateQuest] &eYou have already accepted or claimed this quest.'
+  admin-only: '&#98FB98[UltimateQuest] &cThis quest must be assigned by an administrator.'
+  limit: '&#98FB98[UltimateQuest] &cYou have reached the active quest limit.'
+  requirements: '&#98FB98[UltimateQuest] &cYou do not meet this quest’s requirements.'
+  accepted: '&#98FB98[UltimateQuest] &aQuest accepted.'
+  abandoned: '&#98FB98[UltimateQuest] &eQuest abandoned.'
+  completed: '&#98FB98[UltimateQuest] &aA quest is complete. Open /uq to claim its rewards.'
+  claimed: '&#98FB98[UltimateQuest] &aQuest rewards claimed.'
+  cannot-claim: '&#98FB98[UltimateQuest] &cThis quest has no reward available to claim.'
+  cannot-abandon: '&#98FB98[UltimateQuest] &cThis quest cannot be abandoned.'
+  objective: '&7{name}: &f{current}/{required}'
+  state:
+    AVAILABLE: '&eAvailable'
+    LOCKED: '&cLocked'
+    ACTIVE: '&bIn progress'
+    COMPLETED: '&aReady to claim'
+    CLAIMING: '&eClaim being processed'
+    CLAIMED: '&7Claimed'
+    REVIEW: '&cAdministrator review required'
+progression:
+  objective: '&7{name} &8(+{value} {unit})'
+  objective-items: '&7{name} &8(+{value} {unit} per item)'
+  objective-counted: '&7{name} &8(+{value} {unit} per {count-unit})'
+  count-units:
+    blocks: 'block'
+    damage: 'damage point'
+    blocked_damage: 'blocked damage point'
+    healing: 'health point restored'
+    durability: 'durability point'
+    experience: 'experience point'
+    distance: 'block travelled'
+    exhaustion: 'exhaustion unit'
+  unit:
+    battlepass: points
+    milestone: progress
+  open: '&eClick to view stage rewards'
+  inactive: '&#98FB98[UltimateQuest] &cThis progression is outside its active period.'
+  unlocked: '&#98FB98[UltimateQuest] &aNew stage rewards unlocked. Open /uq to claim them.'
+  premium-required: '&#98FB98[UltimateQuest] &cThe premium track requires premium access.'
+  unavailable: '&#98FB98[UltimateQuest] &cBattle pass unavailable, not loaded, or already at the points cap.'
+  xp-added: '&#98FB98[UltimateQuest] &aBattle pass points added and saved.'
+  xp-save-failed: '&#98FB98[UltimateQuest] &cPoints are retained in memory and will be saved again. Do not repeat the grant.'
+  usage: '&#98FB98[UltimateQuest] &e/uq battlepass [id] | /uq battlepass claim <id> <level> [free|premium] | /uq milestone [id] | /uq milestone claim
+    <id> <stage> | /uq battlepass addxp <player> <id> <amount>'
+  track:
+    free: '&aFree'
+    premium: '&6Premium'
+    default: '&aCollection'
+  state:
+    LOCKED: '&7Locked'
+    AVAILABLE: '&aClick to claim'
+    CLAIMING: '&eClaim being processed'
+    CLAIMED: '&7Claimed'
+    REVIEW: '&cAdministrator review required'
+    PREMIUM_REQUIRED: '&6Premium access required'
+    INACTIVE: '&cOutside the active period'
+period:
+  ready: '&#98FB98[UltimateQuest] &aYour periodic quests are ready. Open /uq period to view them.'
+scroll:
+  given: '&#98FB98[UltimateQuest] &aQuest scroll issued. Keep it in your inventory to make progress.'
+  activated: '&#98FB98[UltimateQuest] &aThe scroll in your inventory is now being tracked. View it with /uq scroll.'
+  used: '&#98FB98[UltimateQuest] &cThis scroll has already been used or requires administrator review.'
+  invalid: '&#98FB98[UltimateQuest] &cThis scroll has invalid data. Automatic loading is paused; contact an administrator.'
+  read-failed: '&#98FB98[UltimateQuest] &cScroll data is temporarily unavailable. It will be retried shortly.'
+  requirements: '&#98FB98[UltimateQuest] &cKeep the scroll in your inventory or off hand and leave enough active scroll quest slots.'
+  usage: '&#98FB98[UltimateQuest] &e/uq scroll | /uq scroll give <player> <profile> [rarity] [difficulty]'
+menu-assigned-active: '&7Left click for progress'
+menu-not-found: '&#98FB98[UltimateQuest] &cMenu not found.'
+menu-accept: '&eLeft click to accept'
+menu-claim: '&aLeft click to claim'
+menu-active: '&7Left click for progress; right click to abandon'
+menu-locked: '&cYou have not met the requirements'
+menu-unavailable: '&7This quest is unavailable'
+menu-abandon-confirm: '&#98FB98[UltimateQuest] &eRight click {name} again to confirm abandonment.'
+menu-abandon-confirm-hint: '&cRight click again to confirm abandonment'
+menu-view:
+  claimable: Claimable
+  claimed: Claimed
+  locked: Locked
+  inactive: Inactive
+  all: All quests
+  active: In progress
+  available: Available
+  completed: Completed
+menu-time:
+  unlimited: No time limit
+  expired: Expired
+  days: '{days}d {hours}h'
+  hours: '{hours}h {minutes}m'
+  minutes: '{minutes}m'
+battlepass:
+  task-completed: '&#98FB98[UltimateQuest] &aBattle pass task complete. Its points were added automatically.'
+  group:
+    all: All
+    daily: Daily
+    weekly: Weekly
+    season: Season
+  level-up: '&#98FB98[UltimateQuest] &a{name} &7reached level &e{level}&7!'
+  reward-item: '&7• &f{name} &7x{amount}'
+  reward-xp: '&7• &b{amount} points &7({pass})'
+  reward-custom: '&7• &f{name}'
+  reward-random-rate: ' &8({rate}%)'
+  reward-random-count: '&7Draw &e{count} &7weighted choices ({mode})'
+  reward-random-repeat: 'repeats allowed'
+  reward-random-unique: 'no repeats'
+  reward-random-weight: ' &8(weight {weight})'
+  reward-empty: '&8No rewards at this level.'
+  admin-saved: '&#98FB98[UltimateQuest] &aBattle pass changes saved.'
+  admin-failed: '&#98FB98[UltimateQuest] &cBattle pass operation failed. Check arguments and the server error message.'
+  admin-usage: '&#98FB98[UltimateQuest] &e/uq battlepass <setxp|removexp|setlevel|premium> <player/UUID> <pass> <value> | boost <player/UUID> <pass>
+    <multiplier> <seconds> | resolve <player/UUID> <pass@season> <track/level> <AVAILABLE|CLAIMED> | season <start|schedule|pause|resume|end|globalboost>
+    <pass> [values]'
+  player-usage: '&#98FB98[UltimateQuest] &e/uq battlepass <claimall|history|challenges|stats> <pass> | /uq battlepass <pass@season>'
+  history: '&#98FB98[UltimateQuest] &eSaved seasons: &f{seasons}'
+  stats: '&#98FB98[UltimateQuest] &e{name} &7[{season}] Level: &f{level} &7Points: &f{total} &7Premium: &f{premium}'
+override-lang:
+  auto-save:
+    message: '&#98FB98[UltimateQuest] Automatically saving player quest data...'
+  task-admin-only: '&cAssigned by administrators only'
+  category:
+    all: '&fAll tasks'
+    uncategorized: Uncategorized
+    title: '&8Task Categories &7[{page}/{pages}]'
+    button: '&eTask categories'
+    current: '&7Current: &f{category-name}'
+    select: '&eClick to select'
+    selected: '&aCurrently selected'
+    count: '&7Tasks: &f{category-count}'
+    active: '&7In progress: &f{category-active}'
+    claimable: '&7Ready to claim: &f{category-claimable}'
+    empty: '&7No matching tasks in this category.'
+    status: '&eStatus: &f{view} &7(click to switch)'
+  objective-action-kill: 'Kill '
+  objective-action-block-break: 'Break '
+  objective-action-fish: 'Catch '
+  objective-action-consume: 'Consume '
+  progression:
+    battlepass: '&6Battle passes'
+    milestone: '&aCollections'
+    catalog-title: '&6&lBattle Pass Hub'
+    milestone-catalog-title: '&a&lMilestone Hub'
+    catalog-count: '&7Available entries: &f{count}'
+    catalog-description: '&7Choose a pass to view its free and premium reward tracks.'
+    milestone-catalog-description: '&7Choose a milestone to view its stages and rewards.'
+    summary: '&7Total: &f{total} &7| Level: &f{level}'
+    season: '&7Season: &f{season}'
+    required: '&7Progress: &f{total}/{required}'
+    stage-title: '&eLevel {level} &7- {track}'
+    level-title: Level {level}
+    free-reward: Free Reward
+    premium-reward: Premium Reward
+    claimable-summary: '&aRewards ready: &f{claimable}'
+    rewards-title: '&6Rewards'
+    next-level: '&7Next threshold: &f{next-required} &7({remaining-xp} points left)'
+    time-left: '&7Season time left: &f{season-time}'
+    claim-all: '&aClaim all available rewards'
+    challenges: '&eSeason challenges'
+    challenges-empty: '&7No unlocked challenges for this season.'
+  period:
+    filter-all: 'All periods'
+    filter-title: '&ePeriod: &f{period-group}'
+    filter-current: '&7Current period: &f{period-group}'
+    filter-switch: '&eClick to cycle daily, weekly, monthly and custom periods'
+    title: '&ePeriodic quests'
+    summary-title: '&e&lPeriodic Quest Overview'
+    source: '&7Source: &f{source}'
+    expires: '&7Time left: &f{expires-in}'
+  scroll:
+    filter-all: 'All scrolls'
+    filter-title: '&eScroll source: &f{scroll-group}'
+    filter-current: '&7Current source: &f{scroll-group}'
+    filter-switch: '&eClick to cycle scroll types'
+    title: '&eScroll quests'
+    summary-title: '&e&lScroll Quest Overview'
+    expires: '&7Time left: &f{expires-in}'
+  menu-back-catalog: '&eBack to the list'
+  menu-back: '&eBack'
+  menu-disabled: '&#98FB98[UltimateQuest] &cThis menu is disabled.'
+  menu-no-permission: '&#98FB98[UltimateQuest] &cYou do not have permission to open this menu.'
+  menu-title: '&8Quest Journal &7• {view} &8[{page}/{pages}]'
+  menu-close: '&cClose'
+  menu-previous: '&ePrevious page'
+  menu-next: '&eNext page'
+  menu-refresh: '&eRefresh'
+  menu-refresh-description: '&7Reload the current quest states.'
+  menu-objectives-title: Objectives
+  menu-empty-title: '&7Nothing to show here'
+  menu-empty-description: '&8Change the filter or check back later.'
+  menu-empty-battlepass: '&8There are no configured battle passes.'
+  menu-empty-milestone: '&8There are no configured milestones.'
+  menu-empty-period: '&8New quests appear when the next period begins.'
+  menu-empty-scroll: '&8There are no active quest scrolls in your inventory.'
+  menu-summary-title: '&e&lQuest Overview'
+  menu-summary-total: '&7Total quests: &f{count}'
+  menu-summary-active: '&bIn progress: &f{active}'
+  menu-summary-claimable: '&aReady to claim: &f{claimable}'
+  menu-summary-claimed: '&7Claimed: &f{claimed}'
+  menu-summary-available: '&eAvailable: &f{available}'
+  menu-summary-locked: '&cLocked: &f{locked}'
+  menu-filter-title: '&eFilter: &f{view}'
+  menu-filter-all: '&a● &fAll quests'
+  menu-filter-active: '&a● &fOnly quests in progress'
+  menu-filter-available: '&a● &fAvailable and locked quests'
+  menu-filter-completed: '&a● &fCompleted quests only'
+  menu-filter-claimable: '&a● &fOnly tasks with claimable rewards'
+  menu-filter-claimed: '&a● &fOnly tasks with claimed rewards'
+  menu-filter-switch: '&eClick to change the filter'
+  menu-open-battlepass: '&7View season levels and both reward tracks.'
+  menu-open-milestone: '&7View long-term progress and stage rewards.'
+  menu-open-period: '&7View daily, weekly, and monthly quests.'
+  menu-open-scroll: '&7View quest scrolls carried in your inventory.'
+  menu-abandon-confirm-title: '&c&lAbandon {name}?'
+  menu-abandon-confirm-loss: '&7All progress on this quest will be lost.'
+  menu-abandon-confirm-action: '&cRight click again to confirm'
+  menu-abandon-confirm-timeout: '&8Confirmation expires after 5 seconds'
+  defaults:
+    categories:
+      combat:
+        name: '&cCombat'
+        description: '&7Defeat hostile mobs and protect your settlement.'
+      gathering:
+        name: '&aGathering'
+        description: '&7Mine natural stone, ores and timber.'
+      adventure:
+        name: '&eAdventure'
+        description: '&7Explore the world and complete mixed challenges.'
+      farming:
+        name: '&2Farming'
+        description: '&7Harvest fully grown crops and build a food supply.'
+      fishing:
+        name: '&bFishing'
+        description: '&7Catch fish and work towards long-term fishing goals.'
+      building:
+        name: '&6Building'
+        description: '&7Expand your base with useful building materials.'
+      craftsmanship:
+        name: '&dCraftsmanship'
+        description: '&7Practise enchanting and ranged combat.'
+      nether:
+        name: '&4Nether Expeditions'
+        description: '&7Gather Nether resources and confront its inhabitants.'
+    objectives:
+      miner: '&fMine natural stone'
+      hunter: '&fDefeat zombies'
+      veteran: '&fChop natural logs'
+      angler: '&fCatch fish'
+      champion: '&fDefeat hostile mobs'
+      coal: '&fMine coal ore'
+      iron: '&fMine iron ore'
+      gold: '&fMine gold ore'
+      redstone: '&fMine redstone ore'
+      diamond: '&fMine diamond ore'
+      wheat: '&fHarvest mature wheat'
+      crops: '&fHarvest mature crops'
+      builder: '&fPlace building blocks'
+      walker: '&fExplore block positions'
+      sprinter: '&fSprint distance in blocks'
+      swimmer: '&fSwim distance in blocks'
+      enchanter: '&fEnchant items at a table'
+      archer: '&fFire a bow or crossbow'
+      food: '&fEat survival food'
+      nether_miner: '&fMine natural Nether resources'
+      blaze: '&fDefeat blazes'
+      enderman: '&fDefeat endermen'
+      barter: '&fBarter with piglins'
+    tasks:
+      miner:
+        name: '&eFirst Stone'
+        description: '&7Mine 16 natural stone blocks; claim to receive your first scroll.'
+      woodworker:
+        name: '&eTimber for Shelter'
+        description: '&7Chop 16 natural logs to begin gathering supplies.'
+      hunter:
+        name: '&eFirst Night Patrol'
+        description: '&7Defeat 8 naturally spawned zombies.'
+      angler:
+        name: '&eFirst Catch'
+        description: '&7Catch 3 fish with a fishing rod.'
+      farmer:
+        name: '&eFirst Harvest'
+        description: '&7Harvest 16 fully grown wheat plants; immature crops do not count.'
+      builder:
+        name: '&eA Place to Call Home'
+        description: '&7Place 32 supported building blocks; view the objective for progress.'
+      traveler:
+        name: '&eBeyond the Doorstep'
+        description: '&7Cross block positions 256 times; progress is limited to four checks per second.'
+      sprinter:
+        name: '&ePick Up the Pace'
+        description: '&7Sprint a total of 256 blocks.'
+      swimmer:
+        name: '&eInto the Water'
+        description: '&7Swim a total of 128 blocks in the swimming state.'
+      coal_supply:
+        name: '&eLight the Way'
+        description: '&7Mine 16 natural coal ore blocks, including deepslate coal ore.'
+      iron_supply:
+        name: '&eIron Age'
+        description: '&7Mine 12 natural iron ore blocks.'
+      forest_adventure:
+        name: '&eForest Adventure'
+        description: '&7Defeat 10 zombies and chop 32 natural logs.'
+      night_watch:
+        name: '&eSettlement Guardian'
+        description: '&7Defeat 24 hostile mobs to make the settlement safer.'
+      deep_miner:
+        name: '&eBelow the Surface'
+        description: '&7Mine 256 natural stone blocks and 24 iron ore blocks.'
+      grain_barn:
+        name: '&eFill the Granary'
+        description: '&7Harvest 64 fully grown wheat plants.'
+      fishing_trip:
+        name: '&eAn Afternoon by the Water'
+        description: '&7Catch 16 fish; junk and treasure catches do not count.'
+      ore_prospector:
+        name: '&eVeins of Fortune'
+        description: '&7Mine 8 gold ore blocks and 32 redstone ore blocks.'
+      archery_training:
+        name: '&eSteady Aim'
+        description: '&7Fire a bow or crossbow 32 times; hits are not required.'
+      enchant_apprentice:
+        name: '&eA Touch of Magic'
+        description: '&7Enchant one item at an enchanting table.'
+      sustainable_farm:
+        name: '&eA Thriving Farm'
+        description: '&7Harvest 128 mature wheat, carrot, potato or beetroot plants.'
+      nether_expedition:
+        name: '&eInto the Nether'
+        description: '&7Mine 128 Nether resource blocks and defeat 8 blazes.'
+      enderman_research:
+        name: '&eEyes in the Darkness'
+        description: '&7Defeat 12 naturally spawned endermen.'
+      diamond_expedition:
+        name: '&eDiamonds in the Deep'
+        description: '&7Mine 8 natural diamond ore blocks.'
+      survivalist:
+        name: '&ePrepared for Anything'
+        description: '&7Gather stone and logs, eat 16 food items and catch 12 fish.'
+      master_builder:
+        name: '&eA Growing Settlement'
+        description: '&7Place 256 supported building blocks to expand your base.'
+      veteran_expedition:
+        name: '&eSeasoned Adventurer'
+        description: '&7Complete a major expedition across combat, mining, fishing and enchanting.'
+    rewards:
+      stone_pickaxe_1: '&7• &fStone Pickaxe &7x1'
+      torch_16: '&7• &fTorches &7x16'
+      scroll_novice: '&7• &eBeginner Scroll &7x1'
+      stone_axe_1: '&7• &fStone Axe &7x1'
+      bread_4: '&7• &fBread &7x4'
+      cooked_beef_6: '&7• &fSteak &7x6'
+      fishing_rod_1: '&7• &fFishing Rod &7x1'
+      wheat_seeds_16: '&7• &fWheat Seeds &7x16'
+      bread_6: '&7• &fBread &7x6'
+      glass_16: '&7• &fGlass &7x16'
+      bread_8: '&7• &fBread &7x8'
+      torch_32: '&7• &fTorches &7x32'
+      experience_bottle_2: '&7• &fBottles of Enchanting &7x2'
+      iron_ingot_4: '&7• &fIron Ingots &7x4'
+      emerald_5: '&7• &fEmeralds &7x5'
+      shield_1: '&7• &fShield &7x1'
+      cooked_beef_8: '&7• &fSteak &7x8'
+      iron_pickaxe_1: '&7• &fIron Pickaxe &7x1'
+      scroll_mining: '&7• &eProspector Scroll &7x1'
+      bread_16: '&7• &fBread &7x16'
+      emerald_3: '&7• &fEmeralds &7x3'
+      experience_bottle_6: '&7• &fBottles of Enchanting &7x6'
+      gold_ingot_4: '&7• &fGold Ingots &7x4'
+      arrow_32: '&7• &fArrows &7x32'
+      experience_bottle_4: '&7• &fBottles of Enchanting &7x4'
+      lapis_lazuli_16: '&7• &fLapis Lazuli &7x16'
+      emerald_6: '&7• &fEmeralds &7x6'
+      gold_ingot_8: '&7• &fGold Ingots &7x8'
+      experience_bottle_12: '&7• &fBottles of Enchanting &7x12'
+      ender_pearl_4: '&7• &fEnder Pearls &7x4'
+      experience_bottle_8: '&7• &fBottles of Enchanting &7x8'
+      diamond_2: '&7• &fDiamonds &7x2'
+      emerald_12: '&7• &fEmeralds &7x12'
+      cooked_beef_16: '&7• &fSteak &7x16'
+      scroll_adventure: '&7• &eAdventure Scroll &7x1'
+      glass_64: '&7• &fGlass &7x64'
+      diamond_8: '&7• &fDiamonds &7x8'
+      experience_bottle_16: '&7• &fBottles of Enchanting &7x16'
+      scroll_veteran: '&7• &eVeteran Scroll &7x1'
+      emerald_2: '&7• &fEmeralds &7x2'
+      diamond_5: '&7• &fDiamonds &7x5'
+      iron_ingot_2: '&7• &fIron Ingots &7x2'
+      diamond_3: '&7• &fDiamonds &7x3'
+      diamond_6: '&7• &fDiamonds &7x6'
+      emerald_8: '&7• &fEmeralds &7x8'
+      diamond_4: '&7• &fDiamonds &7x4'
+      cooked_beef_12: '&7• &fSteak &7x12'
+      gold_ingot_6: '&7• &fGold Ingots &7x6'
+      diamond_1: '&7• &fDiamonds &7x1'
+      name_tag_1: '&7• &fName Tag &7x1'
+      heart_of_the_sea_1: '&7• &fHeart of the Sea &7x1'
+      catch_pack: '&eFishing Supply Pack'
+      cooked_beef_2: '&7• &fSteak &7x2'
+      golden_carrot_8: '&7• &fGolden Carrot &7x8'
+      scroll_pack_novice: '&eNovice Supply Pack'
+      scroll_pack_mining: '&eMining Supply Pack'
+      scroll_pack_adventure: '&eAdventure Supply Pack'
+      scroll_pack_veteran: '&eVeteran Supply Pack'
+    period-rewards:
+      daily_common_stick: '&7• &f[Common] Stick &7x16'
+      daily_common_oak_log: '&7• &f[Common] Oak Log &7x16'
+      daily_common_spruce_log: '&7• &f[Common] Spruce Log &7x16'
+      daily_common_oak_planks: '&7• &f[Common] Oak Planks &7x32'
+      daily_common_cobblestone: '&7• &f[Common] Cobblestone &7x32'
+      daily_common_sand: '&7• &f[Common] Sand &7x16'
+      daily_common_glass: '&7• &f[Common] Glass &7x16'
+      daily_common_torch: '&7• &f[Common] Torch &7x16'
+      daily_common_coal: '&7• &f[Common] Coal &7x8'
+      daily_common_bread: '&7• &f[Common] Bread &7x8'
+      daily_common_baked_potato: '&7• &f[Common] Baked Potato &7x8'
+      daily_common_carrot: '&7• &f[Common] Carrot &7x16'
+      daily_common_wheat_seeds: '&7• &f[Common] Wheat Seeds &7x16'
+      daily_common_sugar_cane: '&7• &f[Common] Sugar Cane &7x16'
+      daily_common_leather: '&7• &f[Common] Leather &7x4'
+      daily_common_string: '&7• &f[Common] String &7x8'
+      daily_uncommon_iron_ingot: '&7• &a[Uncommon] Iron Ingot &7x4'
+      daily_uncommon_copper_ingot: '&7• &a[Uncommon] Copper Ingot &7x8'
+      daily_uncommon_flint: '&7• &a[Uncommon] Flint &7x8'
+      daily_uncommon_bone: '&7• &a[Uncommon] Bone &7x8'
+      daily_uncommon_arrow: '&7• &a[Uncommon] Arrow &7x16'
+      daily_uncommon_cooked_beef: '&7• &a[Uncommon] Cooked Beef &7x8'
+      daily_uncommon_book: '&7• &a[Uncommon] Book &7x4'
+      daily_uncommon_paper: '&7• &a[Uncommon] Paper &7x16'
+      daily_uncommon_lantern: '&7• &a[Uncommon] Lantern &7x4'
+      daily_uncommon_white_wool: '&7• &a[Uncommon] White Wool &7x8'
+      daily_rare_gold_ingot: '&7• &9[Rare] Gold Ingot &7x4'
+      daily_rare_lapis_lazuli: '&7• &9[Rare] Lapis Lazuli &7x12'
+      daily_rare_redstone: '&7• &9[Rare] Redstone &7x16'
+      daily_rare_emerald: '&7• &9[Rare] Emerald &7x3'
+      daily_rare_experience_bottle: '&7• &9[Rare] Experience Bottle &7x4'
+      daily_rare_iron_pickaxe: '&7• &9[Rare] Iron Pickaxe &7x1'
+      daily_rare_shield: '&7• &9[Rare] Shield &7x1'
+      daily_rare_fishing_rod: '&7• &9[Rare] Fishing Rod &7x1'
+      daily_epic_diamond: '&7• &5[Epic] Diamond &7x1'
+      daily_epic_golden_carrot: '&7• &5[Epic] Golden Carrot &7x8'
+      daily_epic_ender_pearl: '&7• &5[Epic] Ender Pearl &7x2'
+      daily_epic_name_tag: '&7• &5[Epic] Name Tag &7x1'
+      daily_legendary_diamond_pickaxe: '&7• &6[Legendary] Diamond Pickaxe &7x1'
+      daily_legendary_golden_apple: '&7• &6[Legendary] Golden Apple &7x2'
+      weekly_common_bread: '&7• &f[Common] Bread &7x16'
+      weekly_common_cooked_beef: '&7• &f[Common] Cooked Beef &7x12'
+      weekly_common_cooked_chicken: '&7• &f[Common] Cooked Chicken &7x12'
+      weekly_common_cooked_porkchop: '&7• &f[Common] Cooked Porkchop &7x12'
+      weekly_common_cooked_salmon: '&7• &f[Common] Cooked Salmon &7x12'
+      weekly_common_baked_potato: '&7• &f[Common] Baked Potato &7x16'
+      weekly_common_torch: '&7• &f[Common] Torch &7x32'
+      weekly_common_oak_log: '&7• &f[Common] Oak Log &7x24'
+      weekly_common_spruce_log: '&7• &f[Common] Spruce Log &7x24'
+      weekly_common_sugar_cane: '&7• &f[Common] Sugar Cane &7x24'
+      weekly_common_leather: '&7• &f[Common] Leather &7x8'
+      weekly_common_string: '&7• &f[Common] String &7x16'
+      weekly_common_feather: '&7• &f[Common] Feather &7x16'
+      weekly_common_bone: '&7• &f[Common] Bone &7x16'
+      weekly_common_arrow: '&7• &f[Common] Arrow &7x32'
+      weekly_common_paper: '&7• &f[Common] Paper &7x24'
+      weekly_uncommon_iron_ingot: '&7• &a[Uncommon] Iron Ingot &7x8'
+      weekly_uncommon_gold_ingot: '&7• &a[Uncommon] Gold Ingot &7x6'
+      weekly_uncommon_coal: '&7• &a[Uncommon] Coal &7x16'
+      weekly_uncommon_book: '&7• &a[Uncommon] Book &7x8'
+      weekly_uncommon_slime_ball: '&7• &a[Uncommon] Slime Ball &7x8'
+      weekly_uncommon_gunpowder: '&7• &a[Uncommon] Gunpowder &7x12'
+      weekly_uncommon_glow_ink_sac: '&7• &a[Uncommon] Glow Ink Sac &7x6'
+      weekly_uncommon_compass: '&7• &a[Uncommon] Compass &7x1'
+      weekly_uncommon_clock: '&7• &a[Uncommon] Clock &7x1'
+      weekly_uncommon_spyglass: '&7• &a[Uncommon] Spyglass &7x1'
+      weekly_rare_emerald: '&7• &9[Rare] Emerald &7x8'
+      weekly_rare_experience_bottle: '&7• &9[Rare] Experience Bottle &7x8'
+      weekly_rare_ender_pearl: '&7• &9[Rare] Ender Pearl &7x4'
+      weekly_rare_blaze_rod: '&7• &9[Rare] Blaze Rod &7x4'
+      weekly_rare_phantom_membrane: '&7• &9[Rare] Phantom Membrane &7x2'
+      weekly_rare_nautilus_shell: '&7• &9[Rare] Nautilus Shell &7x2'
+      weekly_rare_saddle: '&7• &9[Rare] Saddle &7x1'
+      weekly_rare_golden_carrot: '&7• &9[Rare] Golden Carrot &7x12'
+      weekly_epic_diamond: '&7• &5[Epic] Diamond &7x3'
+      weekly_epic_golden_apple: '&7• &5[Epic] Golden Apple &7x2'
+      weekly_epic_ghast_tear: '&7• &5[Epic] Ghast Tear &7x2'
+      weekly_epic_diamond_sword: '&7• &5[Epic] Diamond Sword &7x1'
+      weekly_legendary_heart_of_the_sea: '&7• &6[Legendary] Heart Of The Sea &7x1'
+      weekly_legendary_totem_of_undying: '&7• &6[Legendary] Totem Of Undying &7x1'
+      monthly_common_iron_ingot: '&7• &f[Common] Iron Ingot &7x16'
+      monthly_common_gold_ingot: '&7• &f[Common] Gold Ingot &7x12'
+      monthly_common_copper_ingot: '&7• &f[Common] Copper Ingot &7x32'
+      monthly_common_coal: '&7• &f[Common] Coal &7x32'
+      monthly_common_redstone: '&7• &f[Common] Redstone &7x32'
+      monthly_common_lapis_lazuli: '&7• &f[Common] Lapis Lazuli &7x32'
+      monthly_common_quartz: '&7• &f[Common] Quartz &7x32'
+      monthly_common_amethyst_shard: '&7• &f[Common] Amethyst Shard &7x24'
+      monthly_common_glowstone_dust: '&7• &f[Common] Glowstone Dust &7x24'
+      monthly_common_obsidian: '&7• &f[Common] Obsidian &7x24'
+      monthly_common_cooked_beef: '&7• &f[Common] Cooked Beef &7x24'
+      monthly_common_golden_carrot: '&7• &f[Common] Golden Carrot &7x16'
+      monthly_common_arrow: '&7• &f[Common] Arrow &7x64'
+      monthly_common_leather: '&7• &f[Common] Leather &7x16'
+      monthly_common_book: '&7• &f[Common] Book &7x12'
+      monthly_common_gunpowder: '&7• &f[Common] Gunpowder &7x24'
+      monthly_uncommon_emerald: '&7• &a[Uncommon] Emerald &7x12'
+      monthly_uncommon_experience_bottle: '&7• &a[Uncommon] Experience Bottle &7x16'
+      monthly_uncommon_iron_block: '&7• &a[Uncommon] Iron Block &7x4'
+      monthly_uncommon_gold_block: '&7• &a[Uncommon] Gold Block &7x2'
+      monthly_uncommon_coal_block: '&7• &a[Uncommon] Coal Block &7x4'
+      monthly_uncommon_crying_obsidian: '&7• &a[Uncommon] Crying Obsidian &7x8'
+      monthly_uncommon_ghast_tear: '&7• &a[Uncommon] Ghast Tear &7x2'
+      monthly_uncommon_nautilus_shell: '&7• &a[Uncommon] Nautilus Shell &7x4'
+      monthly_uncommon_name_tag: '&7• &a[Uncommon] Name Tag &7x2'
+      monthly_uncommon_sea_lantern: '&7• &a[Uncommon] Sea Lantern &7x8'
+      monthly_rare_diamond: '&7• &9[Rare] Diamond &7x6'
+      monthly_rare_emerald_block: '&7• &9[Rare] Emerald Block &7x2'
+      monthly_rare_golden_apple: '&7• &9[Rare] Golden Apple &7x4'
+      monthly_rare_diamond_sword: '&7• &9[Rare] Diamond Sword &7x1'
+      monthly_rare_diamond_pickaxe: '&7• &9[Rare] Diamond Pickaxe &7x1'
+      monthly_rare_diamond_helmet: '&7• &9[Rare] Diamond Helmet &7x1'
+      monthly_rare_diamond_boots: '&7• &9[Rare] Diamond Boots &7x1'
+      monthly_rare_shulker_shell: '&7• &9[Rare] Shulker Shell &7x2'
+      monthly_epic_diamond_chestplate: '&7• &5[Epic] Diamond Chestplate &7x1'
+      monthly_epic_diamond_leggings: '&7• &5[Epic] Diamond Leggings &7x1'
+      monthly_epic_netherite_scrap: '&7• &5[Epic] Netherite Scrap &7x2'
+      monthly_epic_enchanted_golden_apple: '&7• &5[Epic] Enchanted Golden Apple &7x1'
+      monthly_legendary_netherite_ingot: '&7• &6[Legendary] Netherite Ingot &7x1'
+      monthly_legendary_totem_of_undying: '&7• &6[Legendary] Totem Of Undying &7x1'
+    periods:
+      reward-note: '&7Each task draws 3 of 40 weighted rewards without repeats.'
+      daily-pack: '&eDaily Rewards'
+      weekly-pack: '&eWeekly Rewards'
+      monthly-pack: '&eMonthly Rewards'
+      daily:
+        name: '&eDaily Quests'
+        description: '&7Three random objectives; refresh at midnight each day (server time).'
+      claim-note: '&7Complete before reset, then claim during the grace period.'
+      weekly:
+        name: '&eWeekly Quests'
+        description: '&7Three random objectives; refresh at midnight every Monday (server time).'
+      monthly:
+        name: '&eMonthly Quests'
+        description: '&7Three random objectives; refresh at midnight on the first day of each month (server time).'
+    scroll-rewards:
+      novice_common_stick: '&7• &f[Common] Stick &7x16'
+      novice_common_oak_log: '&7• &f[Common] Oak Log &7x16'
+      novice_common_spruce_log: '&7• &f[Common] Spruce Log &7x16'
+      novice_common_birch_log: '&7• &f[Common] Birch Log &7x16'
+      novice_common_oak_planks: '&7• &f[Common] Oak Planks &7x32'
+      novice_common_cobblestone: '&7• &f[Common] Cobblestone &7x32'
+      novice_common_stone: '&7• &f[Common] Stone &7x32'
+      novice_common_dirt: '&7• &f[Common] Dirt &7x32'
+      novice_common_sand: '&7• &f[Common] Sand &7x16'
+      novice_common_gravel: '&7• &f[Common] Gravel &7x16'
+      novice_common_glass: '&7• &f[Common] Glass &7x16'
+      novice_common_torch: '&7• &f[Common] Torch &7x16'
+      novice_common_coal: '&7• &f[Common] Coal &7x8'
+      novice_common_charcoal: '&7• &f[Common] Charcoal &7x8'
+      novice_common_bread: '&7• &f[Common] Bread &7x8'
+      novice_common_baked_potato: '&7• &f[Common] Baked Potato &7x8'
+      novice_common_carrot: '&7• &f[Common] Carrot &7x16'
+      novice_common_apple: '&7• &f[Common] Apple &7x4'
+      novice_common_wheat_seeds: '&7• &f[Common] Wheat Seeds &7x16'
+      novice_common_pumpkin_seeds: '&7• &f[Common] Pumpkin Seeds &7x8'
+      novice_common_melon_seeds: '&7• &f[Common] Melon Seeds &7x8'
+      novice_common_sugar_cane: '&7• &f[Common] Sugar Cane &7x16'
+      novice_common_leather: '&7• &f[Common] Leather &7x4'
+      novice_common_string: '&7• &f[Common] String &7x8'
+      novice_uncommon_iron_ingot: '&7• &a[Uncommon] Iron Ingot &7x4'
+      novice_uncommon_copper_ingot: '&7• &a[Uncommon] Copper Ingot &7x8'
+      novice_uncommon_flint: '&7• &a[Uncommon] Flint &7x8'
+      novice_uncommon_bone: '&7• &a[Uncommon] Bone &7x8'
+      novice_uncommon_arrow: '&7• &a[Uncommon] Arrow &7x16'
+      novice_uncommon_cooked_beef: '&7• &a[Uncommon] Cooked Beef &7x8'
+      novice_uncommon_cooked_chicken: '&7• &a[Uncommon] Cooked Chicken &7x8'
+      novice_uncommon_cooked_salmon: '&7• &a[Uncommon] Cooked Salmon &7x8'
+      novice_uncommon_book: '&7• &a[Uncommon] Book &7x4'
+      novice_uncommon_paper: '&7• &a[Uncommon] Paper &7x16'
+      novice_uncommon_ladder: '&7• &a[Uncommon] Ladder &7x16'
+      novice_uncommon_chest: '&7• &a[Uncommon] Chest &7x4'
+      novice_uncommon_barrel: '&7• &a[Uncommon] Barrel &7x4'
+      novice_uncommon_lantern: '&7• &a[Uncommon] Lantern &7x4'
+      novice_uncommon_white_wool: '&7• &a[Uncommon] White Wool &7x8'
+      novice_uncommon_hay_block: '&7• &a[Uncommon] Hay Block &7x4'
+      novice_rare_gold_ingot: '&7• &9[Rare] Gold Ingot &7x4'
+      novice_rare_lapis_lazuli: '&7• &9[Rare] Lapis Lazuli &7x12'
+      novice_rare_redstone: '&7• &9[Rare] Redstone &7x16'
+      novice_rare_emerald: '&7• &9[Rare] Emerald &7x3'
+      novice_rare_experience_bottle: '&7• &9[Rare] Experience Bottle &7x4'
+      novice_rare_iron_pickaxe: '&7• &9[Rare] Iron Pickaxe &7x1'
+      novice_rare_iron_axe: '&7• &9[Rare] Iron Axe &7x1'
+      novice_rare_iron_sword: '&7• &9[Rare] Iron Sword &7x1'
+      novice_rare_shield: '&7• &9[Rare] Shield &7x1'
+      novice_rare_fishing_rod: '&7• &9[Rare] Fishing Rod &7x1'
+      novice_rare_bucket: '&7• &9[Rare] Bucket &7x1'
+      novice_rare_shears: '&7• &9[Rare] Shears &7x1'
+      novice_epic_diamond: '&7• &5[Epic] Diamond &7x1'
+      novice_epic_golden_carrot: '&7• &5[Epic] Golden Carrot &7x8'
+      novice_epic_ender_pearl: '&7• &5[Epic] Ender Pearl &7x2'
+      novice_epic_name_tag: '&7• &5[Epic] Name Tag &7x1'
+      novice_epic_saddle: '&7• &5[Epic] Saddle &7x1'
+      novice_epic_obsidian: '&7• &5[Epic] Obsidian &7x8'
+      novice_legendary_diamond_pickaxe: '&7• &6[Legendary] Diamond Pickaxe &7x1'
+      novice_legendary_golden_apple: '&7• &6[Legendary] Golden Apple &7x2'
+      mining_common_cobblestone: '&7• &f[Common] Cobblestone &7x64'
+      mining_common_stone: '&7• &f[Common] Stone &7x64'
+      mining_common_cobbled_deepslate: '&7• &f[Common] Cobbled Deepslate &7x64'
+      mining_common_deepslate: '&7• &f[Common] Deepslate &7x32'
+      mining_common_andesite: '&7• &f[Common] Andesite &7x32'
+      mining_common_diorite: '&7• &f[Common] Diorite &7x32'
+      mining_common_granite: '&7• &f[Common] Granite &7x32'
+      mining_common_tuff: '&7• &f[Common] Tuff &7x32'
+      mining_common_calcite: '&7• &f[Common] Calcite &7x32'
+      mining_common_smooth_basalt: '&7• &f[Common] Smooth Basalt &7x32'
+      mining_common_stone_bricks: '&7• &f[Common] Stone Bricks &7x32'
+      mining_common_deepslate_bricks: '&7• &f[Common] Deepslate Bricks &7x32'
+      mining_common_polished_andesite: '&7• &f[Common] Polished Andesite &7x32'
+      mining_common_polished_diorite: '&7• &f[Common] Polished Diorite &7x32'
+      mining_common_polished_granite: '&7• &f[Common] Polished Granite &7x32'
+      mining_common_gravel: '&7• &f[Common] Gravel &7x32'
+      mining_common_sand: '&7• &f[Common] Sand &7x32'
+      mining_common_coal: '&7• &f[Common] Coal &7x16'
+      mining_common_charcoal: '&7• &f[Common] Charcoal &7x16'
+      mining_common_torch: '&7• &f[Common] Torch &7x32'
+      mining_common_ladder: '&7• &f[Common] Ladder &7x32'
+      mining_common_stick: '&7• &f[Common] Stick &7x32'
+      mining_common_oak_log: '&7• &f[Common] Oak Log &7x16'
+      mining_common_rail: '&7• &f[Common] Rail &7x16'
+      mining_uncommon_raw_iron: '&7• &a[Uncommon] Raw Iron &7x12'
+      mining_uncommon_iron_ingot: '&7• &a[Uncommon] Iron Ingot &7x8'
+      mining_uncommon_raw_copper: '&7• &a[Uncommon] Raw Copper &7x24'
+      mining_uncommon_copper_ingot: '&7• &a[Uncommon] Copper Ingot &7x24'
+      mining_uncommon_redstone: '&7• &a[Uncommon] Redstone &7x32'
+      mining_uncommon_lapis_lazuli: '&7• &a[Uncommon] Lapis Lazuli &7x24'
+      mining_uncommon_flint: '&7• &a[Uncommon] Flint &7x16'
+      mining_uncommon_amethyst_shard: '&7• &a[Uncommon] Amethyst Shard &7x16'
+      mining_uncommon_quartz: '&7• &a[Uncommon] Quartz &7x24'
+      mining_uncommon_glowstone_dust: '&7• &a[Uncommon] Glowstone Dust &7x16'
+      mining_uncommon_lantern: '&7• &a[Uncommon] Lantern &7x8'
+      mining_uncommon_powered_rail: '&7• &a[Uncommon] Powered Rail &7x6'
+      mining_uncommon_minecart: '&7• &a[Uncommon] Minecart &7x1'
+      mining_uncommon_hopper: '&7• &a[Uncommon] Hopper &7x2'
+      mining_uncommon_blast_furnace: '&7• &a[Uncommon] Blast Furnace &7x2'
+      mining_uncommon_iron_pickaxe: '&7• &a[Uncommon] Iron Pickaxe &7x1'
+      mining_rare_raw_gold: '&7• &9[Rare] Raw Gold &7x8'
+      mining_rare_gold_ingot: '&7• &9[Rare] Gold Ingot &7x8'
+      mining_rare_emerald: '&7• &9[Rare] Emerald &7x6'
+      mining_rare_experience_bottle: '&7• &9[Rare] Experience Bottle &7x8'
+      mining_rare_obsidian: '&7• &9[Rare] Obsidian &7x16'
+      mining_rare_crying_obsidian: '&7• &9[Rare] Crying Obsidian &7x4'
+      mining_rare_magma_block: '&7• &9[Rare] Magma Block &7x16'
+      mining_rare_prismarine_crystals: '&7• &9[Rare] Prismarine Crystals &7x8'
+      mining_rare_iron_block: '&7• &9[Rare] Iron Block &7x2'
+      mining_rare_coal_block: '&7• &9[Rare] Coal Block &7x4'
+      mining_rare_redstone_block: '&7• &9[Rare] Redstone Block &7x4'
+      mining_rare_lapis_block: '&7• &9[Rare] Lapis Block &7x2'
+      mining_epic_diamond: '&7• &5[Epic] Diamond &7x4'
+      mining_epic_diamond_pickaxe: '&7• &5[Epic] Diamond Pickaxe &7x1'
+      mining_epic_diamond_shovel: '&7• &5[Epic] Diamond Shovel &7x1'
+      mining_epic_diamond_axe: '&7• &5[Epic] Diamond Axe &7x1'
+      mining_epic_gold_block: '&7• &5[Epic] Gold Block &7x2'
+      mining_epic_emerald_block: '&7• &5[Epic] Emerald Block &7x1'
+      mining_legendary_netherite_scrap: '&7• &6[Legendary] Netherite Scrap &7x1'
+      mining_legendary_diamond_block: '&7• &6[Legendary] Diamond Block &7x1'
+      adventure_common_bread: '&7• &f[Common] Bread &7x16'
+      adventure_common_cooked_beef: '&7• &f[Common] Cooked Beef &7x12'
+      adventure_common_cooked_chicken: '&7• &f[Common] Cooked Chicken &7x12'
+      adventure_common_cooked_porkchop: '&7• &f[Common] Cooked Porkchop &7x12'
+      adventure_common_cooked_salmon: '&7• &f[Common] Cooked Salmon &7x12'
+      adventure_common_cooked_cod: '&7• &f[Common] Cooked Cod &7x12'
+      adventure_common_baked_potato: '&7• &f[Common] Baked Potato &7x16'
+      adventure_common_apple: '&7• &f[Common] Apple &7x8'
+      adventure_common_carrot: '&7• &f[Common] Carrot &7x16'
+      adventure_common_sweet_berries: '&7• &f[Common] Sweet Berries &7x16'
+      adventure_common_torch: '&7• &f[Common] Torch &7x32'
+      adventure_common_oak_log: '&7• &f[Common] Oak Log &7x24'
+      adventure_common_spruce_log: '&7• &f[Common] Spruce Log &7x24'
+      adventure_common_jungle_log: '&7• &f[Common] Jungle Log &7x24'
+      adventure_common_acacia_log: '&7• &f[Common] Acacia Log &7x24'
+      adventure_common_dark_oak_log: '&7• &f[Common] Dark Oak Log &7x24'
+      adventure_common_bamboo: '&7• &f[Common] Bamboo &7x32'
+      adventure_common_sugar_cane: '&7• &f[Common] Sugar Cane &7x24'
+      adventure_common_leather: '&7• &f[Common] Leather &7x8'
+      adventure_common_string: '&7• &f[Common] String &7x16'
+      adventure_common_feather: '&7• &f[Common] Feather &7x16'
+      adventure_common_bone: '&7• &f[Common] Bone &7x16'
+      adventure_common_arrow: '&7• &f[Common] Arrow &7x32'
+      adventure_common_paper: '&7• &f[Common] Paper &7x24'
+      adventure_uncommon_iron_ingot: '&7• &a[Uncommon] Iron Ingot &7x8'
+      adventure_uncommon_gold_ingot: '&7• &a[Uncommon] Gold Ingot &7x6'
+      adventure_uncommon_coal: '&7• &a[Uncommon] Coal &7x16'
+      adventure_uncommon_book: '&7• &a[Uncommon] Book &7x8'
+      adventure_uncommon_slime_ball: '&7• &a[Uncommon] Slime Ball &7x8'
+      adventure_uncommon_gunpowder: '&7• &a[Uncommon] Gunpowder &7x12'
+      adventure_uncommon_ink_sac: '&7• &a[Uncommon] Ink Sac &7x12'
+      adventure_uncommon_glow_ink_sac: '&7• &a[Uncommon] Glow Ink Sac &7x6'
+      adventure_uncommon_rabbit_hide: '&7• &a[Uncommon] Rabbit Hide &7x8'
+      adventure_uncommon_honey_bottle: '&7• &a[Uncommon] Honey Bottle &7x4'
+      adventure_uncommon_pumpkin_seeds: '&7• &a[Uncommon] Pumpkin Seeds &7x16'
+      adventure_uncommon_melon_seeds: '&7• &a[Uncommon] Melon Seeds &7x16'
+      adventure_uncommon_cocoa_beans: '&7• &a[Uncommon] Cocoa Beans &7x16'
+      adventure_uncommon_compass: '&7• &a[Uncommon] Compass &7x1'
+      adventure_uncommon_clock: '&7• &a[Uncommon] Clock &7x1'
+      adventure_uncommon_spyglass: '&7• &a[Uncommon] Spyglass &7x1'
+      adventure_rare_emerald: '&7• &9[Rare] Emerald &7x8'
+      adventure_rare_experience_bottle: '&7• &9[Rare] Experience Bottle &7x8'
+      adventure_rare_ender_pearl: '&7• &9[Rare] Ender Pearl &7x4'
+      adventure_rare_blaze_rod: '&7• &9[Rare] Blaze Rod &7x4'
+      adventure_rare_magma_cream: '&7• &9[Rare] Magma Cream &7x4'
+      adventure_rare_phantom_membrane: '&7• &9[Rare] Phantom Membrane &7x2'
+      adventure_rare_prismarine_shard: '&7• &9[Rare] Prismarine Shard &7x16'
+      adventure_rare_prismarine_crystals: '&7• &9[Rare] Prismarine Crystals &7x8'
+      adventure_rare_nautilus_shell: '&7• &9[Rare] Nautilus Shell &7x2'
+      adventure_rare_saddle: '&7• &9[Rare] Saddle &7x1'
+      adventure_rare_name_tag: '&7• &9[Rare] Name Tag &7x1'
+      adventure_rare_golden_carrot: '&7• &9[Rare] Golden Carrot &7x12'
+      adventure_epic_diamond: '&7• &5[Epic] Diamond &7x3'
+      adventure_epic_golden_apple: '&7• &5[Epic] Golden Apple &7x2'
+      adventure_epic_ghast_tear: '&7• &5[Epic] Ghast Tear &7x2'
+      adventure_epic_diamond_sword: '&7• &5[Epic] Diamond Sword &7x1'
+      adventure_epic_diamond_boots: '&7• &5[Epic] Diamond Boots &7x1'
+      adventure_epic_turtle_scute: '&7• &5[Epic] Turtle Scute &7x2'
+      adventure_legendary_heart_of_the_sea: '&7• &6[Legendary] Heart Of The Sea &7x1'
+      adventure_legendary_totem_of_undying: '&7• &6[Legendary] Totem Of Undying &7x1'
+      veteran_common_iron_ingot: '&7• &f[Common] Iron Ingot &7x16'
+      veteran_common_gold_ingot: '&7• &f[Common] Gold Ingot &7x12'
+      veteran_common_copper_ingot: '&7• &f[Common] Copper Ingot &7x32'
+      veteran_common_coal: '&7• &f[Common] Coal &7x32'
+      veteran_common_redstone: '&7• &f[Common] Redstone &7x32'
+      veteran_common_lapis_lazuli: '&7• &f[Common] Lapis Lazuli &7x32'
+      veteran_common_quartz: '&7• &f[Common] Quartz &7x32'
+      veteran_common_amethyst_shard: '&7• &f[Common] Amethyst Shard &7x24'
+      veteran_common_glowstone_dust: '&7• &f[Common] Glowstone Dust &7x24'
+      veteran_common_obsidian: '&7• &f[Common] Obsidian &7x24'
+      veteran_common_cooked_beef: '&7• &f[Common] Cooked Beef &7x24'
+      veteran_common_cooked_porkchop: '&7• &f[Common] Cooked Porkchop &7x24'
+      veteran_common_cooked_salmon: '&7• &f[Common] Cooked Salmon &7x24'
+      veteran_common_golden_carrot: '&7• &f[Common] Golden Carrot &7x16'
+      veteran_common_arrow: '&7• &f[Common] Arrow &7x64'
+      veteran_common_torch: '&7• &f[Common] Torch &7x64'
+      veteran_common_leather: '&7• &f[Common] Leather &7x16'
+      veteran_common_book: '&7• &f[Common] Book &7x12'
+      veteran_common_gunpowder: '&7• &f[Common] Gunpowder &7x24'
+      veteran_common_slime_ball: '&7• &f[Common] Slime Ball &7x16'
+      veteran_common_blaze_rod: '&7• &f[Common] Blaze Rod &7x8'
+      veteran_common_ender_pearl: '&7• &f[Common] Ender Pearl &7x8'
+      veteran_common_prismarine_shard: '&7• &f[Common] Prismarine Shard &7x32'
+      veteran_common_prismarine_crystals: '&7• &f[Common] Prismarine Crystals &7x16'
+      veteran_uncommon_emerald: '&7• &a[Uncommon] Emerald &7x12'
+      veteran_uncommon_experience_bottle: '&7• &a[Uncommon] Experience Bottle &7x16'
+      veteran_uncommon_iron_block: '&7• &a[Uncommon] Iron Block &7x4'
+      veteran_uncommon_gold_block: '&7• &a[Uncommon] Gold Block &7x2'
+      veteran_uncommon_redstone_block: '&7• &a[Uncommon] Redstone Block &7x4'
+      veteran_uncommon_lapis_block: '&7• &a[Uncommon] Lapis Block &7x4'
+      veteran_uncommon_coal_block: '&7• &a[Uncommon] Coal Block &7x4'
+      veteran_uncommon_crying_obsidian: '&7• &a[Uncommon] Crying Obsidian &7x8'
+      veteran_uncommon_magma_cream: '&7• &a[Uncommon] Magma Cream &7x8'
+      veteran_uncommon_phantom_membrane: '&7• &a[Uncommon] Phantom Membrane &7x4'
+      veteran_uncommon_ghast_tear: '&7• &a[Uncommon] Ghast Tear &7x2'
+      veteran_uncommon_nautilus_shell: '&7• &a[Uncommon] Nautilus Shell &7x4'
+      veteran_uncommon_name_tag: '&7• &a[Uncommon] Name Tag &7x2'
+      veteran_uncommon_saddle: '&7• &a[Uncommon] Saddle &7x1'
+      veteran_uncommon_hopper: '&7• &a[Uncommon] Hopper &7x4'
+      veteran_uncommon_sea_lantern: '&7• &a[Uncommon] Sea Lantern &7x8'
+      veteran_rare_diamond: '&7• &9[Rare] Diamond &7x6'
+      veteran_rare_emerald_block: '&7• &9[Rare] Emerald Block &7x2'
+      veteran_rare_golden_apple: '&7• &9[Rare] Golden Apple &7x4'
+      veteran_rare_diamond_sword: '&7• &9[Rare] Diamond Sword &7x1'
+      veteran_rare_diamond_pickaxe: '&7• &9[Rare] Diamond Pickaxe &7x1'
+      veteran_rare_diamond_axe: '&7• &9[Rare] Diamond Axe &7x1'
+      veteran_rare_diamond_shovel: '&7• &9[Rare] Diamond Shovel &7x1'
+      veteran_rare_diamond_helmet: '&7• &9[Rare] Diamond Helmet &7x1'
+      veteran_rare_diamond_boots: '&7• &9[Rare] Diamond Boots &7x1'
+      veteran_rare_turtle_scute: '&7• &9[Rare] Turtle Scute &7x4'
+      veteran_rare_shulker_shell: '&7• &9[Rare] Shulker Shell &7x2'
+      veteran_rare_heart_of_the_sea: '&7• &9[Rare] Heart Of The Sea &7x1'
+      veteran_epic_diamond_chestplate: '&7• &5[Epic] Diamond Chestplate &7x1'
+      veteran_epic_diamond_leggings: '&7• &5[Epic] Diamond Leggings &7x1'
+      veteran_epic_diamond_block: '&7• &5[Epic] Diamond Block &7x1'
+      veteran_epic_netherite_scrap: '&7• &5[Epic] Netherite Scrap &7x2'
+      veteran_epic_enchanted_golden_apple: '&7• &5[Epic] Enchanted Golden Apple &7x1'
+      veteran_epic_wither_skeleton_skull: '&7• &5[Epic] Wither Skeleton Skull &7x1'
+      veteran_legendary_netherite_ingot: '&7• &6[Legendary] Netherite Ingot &7x1'
+      veteran_legendary_totem_of_undying: '&7• &6[Legendary] Totem Of Undying &7x1'
+    scrolls:
+      reward-note: '&7Draw 3 of 60 weighted rewards without repeats; name colors show rarity.'
+      carry: '&7Carry in your inventory or off hand to make progress.'
+      novice:
+        duration: '&7Finish all fixed and random objectives within 24 hours of first activation.'
+        name: '&eBeginner Scroll'
+      claim: '&7Claim in /uq scroll; claiming consumes this scroll.'
+      adventure:
+        duration: '&7Finish all fixed and random objectives within 24 hours of first activation.'
+        name: '&eAdventure Scroll'
+      mining:
+        duration: '&7Finish all fixed and random objectives within 48 hours of first activation.'
+        name: '&eProspector Scroll'
+      veteran:
+        duration: '&7Finish all fixed and random objectives within 72 hours of first activation.'
+        name: '&eVeteran Scroll'
+    milestones:
+      mining:
+        name: '&aStone and Steel'
+      description: '&7Permanent progress with five reward stages; no acceptance required.'
+      forestry:
+        name: '&aKeeper of the Woods'
+      hunting:
+        name: '&aGuardian of the Realm'
+      fishing:
+        name: '&aWaterside Stories'
+      farming:
+        name: '&aHarvest Almanac'
+      exploration:
+        name: '&aFootprints of an Explorer'
+    battlepasses:
+      example:
+        name: '&6Survival Expedition Pass'
+        description: '&7A monthly 30-level pass with daily, weekly and expedition missions.'
+        free: '&7All missions and the free reward track are open to every player.'
+        season-name: Monthly Expedition
+      tasks:
+        zombie_hunter:
+          name: '&eZombie Patrol'
+        daily_stone:
+          name: '&eStone for Today'
+        daily_logs:
+          name: '&eTimber for Today'
+        daily_fish:
+          name: '&eFresh Catch'
+        daily_harvest:
+          name: '&eDaily Harvest'
+        daily_explorer:
+          name: '&eStretch Your Legs'
+        lumberjack:
+          name: '&eForestry Contract'
+        weekly_miner:
+          name: '&eMining Contract'
+        weekly_guardian:
+          name: '&eGuardian Contract'
+        weekly_fishing:
+          name: '&eFishing Contract'
+        weekly_harvest:
+          name: '&eHarvest Contract'
+        weekly_enchanter:
+          name: '&eEnchanter Contract'
+        expedition:
+          name: '&eExpedition Preparation'
+        season_supplies:
+          name: '&eStock the Camp'
+        season_harvest:
+          name: '&eA Month of Plenty'
+        season_nether:
+          name: '&eNether Survey'
+        season_treasure:
+          name: '&eBuried Riches'
+        season_mastery:
+          name: '&eMaster of the Wilds'
+      task-instructions: '&7Complete every objective below to earn the listed pass points.'
+      groups:
+        daily: Daily
+        weekly: Weekly
+        season: Season
+    ui:
+      menus:
+        battlepass:
+          catalog-title: '&6Battle passes &8[{page}/{pages}]'
+          detail-title: '&8{name} &7• {level}'
+          contents:
+            j:
+              item:
+                lore:
+                  '2': '&7Group: &f{group}'
+                  '6': '&6Points: &e{points}'
+                  '7': '&7Unlock week: &f{unlock-week}'
+            a:
+              catalog-item:
+                name: '&6&l{name}'
+            q:
+              item:
+                name: '&aFree Reward &8• &f{level}'
+                lore: {}
+              state-items:
+                available:
+                  name: '&a&lFree Reward &8• &f{level}'
+                  lore:
+                    '6': '&a➜ {state}'
+                claimed:
+                  name: '&8Free Reward • {level}'
+            l:
+              item:
+                name: '&7Level {level}'
+              state-items:
+                available:
+                  name: '&a&lLevel {level}'
+                claimed:
+                  name: '&bLevel {level}'
+                claiming:
+                  name: '&eLevel {level}'
+                review:
+                  name: '&cLevel {level}'
+            r:
+              item:
+                name: '&6Premium Reward &8• &f{level}'
+              state-items:
+                available:
+                  name: '&6&lPremium Reward &8• &f{level}'
+                  lore:
+                    '6': '&6➜ {state}'
+                premium_required:
+                  name: '&cPremium Reward &8• &f{level}'
+                claimed:
+                  name: '&8Premium Reward • {level}'
+          items:
+            y:
+              item:
+                name: '&eTask group: &f{challenge-group}'
+                lore:
+                  '0': '&7Click to switch between all, daily,'
+                  '1': '&7weekly, and season tasks.'
+            p:
+              item:
+                lore: {}
+        main:
+          contents:
+            q:
+              item:
+                lore:
+                  '2': '&6Objectives'
+                  '8': '&6Reward Preview'
+                  '10': '&7Categories: &f{categories}'
+                  '11': '&7Prerequisites: &f{prerequisites}'
+              state-items:
+                completed:
+                  name: '&a&l{name} &8• {state}'
+                locked:
+                  name: '&c{name} &8• {state}'
+        milestone:
+          catalog-title: '&aCollections &8[{page}/{pages}]'
+          contents:
+            a:
+              catalog-item:
+                name: '&a&l{name}'
+            l:
+              item:
+                name: '&7&eLevel {level} &7- {track}'
+              state-items:
+                available:
+                  name: '&a&l&eLevel {level} &7- {track}'
+                claimed:
+                  name: '&8&eLevel {level} &7- {track}'
+                claiming:
+                  name: '&e&eLevel {level} &7- {track}'
+                review:
+                  name: '&c&eLevel {level} &7- {track}'
+        period:
+          title: '&ePeriodic quests &7• {period-group} &8[{page}/{pages}]'
+        scroll:
+          title: '&eScroll quests &8[{page}/{pages}]'
+      progress-bar:
+        complete: '&a■'
+        remaining: '&8■'
+        suffix: ' &7{percent}%'
+      category-menu:
+        item:
+          lore: {}
+      quest-name: '&f{name} &8• {state}'
+      description: '{description}'
+      blank: ' '
+      objectives: '{objectives}'
+      progress: '{progress-bar}'
+      hint: '{hint}'
+      rewards: '{rewards}'
+      state: '{state}'
+      page-number: '&7{page}/{pages}'
+      category-name: '{category-name}'
+      category-description: '{category-description}'
+      category-selected: '{category-selected}'
+      objective-display:
+        kill: Kill {target}
+        block_break: Break {target}
+        fish: Catch {target}
+        consume: Consume {target}
+      reward-title: '&6Reward Preview'
+      task-categories: '&7Categories: &f{categories}'
+      task-prerequisites: '&7Prerequisites: &f{prerequisites}'
+      no-prerequisites: '&7None'
+      prerequisite-complete: '&a✓ &f{name}'
+      prerequisite-pending: '&c✗ &f{name}'
+      prerequisite-separator: ' &7/ '
+    guide:
+      accept: '&eLeft click a task to accept it; locked tasks show prerequisites.'
+      progress: '&7Progress starts after acceptance. Claim completed tasks here.'
+      modes: '&7Use the buttons below for contracts, scrolls, milestones and the pass.'
+objective-display:
+  target-separator: ' / '
+  targets:
+    kill: entities
+    block_break: blocks
+    fish: items
+    consume: items
+editor:
+  category:
+    edit: '&eEdit categories'
+    select: '&eClick to select'
+    remove: '&aSelected; click to remove'
+  summary:
+    type: '&7Type: &f{value}'
+    section: Section
+    keys: '&7Keys: &f{value}'
+    list: List
+    size: '&7Size: &f{value}'
+    value: '&7Value: &f{value}'
+  message:
+    disabled: '&#98FB98[UltimateQuest] &cThe configuration editor is disabled.'
+    target-not-found: '&#98FB98[UltimateQuest] &cTarget file not found.'
+    invalid-number: '&#98FB98[UltimateQuest] &cThat is not a valid finite number.'
+    saved: '&#98FB98[UltimateQuest] &aValidated and saved &f{value}'
+    save-failed: '&#98FB98[UltimateQuest] &cNot applied: {value}'
+    invalid-key: '&#98FB98[UltimateQuest] &cUse a new key containing letters, numbers, _ or -.'
+    invalid-new-child-value: '&#98FB98[UltimateQuest] &cInvalid value.'
+    command-usage: '&#98FB98[UltimateQuest] &cUse /uq editor [quest|task|category|battlepass|milestone|period|scroll|pool|reward-pool|menu] [id]'
+    invalid-integer: '&#98FB98[UltimateQuest] &cThat is not a valid integer.'
+  prompt:
+    description: '&#98FB98[UltimateQuest] &f{value}'
+    cancel-tip: '&#98FB98[UltimateQuest] &7Type &fcancel &7to abort this edit.'
+    string: Input the new string for &f{path}
+    new-child: Input the new child key
+    new-child-value: Input a value for &f{path}&7. Use section/{}, boolean, number, ;; list, [] or string:text.
+    integer: Input the new integer for &f{path}
+    double: Input the new number for &f{path}
+    integer-list-entry: Input the new integer list entry for &f{path}
+    string-list-entry: Input the new list entry for &f{path}
+    integer-list-entry-edit: Input the new integer for list entry &f#{index}
+    string-list-entry-edit: Input the new value for list entry &f#{index}
+  root:
+    title: UltimateQuest Editor
+    close:
+      name: '&cClose'
+  action:
+    open: '&aLeft click to open'
+    delete: '&cRight click to delete'
+    toggle: '&aLeft click to toggle'
+    increase-ten: '&aLeft click to add 10'
+    decrease-ten: '&cRight click to subtract 10'
+    increase-one: '&aShift-left to add 1'
+    decrease-one: '&cShift-right to subtract 1'
+    middle-clear: '&eMiddle click to clear'
+    input-number: '&eDrop key to enter an exact number'
+    edit: '&aLeft click to edit'
+  file-list:
+    title: 'Editor: {scope}'
+    type: '&7Type: &f{value}'
+    file: '&7File: &f{value}'
+    back: '&7Return to editor home'
+    refresh: '&7Reload the file list'
+  common:
+    back:
+      name: '&eBack'
+      desc: '&7Return to the previous screen'
+    refresh:
+      name: '&eRefresh'
+    previous-page:
+      name: '&ePrevious Page'
+      desc: '&7Go to the previous page'
+    next-page:
+      name: '&eNext Page'
+      desc: '&7Go to the next page'
+    reload:
+      name: '&aValidate and Apply'
+    clear:
+      name: '&cClear'
+      desc: '&7Remove this value'
+    root: root
+  section:
+    path:
+      name: '&eCurrent Path'
+      desc: '&f{value}'
+    reload:
+      line-1: '&7Changes are held in this session draft.'
+      line-2: '&7Validate, back up, save and rebuild live definitions.'
+    add-child:
+      name: '&eAdd Child'
+      generic: '&7Add a new child node under this section'
+  discard:
+    name: '&cDiscard Draft'
+    desc: '&7Shift-click to discard changes and reload this file'
+  lore:
+    path: '&7Path: &f{value}'
+    kind: '&7Kind: &f{value}'
+  item:
+    raw-hint: '&eRight click: raw fields; shift-right: delete'
+    title: 'Item Editor: {path}'
+    slot:
+      name: '&eItemFormat Slot'
+      line-1: '&7Click slot 13 while holding an item on your cursor.'
+      line-2: '&7The item is copied, never taken. Apply to update the draft.'
+    raw:
+      name: '&eRaw Section'
+      desc: '&7Open all keys inside this item section'
+    apply:
+      name: '&aApply Item'
+      desc: '&7Serialize slot 13 into the current section'
+    clear:
+      name: '&cClear Section'
+      desc: '&7Delete this entire item section'
+    back:
+      desc: '&7Return to the parent section'
+  list:
+    title: 'List Editor: {path}'
+    move-up: '&eShift-left to move up'
+    move-down: '&eShift-right to move down'
+    add:
+      name: '&eAdd Line'
+      desc: '&7Add a new line to this list'
+    clear:
+      name: '&cClear List'
+      desc: '&7Remove all entries from this list'
+    current: '&7Current: &f{value}'
+  reset-time:
+    title: 'Reset Time: {path}'
+    mode:
+      name: '&eCurrent Mode'
+      value: '&7Mode: &f{value}'
+      desc: '&7Click to cycle modes (shift: reverse); sets a default value.'
+    preview:
+      name: '&eSchedule Preview'
+      previous: '&7Previous: &f{value}'
+      next: '&7Next: &f{value}'
+    add:
+      name: '&eAdd Time'
+      desc: '&7Add a new reset time entry'
+    manual:
+      name: '&eEdit Value'
+    current: '&7Current: &f{value}'
+    never:
+      name: '&eNo Reset Time Needed'
+      desc: '&7This reset mode does not use a time value.'
+    prompt-add: Input the new reset time for &f{path}
+    prompt-edit: Input the new reset time for entry &f#{index}
+    invalid: '&#98FB98[UltimateQuest] &cInvalid schedule: {value}'
+  sub-button:
+    not-set: <not set>
+  scope:
+    reward_pool: Reward Pools
+    quest: Objectives
+    task: Tasks
+    category: Categories
+    battlepass: Battle Passes
+    milestone: Milestones
+    period: Periods
+    scroll: Scrolls
+    pool: Pools
+    menu: Menus
+  value-kind:
+    section: SECTION
+    item_section: ITEM_SECTION
+    boolean: BOOLEAN
+    integer: INTEGER
+    double: DOUBLE
+    string: STRING
+    string_list: STRING_LIST
+    integer_list: INTEGER_LIST
+    unknown: UNKNOWN

@@ -1,0 +1,27 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.objectives.crops}'
+icon:
+  material: CARROT
+trigger: block_break
+amount: 512
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  blocks:
+    type: block_type
+    types:
+    - WHEAT[age=7]
+    - CARROTS[age=7]
+    - POTATOES[age=7]
+    - BEETROOTS[age=3]
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: false

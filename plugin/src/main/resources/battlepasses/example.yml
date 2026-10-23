@@ -1,0 +1,1071 @@
+enabled: true
+name: '{lang:defaults.battlepasses.example.name}'
+description:
+- '{lang:defaults.battlepasses.example.description}'
+- '{lang:defaults.battlepasses.example.free}'
+icon:
+  material: EXPERIENCE_BOTTLE
+categories:
+- adventure
+season: season_1
+season-name: '{lang:defaults.battlepasses.example.season-name}'
+season-prefix: expedition
+rotation:
+  enabled: true
+  reset-mode: CRON
+  reset-time: 0 0 0 1 * ?
+premium-by-permission: true
+premium-permission: ultimatequest.battlepass.example.premium
+cap-experience: true
+claim-grace-seconds: 604800
+auto-claim: false
+paused: false
+leveling:
+  count: 30
+  base: 100
+  increment: 10
+  multiplier: 1.0
+tasks:
+  zombie_hunter:
+    name: '{lang:defaults.battlepasses.tasks.zombie_hunter.name}'
+    categories:
+    - combat
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: ROTTEN_FLESH
+    points: 30
+    group: daily
+    reset: daily
+    group-name: '{lang:defaults.battlepasses.groups.daily}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: hunter
+      amount: 8
+  daily_stone:
+    name: '{lang:defaults.battlepasses.tasks.daily_stone.name}'
+    categories:
+    - gathering
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: STONE_PICKAXE
+    points: 25
+    group: daily
+    reset: daily
+    group-name: '{lang:defaults.battlepasses.groups.daily}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: miner
+      amount: 64
+  daily_logs:
+    name: '{lang:defaults.battlepasses.tasks.daily_logs.name}'
+    categories:
+    - gathering
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: IRON_AXE
+    points: 25
+    group: daily
+    reset: daily
+    group-name: '{lang:defaults.battlepasses.groups.daily}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: veteran
+      amount: 24
+  daily_fish:
+    name: '{lang:defaults.battlepasses.tasks.daily_fish.name}'
+    categories:
+    - fishing
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: FISHING_ROD
+    points: 25
+    group: daily
+    reset: daily
+    group-name: '{lang:defaults.battlepasses.groups.daily}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: angler
+      amount: 3
+  daily_harvest:
+    name: '{lang:defaults.battlepasses.tasks.daily_harvest.name}'
+    categories:
+    - farming
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: WHEAT
+    points: 25
+    group: daily
+    reset: daily
+    group-name: '{lang:defaults.battlepasses.groups.daily}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: wheat
+      amount: 16
+  daily_explorer:
+    name: '{lang:defaults.battlepasses.tasks.daily_explorer.name}'
+    categories:
+    - adventure
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: LEATHER_BOOTS
+    points: 20
+    group: daily
+    reset: daily
+    group-name: '{lang:defaults.battlepasses.groups.daily}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: walker
+      amount: 256
+  lumberjack:
+    name: '{lang:defaults.battlepasses.tasks.lumberjack.name}'
+    categories:
+    - gathering
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: IRON_AXE
+    points: 100
+    group: weekly
+    reset: weekly
+    group-name: '{lang:defaults.battlepasses.groups.weekly}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: veteran
+      amount: 256
+  weekly_miner:
+    name: '{lang:defaults.battlepasses.tasks.weekly_miner.name}'
+    categories:
+    - gathering
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: STONE_PICKAXE
+    points: 120
+    group: weekly
+    reset: weekly
+    group-name: '{lang:defaults.battlepasses.groups.weekly}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: miner
+      amount: 512
+  weekly_guardian:
+    name: '{lang:defaults.battlepasses.tasks.weekly_guardian.name}'
+    categories:
+    - combat
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: IRON_SWORD
+    points: 140
+    group: weekly
+    reset: weekly
+    group-name: '{lang:defaults.battlepasses.groups.weekly}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: champion
+      amount: 60
+  weekly_fishing:
+    name: '{lang:defaults.battlepasses.tasks.weekly_fishing.name}'
+    categories:
+    - fishing
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: FISHING_ROD
+    points: 120
+    group: weekly
+    reset: weekly
+    group-name: '{lang:defaults.battlepasses.groups.weekly}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: angler
+      amount: 30
+  weekly_harvest:
+    name: '{lang:defaults.battlepasses.tasks.weekly_harvest.name}'
+    categories:
+    - farming
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: CARROT
+    points: 120
+    group: weekly
+    reset: weekly
+    group-name: '{lang:defaults.battlepasses.groups.weekly}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: crops
+      amount: 128
+  weekly_enchanter:
+    name: '{lang:defaults.battlepasses.tasks.weekly_enchanter.name}'
+    categories:
+    - craftsmanship
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: ENCHANTING_TABLE
+    points: 120
+    group: weekly
+    reset: weekly
+    group-name: '{lang:defaults.battlepasses.groups.weekly}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    source:
+      quest: enchanter
+      amount: 3
+  expedition:
+    name: '{lang:defaults.battlepasses.tasks.expedition.name}'
+    categories:
+    - combat
+    - gathering
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: IRON_SWORD
+    points: 200
+    group: season
+    reset: season
+    group-name: '{lang:defaults.battlepasses.groups.season}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    objectives:
+      champion:
+        source:
+          quest: champion
+          amount: 100
+      miner:
+        source:
+          quest: miner
+          amount: 256
+  season_supplies:
+    name: '{lang:defaults.battlepasses.tasks.season_supplies.name}'
+    categories:
+    - adventure
+    - gathering
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: IRON_AXE
+    points: 250
+    group: season
+    reset: season
+    group-name: '{lang:defaults.battlepasses.groups.season}'
+    unlock-week: 1
+    catch-up: true
+    premium: false
+    objectives:
+      veteran:
+        source:
+          quest: veteran
+          amount: 512
+      food:
+        source:
+          quest: food
+          amount: 32
+  season_harvest:
+    name: '{lang:defaults.battlepasses.tasks.season_harvest.name}'
+    categories:
+    - farming
+    - fishing
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: CARROT
+    points: 250
+    group: season
+    reset: season
+    group-name: '{lang:defaults.battlepasses.groups.season}'
+    unlock-week: 2
+    catch-up: true
+    premium: false
+    objectives:
+      crops:
+        source:
+          quest: crops
+          amount: 512
+      angler:
+        source:
+          quest: angler
+          amount: 50
+  season_nether:
+    name: '{lang:defaults.battlepasses.tasks.season_nether.name}'
+    categories:
+    - combat
+    - nether
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: NETHERRACK
+    points: 300
+    group: season
+    reset: season
+    group-name: '{lang:defaults.battlepasses.groups.season}'
+    unlock-week: 2
+    catch-up: true
+    premium: false
+    objectives:
+      nether_miner:
+        source:
+          quest: nether_miner
+          amount: 256
+      blaze:
+        source:
+          quest: blaze
+          amount: 16
+  season_treasure:
+    name: '{lang:defaults.battlepasses.tasks.season_treasure.name}'
+    categories:
+    - gathering
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: DIAMOND
+    points: 300
+    group: season
+    reset: season
+    group-name: '{lang:defaults.battlepasses.groups.season}'
+    unlock-week: 3
+    catch-up: true
+    premium: false
+    objectives:
+      diamond:
+        source:
+          quest: diamond
+          amount: 16
+      gold:
+        source:
+          quest: gold
+          amount: 32
+  season_mastery:
+    name: '{lang:defaults.battlepasses.tasks.season_mastery.name}'
+    categories:
+    - adventure
+    - combat
+    - craftsmanship
+    description:
+    - '{lang:defaults.battlepasses.task-instructions}'
+    icon:
+      material: IRON_SWORD
+    points: 400
+    group: season
+    reset: season
+    group-name: '{lang:defaults.battlepasses.groups.season}'
+    unlock-week: 4
+    catch-up: true
+    premium: false
+    objectives:
+      champion:
+        source:
+          quest: champion
+          amount: 256
+      enchanter:
+        source:
+          quest: enchanter
+          amount: 8
+      walker:
+        source:
+          quest: walker
+          amount: 4096
+levels:
+  '1':
+    required: 100
+    free:
+      bread:
+        type: item
+        item:
+          material: BREAD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.bread_8}'
+    premium:
+      cooked_beef:
+        type: item
+        item:
+          material: COOKED_BEEF
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.cooked_beef_12}'
+  '2':
+    required: 210
+    free:
+      torch:
+        type: item
+        item:
+          material: TORCH
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.torch_16}'
+    premium:
+      lapis_lazuli:
+        type: item
+        item:
+          material: LAPIS_LAZULI
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.lapis_lazuli_16}'
+  '3':
+    required: 330
+    free:
+      iron_ingot:
+        type: item
+        item:
+          material: IRON_INGOT
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.iron_ingot_4}'
+    premium:
+      gold_ingot:
+        type: item
+        item:
+          material: GOLD_INGOT
+          amount: 6
+        display:
+          name: '{lang:defaults.rewards.gold_ingot_6}'
+  '4':
+    required: 460
+    free:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_4}'
+    premium:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_12}'
+  '5':
+    required: 600
+    free:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 3
+        display:
+          name: '{lang:defaults.rewards.emerald_3}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 1
+        display:
+          name: '{lang:defaults.rewards.diamond_1}'
+      scroll:
+        type: console_command
+        command: uq scroll give {player} novice
+        display:
+          name: '{lang:defaults.rewards.scroll_novice}'
+    premium:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.emerald_8}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 2
+        display:
+          name: '{lang:defaults.rewards.diamond_2}'
+  '6':
+    required: 750
+    free:
+      bread:
+        type: item
+        item:
+          material: BREAD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.bread_8}'
+    premium:
+      cooked_beef:
+        type: item
+        item:
+          material: COOKED_BEEF
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.cooked_beef_12}'
+  '7':
+    required: 910
+    free:
+      torch:
+        type: item
+        item:
+          material: TORCH
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.torch_16}'
+    premium:
+      lapis_lazuli:
+        type: item
+        item:
+          material: LAPIS_LAZULI
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.lapis_lazuli_16}'
+  '8':
+    required: 1080
+    free:
+      iron_ingot:
+        type: item
+        item:
+          material: IRON_INGOT
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.iron_ingot_4}'
+    premium:
+      gold_ingot:
+        type: item
+        item:
+          material: GOLD_INGOT
+          amount: 6
+        display:
+          name: '{lang:defaults.rewards.gold_ingot_6}'
+  '9':
+    required: 1260
+    free:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_4}'
+    premium:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_12}'
+  '10':
+    required: 1450
+    free:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 3
+        display:
+          name: '{lang:defaults.rewards.emerald_3}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 1
+        display:
+          name: '{lang:defaults.rewards.diamond_1}'
+      scroll:
+        type: console_command
+        command: uq scroll give {player} mining
+        display:
+          name: '{lang:defaults.rewards.scroll_mining}'
+    premium:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.emerald_8}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 2
+        display:
+          name: '{lang:defaults.rewards.diamond_2}'
+      name_tag:
+        type: item
+        item:
+          material: NAME_TAG
+          amount: 1
+        display:
+          name: '{lang:defaults.rewards.name_tag_1}'
+  '11':
+    required: 1650
+    free:
+      bread:
+        type: item
+        item:
+          material: BREAD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.bread_8}'
+    premium:
+      cooked_beef:
+        type: item
+        item:
+          material: COOKED_BEEF
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.cooked_beef_12}'
+  '12':
+    required: 1860
+    free:
+      torch:
+        type: item
+        item:
+          material: TORCH
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.torch_16}'
+    premium:
+      lapis_lazuli:
+        type: item
+        item:
+          material: LAPIS_LAZULI
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.lapis_lazuli_16}'
+  '13':
+    required: 2080
+    free:
+      iron_ingot:
+        type: item
+        item:
+          material: IRON_INGOT
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.iron_ingot_4}'
+    premium:
+      gold_ingot:
+        type: item
+        item:
+          material: GOLD_INGOT
+          amount: 6
+        display:
+          name: '{lang:defaults.rewards.gold_ingot_6}'
+  '14':
+    required: 2310
+    free:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_4}'
+    premium:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_12}'
+  '15':
+    required: 2550
+    free:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 3
+        display:
+          name: '{lang:defaults.rewards.emerald_3}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 1
+        display:
+          name: '{lang:defaults.rewards.diamond_1}'
+    premium:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.emerald_8}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 2
+        display:
+          name: '{lang:defaults.rewards.diamond_2}'
+  '16':
+    required: 2800
+    free:
+      bread:
+        type: item
+        item:
+          material: BREAD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.bread_8}'
+    premium:
+      cooked_beef:
+        type: item
+        item:
+          material: COOKED_BEEF
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.cooked_beef_12}'
+  '17':
+    required: 3060
+    free:
+      torch:
+        type: item
+        item:
+          material: TORCH
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.torch_16}'
+    premium:
+      lapis_lazuli:
+        type: item
+        item:
+          material: LAPIS_LAZULI
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.lapis_lazuli_16}'
+  '18':
+    required: 3330
+    free:
+      iron_ingot:
+        type: item
+        item:
+          material: IRON_INGOT
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.iron_ingot_4}'
+    premium:
+      gold_ingot:
+        type: item
+        item:
+          material: GOLD_INGOT
+          amount: 6
+        display:
+          name: '{lang:defaults.rewards.gold_ingot_6}'
+  '19':
+    required: 3610
+    free:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_4}'
+    premium:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_12}'
+  '20':
+    required: 3900
+    free:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 3
+        display:
+          name: '{lang:defaults.rewards.emerald_3}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 1
+        display:
+          name: '{lang:defaults.rewards.diamond_1}'
+      scroll:
+        type: console_command
+        command: uq scroll give {player} adventure
+        display:
+          name: '{lang:defaults.rewards.scroll_adventure}'
+    premium:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.emerald_8}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 2
+        display:
+          name: '{lang:defaults.rewards.diamond_2}'
+      name_tag:
+        type: item
+        item:
+          material: NAME_TAG
+          amount: 1
+        display:
+          name: '{lang:defaults.rewards.name_tag_1}'
+  '21':
+    required: 4200
+    free:
+      bread:
+        type: item
+        item:
+          material: BREAD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.bread_8}'
+    premium:
+      cooked_beef:
+        type: item
+        item:
+          material: COOKED_BEEF
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.cooked_beef_12}'
+  '22':
+    required: 4510
+    free:
+      torch:
+        type: item
+        item:
+          material: TORCH
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.torch_16}'
+    premium:
+      lapis_lazuli:
+        type: item
+        item:
+          material: LAPIS_LAZULI
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.lapis_lazuli_16}'
+  '23':
+    required: 4830
+    free:
+      iron_ingot:
+        type: item
+        item:
+          material: IRON_INGOT
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.iron_ingot_4}'
+    premium:
+      gold_ingot:
+        type: item
+        item:
+          material: GOLD_INGOT
+          amount: 6
+        display:
+          name: '{lang:defaults.rewards.gold_ingot_6}'
+  '24':
+    required: 5160
+    free:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_4}'
+    premium:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_12}'
+  '25':
+    required: 5500
+    free:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 3
+        display:
+          name: '{lang:defaults.rewards.emerald_3}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 1
+        display:
+          name: '{lang:defaults.rewards.diamond_1}'
+    premium:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.emerald_8}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 2
+        display:
+          name: '{lang:defaults.rewards.diamond_2}'
+  '26':
+    required: 5850
+    free:
+      bread:
+        type: item
+        item:
+          material: BREAD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.bread_8}'
+    premium:
+      cooked_beef:
+        type: item
+        item:
+          material: COOKED_BEEF
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.cooked_beef_12}'
+  '27':
+    required: 6210
+    free:
+      torch:
+        type: item
+        item:
+          material: TORCH
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.torch_16}'
+    premium:
+      lapis_lazuli:
+        type: item
+        item:
+          material: LAPIS_LAZULI
+          amount: 16
+        display:
+          name: '{lang:defaults.rewards.lapis_lazuli_16}'
+  '28':
+    required: 6580
+    free:
+      iron_ingot:
+        type: item
+        item:
+          material: IRON_INGOT
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.iron_ingot_4}'
+    premium:
+      gold_ingot:
+        type: item
+        item:
+          material: GOLD_INGOT
+          amount: 6
+        display:
+          name: '{lang:defaults.rewards.gold_ingot_6}'
+  '29':
+    required: 6960
+    free:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 4
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_4}'
+    premium:
+      experience_bottle:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 12
+        display:
+          name: '{lang:defaults.rewards.experience_bottle_12}'
+  '30':
+    required: 7350
+    free:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 3
+        display:
+          name: '{lang:defaults.rewards.emerald_3}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 1
+        display:
+          name: '{lang:defaults.rewards.diamond_1}'
+      scroll:
+        type: console_command
+        command: uq scroll give {player} veteran
+        display:
+          name: '{lang:defaults.rewards.scroll_veteran}'
+    premium:
+      emerald:
+        type: item
+        item:
+          material: EMERALD
+          amount: 8
+        display:
+          name: '{lang:defaults.rewards.emerald_8}'
+      diamond:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 2
+        display:
+          name: '{lang:defaults.rewards.diamond_2}'
+      name_tag:
+        type: item
+        item:
+          material: NAME_TAG
+          amount: 1
+        display:
+          name: '{lang:defaults.rewards.name_tag_1}'
+      heart_of_the_sea:
+        type: item
+        item:
+          material: HEART_OF_THE_SEA
+          amount: 1
+        display:
+          name: '{lang:defaults.rewards.heart_of_the_sea_1}'

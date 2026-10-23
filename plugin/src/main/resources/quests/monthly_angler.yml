@@ -1,0 +1,27 @@
+enabled: true
+categories:
+- fishing
+name: '{lang:defaults.objectives.angler}'
+icon:
+  material: FISHING_ROD
+trigger: fish
+amount: 100
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  fish:
+    type: catch_match_item
+    match:
+      material:
+      - COD
+      - SALMON
+      - PUFFERFISH
+      - TROPICAL_FISH
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

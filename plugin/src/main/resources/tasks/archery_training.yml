@@ -1,0 +1,30 @@
+enabled: true
+name: '{lang:defaults.tasks.archery_training.name}'
+description:
+- '{lang:defaults.tasks.archery_training.description}'
+icon:
+  material: BOW
+categories:
+- combat
+- craftsmanship
+auto-claim: false
+prerequisites:
+- hunter
+source:
+  quest: archer
+  amount: 32
+rewards:
+  arrow:
+    type: item
+    item:
+      material: ARROW
+      amount: 32
+    display:
+      name: '{lang:defaults.rewards.arrow_32}'
+  experience_bottle:
+    type: item
+    item:
+      material: EXPERIENCE_BOTTLE
+      amount: 4
+    display:
+      name: '{lang:defaults.rewards.experience_bottle_4}'

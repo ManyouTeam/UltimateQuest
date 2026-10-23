@@ -1,0 +1,12 @@
+enabled: true
+quests:
+  miner: 10
+  hunter: 8
+  veteran: 10
+  angler: 8
+  champion: 5
+  coal: 8
+  iron: 6
+  wheat: 8
+  crops: 8
+  walker: 6

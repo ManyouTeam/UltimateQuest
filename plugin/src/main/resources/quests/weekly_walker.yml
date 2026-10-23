@@ -1,0 +1,20 @@
+enabled: true
+categories:
+- adventure
+name: '{lang:defaults.objectives.walker}'
+icon:
+  material: LEATHER_BOOTS
+trigger: move
+amount: 2048
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  cooldown-ms: 250

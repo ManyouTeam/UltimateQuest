@@ -1,0 +1,29 @@
+enabled: true
+name: '{lang:defaults.tasks.fishing_trip.name}'
+description:
+- '{lang:defaults.tasks.fishing_trip.description}'
+icon:
+  material: COD
+categories:
+- fishing
+auto-claim: false
+prerequisites:
+- angler
+source:
+  quest: angler
+  amount: 16
+rewards:
+  experience_bottle:
+    type: item
+    item:
+      material: EXPERIENCE_BOTTLE
+      amount: 6
+    display:
+      name: '{lang:defaults.rewards.experience_bottle_6}'
+  emerald:
+    type: item
+    item:
+      material: EMERALD
+      amount: 3
+    display:
+      name: '{lang:defaults.rewards.emerald_3}'

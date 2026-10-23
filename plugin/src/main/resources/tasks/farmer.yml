@@ -1,0 +1,28 @@
+enabled: true
+name: '{lang:defaults.tasks.farmer.name}'
+description:
+- '{lang:defaults.tasks.farmer.description}'
+icon:
+  material: WHEAT
+categories:
+- farming
+auto-claim: false
+prerequisites: []
+source:
+  quest: wheat
+  amount: 16
+rewards:
+  wheat_seeds:
+    type: item
+    item:
+      material: WHEAT_SEEDS
+      amount: 16
+    display:
+      name: '{lang:defaults.rewards.wheat_seeds_16}'
+  bread:
+    type: item
+    item:
+      material: BREAD
+      amount: 6
+    display:
+      name: '{lang:defaults.rewards.bread_6}'

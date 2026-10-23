@@ -1,0 +1,26 @@
+enabled: true
+categories:
+- combat
+- nether
+name: '{lang:defaults.objectives.blaze}'
+icon:
+  material: BLAZE_ROD
+trigger: kill
+amount: 8
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - BLAZE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

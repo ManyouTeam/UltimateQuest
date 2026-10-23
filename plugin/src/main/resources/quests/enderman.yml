@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- combat
+name: '{lang:defaults.objectives.enderman}'
+icon:
+  material: ENDER_PEARL
+trigger: kill
+amount: 6
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - ENDERMAN
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

@@ -1,0 +1,7 @@
+enabled: true
+name: '{lang:defaults.categories.building.name}'
+description:
+- '{lang:defaults.categories.building.description}'
+icon:
+  material: BRICKS
+order: 60

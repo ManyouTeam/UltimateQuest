@@ -1,0 +1,31 @@
+package cn.superiormc.ultimatequest.objects.matchentity;
+
+import cn.superiormc.ultimatequest.managers.MatchEntityManager;
+import cn.superiormc.ultimatequest.objects.ObjectSingleMatchEntity;
+import org.bukkit.configuration.ConfigurationSection;
+
+public class Not extends AbstractMatchEntityRule {
+
+    public Not() {
+        super();
+    }
+
+    @Override
+    public boolean getMatch(ObjectSingleMatchEntity match) {
+        ObjectSingleMatchEntity notMatch = match.withSection(match.section.getConfigurationSection("not"));
+        for (AbstractMatchEntityRule rule : MatchEntityManager.matchEntityManager.getRules()) {
+            if (rule.configNotContains(notMatch.section)) {
+                continue;
+            }
+            if (rule.getMatch(notMatch)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean configNotContains(ConfigurationSection section) {
+        return section.getConfigurationSection("not") == null;
+    }
+}

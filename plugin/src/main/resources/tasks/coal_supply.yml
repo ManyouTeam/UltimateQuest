@@ -1,0 +1,29 @@
+enabled: true
+name: '{lang:defaults.tasks.coal_supply.name}'
+description:
+- '{lang:defaults.tasks.coal_supply.description}'
+icon:
+  material: COAL
+categories:
+- gathering
+auto-claim: false
+prerequisites:
+- miner
+source:
+  quest: coal
+  amount: 16
+rewards:
+  torch:
+    type: item
+    item:
+      material: TORCH
+      amount: 32
+    display:
+      name: '{lang:defaults.rewards.torch_32}'
+  experience_bottle:
+    type: item
+    item:
+      material: EXPERIENCE_BOTTLE
+      amount: 2
+    display:
+      name: '{lang:defaults.rewards.experience_bottle_2}'

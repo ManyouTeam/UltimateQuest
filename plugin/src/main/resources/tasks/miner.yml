@@ -1,0 +1,33 @@
+enabled: true
+name: '{lang:defaults.tasks.miner.name}'
+description:
+- '{lang:defaults.tasks.miner.description}'
+icon:
+  material: STONE_PICKAXE
+categories:
+- gathering
+auto-claim: false
+prerequisites: []
+source:
+  quest: miner
+  amount: 16
+rewards:
+  stone_pickaxe:
+    type: item
+    item:
+      material: STONE_PICKAXE
+      amount: 1
+    display:
+      name: '{lang:defaults.rewards.stone_pickaxe_1}'
+  torch:
+    type: item
+    item:
+      material: TORCH
+      amount: 16
+    display:
+      name: '{lang:defaults.rewards.torch_16}'
+  scroll:
+    type: console_command
+    command: uq scroll give {player} novice
+    display:
+      name: '{lang:defaults.rewards.scroll_novice}'

@@ -1,0 +1,7 @@
+enabled: true
+name: '{lang:defaults.categories.farming.name}'
+description:
+- '{lang:defaults.categories.farming.description}'
+icon:
+  material: WHEAT
+order: 40

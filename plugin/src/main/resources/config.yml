@@ -1,0 +1,151 @@
+# UltimateQuest by PQguanfang
+#
+# Read the Wiki here: https://enchantedmobs.superiormc.cn/for-ultimatequest
+
+config-files:
+  language: en_US
+  per-player-language: true
+  force-parse-mini-message: false
+
+math:
+  enabled: true
+  enable-function: true
+
+debug: false
+
+hook-item-method: DEFAULT
+
+# Automatic saving, using the same option names as UltimateShop.
+# 20 ticks = 1 second. Quitting, reward claims and shutdown still save data.
+auto-save:
+  enabled: true
+  hide-message: false
+  period-tick: 6000
+  message: '{lang:auto-save.message}'
+
+# Task slots per player. -1 = unlimited; 0 = disabled.
+# Completed tasks waiting for reward claims still occupy slots.
+# Battle pass / milestone reward-track containers do not occupy task slots.
+task-limits:
+  normal:
+    total: 20
+    categories:
+      combat: 6
+      gathering: 10
+
+  scroll:
+    total: 8
+    categories:
+      adventure: 4
+      gathering: 4
+
+  period:
+    total: 12
+    categories: {}
+
+  battlepass-task:
+    total: -1
+    categories: {}
+
+  # Optional category caps across all task types.
+  categories:
+    combat: -1
+    gathering: -1
+    uncategorized: -1
+
+# Fallback objective text. Explicit objective names take precedence.
+objective-display:
+  formats:
+    kill: '{lang:defaults.ui.objective-display.kill}'
+    block_break: '{lang:defaults.ui.objective-display.block_break}'
+    fish: '{lang:defaults.ui.objective-display.fish}'
+    consume: '{lang:defaults.ui.objective-display.consume}'
+
+# In-game configuration editor.
+editor:
+  enabled: true
+
+# Default category selector. Individual menus can override these settings.
+category-menu:
+  title: '{lang:category.title}'
+  layout:
+  - FFFFFFFFF
+  - FQQQQQQQF
+  - FQQQQQQQF
+  - FQQQQQQQF
+  - PFFBCFFFN
+
+  all:
+    name: '{lang:category.all}'
+    icon:
+      material: BOOK
+
+  uncategorized:
+    name: '{lang:category.uncategorized}'
+    icon:
+      material: CHEST
+
+  select-label: '{lang:category.select}'
+  selected-label: '{lang:category.selected}'
+
+  item:
+    name: '{lang:defaults.ui.category-name}'
+    lore:
+    - '{lang:defaults.ui.category-description}'
+    - '{lang:category.count}'
+    - '{lang:category.active}'
+    - '{lang:category.claimable}'
+    - '{lang:defaults.ui.blank}'
+    - '{lang:defaults.ui.category-selected}'
+
+  selected-item:
+    name: '{lang:defaults.ui.category-name}'
+    lore:
+    - '{lang:defaults.ui.category-description}'
+    - '{lang:category.count}'
+    - '{lang:category.active}'
+    - '{lang:category.claimable}'
+    - '{lang:defaults.ui.blank}'
+    - '{lang:defaults.ui.category-selected}'
+
+  empty-item:
+    material: HOPPER
+    name: '{lang:category.empty}'
+
+  items:
+    F:
+      material: BLACK_STAINED_GLASS_PANE
+      name: '{lang:defaults.ui.blank}'
+
+    P:
+      material: ARROW
+      name: '{lang:menu-previous}'
+
+    N:
+      material: ARROW
+      name: '{lang:menu-next}'
+
+    B:
+      material: ARROW
+      name: '{lang:menu-back}'
+
+    C:
+      material: BARRIER
+      name: '{lang:menu-close}'
+
+# Uses the same backend selection and JDBC settings as UltimateShop.
+# Database changes require a server restart.
+database:
+  enabled: false
+  jdbc-url: jdbc:sqlite:{plugin_folder}/quests.db
+  properties:
+    user: ''
+    password: ''
+
+# Prerequisite labels used in task menus.
+task-display:
+  admin-only: '{lang:task-admin-only}'
+  no-prerequisites: '{lang:defaults.ui.no-prerequisites}'
+  prerequisite-complete: '{lang:defaults.ui.prerequisite-complete}'
+  prerequisite-pending: '{lang:defaults.ui.prerequisite-pending}'
+  prerequisite-separator: '{lang:defaults.ui.prerequisite-separator}'

@@ -1,0 +1,35 @@
+enabled: true
+categories:
+- adventure
+name: '{lang:defaults.objectives.food}'
+icon:
+  material: BREAD
+trigger: consume
+amount: 8
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  food:
+    type: match_item
+    item: CONTEXT
+    match:
+      material:
+      - BREAD
+      - APPLE
+      - BAKED_POTATO
+      - COOKED_BEEF
+      - COOKED_PORKCHOP
+      - COOKED_CHICKEN
+      - COOKED_MUTTON
+      - COOKED_COD
+      - COOKED_SALMON
+      - CARROT
+      - GOLDEN_CARROT
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

@@ -1,0 +1,66 @@
+name: UltimateQuest
+
+version: '${revision}'
+main: cn.superiormc.ultimatequest.UltimateQuest
+api-version: '1.21.6'
+folia-supported: true
+authors:
+  - PQguanfang
+
+softdepend:
+  - MythicChanger
+  - PlaceholderAPI
+  - NBTAPI
+  - MythicMobs
+  - Vault
+  - PlayerPoints
+  - CoinsEngine
+  - ExcellentEconomy
+  - UltraEconomy
+  - EcoBits
+  - PEconomy
+  - RedisEconomy
+  - RoyaleEconomy
+  - VotingPlugin
+  - ItemsAdder
+  - Oraxen
+  - MMOItems
+  - EcoItems
+  - EcoArmor
+  - eco
+  - NeigeItems
+  - ExecutableItems
+  - Nexo
+  - CraftEngine
+  - WorldGuard
+  - Residence
+  - GriefPrevention
+  - Lands
+  - HuskTowns
+  - HuskClaims
+  - PlotSquared
+  - Towny
+  - BentoBox
+  - Dominion
+  - SuperiorSkyblock2
+
+commands:
+  ultimatequest:
+    description: View and manage quests.
+    aliases: [uq, quests]
+
+permissions:
+  ultimatequest.battlepass.example.premium:
+    default: false
+  ultimatequest.use:
+    default: true
+  ultimatequest.reload:
+    default: op
+  ultimatequest.admin:
+    default: op
+  ultimatequest.saveitem:
+    default: op
+  ultimatequest.givesaveitem:
+    default: op
+  ultimatequest.generateitemformat:
+    default: op

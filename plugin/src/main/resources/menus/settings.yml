@@ -1,0 +1,7 @@
+anti-dupe-checker: true
+lore-wrap-length: 34
+progress-bar:
+  length: 12
+  complete: '{lang:defaults.ui.progress-bar.complete}'
+  remaining: '{lang:defaults.ui.progress-bar.remaining}'
+  suffix: '{lang:defaults.ui.progress-bar.suffix}'

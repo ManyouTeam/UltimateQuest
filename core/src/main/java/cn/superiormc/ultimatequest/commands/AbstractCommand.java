@@ -1,0 +1,84 @@
+package cn.superiormc.ultimatequest.commands;
+
+import cn.superiormc.ultimatequest.managers.LanguageManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+public abstract class AbstractCommand {
+
+    protected String id;
+
+    protected String requiredPermission;
+
+    protected boolean onlyInGame;
+
+    protected Integer[] requiredArgLength;
+
+    protected Integer[] requiredConsoleArgLength;
+
+    protected String requiredConsolePermission;
+
+    public abstract void executeCommandInGame(String[] args, Player player);
+
+    public void executeCommandInConsole(String[] args) {
+        LanguageManager.languageManager.sendStringText("error.in-game");
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public boolean getOnlyInGame() {
+        return onlyInGame;
+    }
+
+    public String getRequiredPermission() {
+        return requiredPermission;
+    }
+
+    public String getRequiredConsolePermission() {
+        return requiredConsolePermission == null ? requiredPermission : requiredConsolePermission;
+    }
+
+    public boolean getLengthCorrect(int length, CommandSender sender) {
+        Integer[] lengths = sender instanceof Player || requiredConsoleArgLength == null || requiredConsoleArgLength.length == 0 ? requiredArgLength : requiredConsoleArgLength;
+        if (lengths == null) {
+            return false;
+        }
+        for (int number : lengths) {
+            if (number == length) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected List<String> getTabResult(String[] args, Player player) {
+        return new ArrayList<>();
+    }
+
+    public List<String> filterTabResult(String[] args, Player player) {
+        return filterSuggestions(args, getTabResult(args, player));
+    }
+
+    protected List<String> getConsoleTabResult(String[] args) {
+        return new ArrayList<>();
+    }
+
+    public List<String> filterConsoleTabResult(String[] args) {
+        return filterSuggestions(args, getConsoleTabResult(args));
+    }
+
+    private List<String> filterSuggestions(String[] args, List<String> suggestions) {
+        List<String> results = new ArrayList<>(suggestions);
+        if (args.length == 0) {
+            return results;
+        }
+        String currentInput = args[args.length - 1].toLowerCase(Locale.ROOT);
+        results.removeIf(result -> !result.toLowerCase(Locale.ROOT).startsWith(currentInput));
+        return results;
+    }
+}

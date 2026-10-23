@@ -1,0 +1,27 @@
+enabled: true
+categories:
+- gathering
+- nether
+name: '{lang:defaults.objectives.nether_miner}'
+icon:
+  material: NETHERRACK
+trigger: block_break
+amount: 64
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  blocks:
+    type: block_type
+    types:
+    - NETHERRACK
+    - NETHER_QUARTZ_ORE
+    - NETHER_GOLD_ORE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: true

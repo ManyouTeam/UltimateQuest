@@ -1,0 +1,168 @@
+name: UltimateQuest
+
+version: '${revision}'
+main: cn.superiormc.ultimatequest.UltimateQuest
+bootstrapper: cn.superiormc.ultimatequest.paper.UltimateQuestBootstrap
+api-version: '1.21.6'
+folia-supported: true
+authors:
+  - PQguanfang
+
+dependencies:
+  server:
+    MythicChanger:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    NBTAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    MythicMobs:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Vault:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    PlayerPoints:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    CoinsEngine:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    ExcellentEconomy:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    UltraEconomy:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    EcoBits:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    PEconomy:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    RedisEconomy:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    RoyaleEconomy:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    VotingPlugin:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    ItemsAdder:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Oraxen:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    MMOItems:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    EcoItems:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    EcoArmor:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    eco:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    NeigeItems:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    ExecutableItems:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Nexo:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    CraftEngine:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    WorldGuard:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Residence:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    GriefPrevention:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Lands:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    HuskTowns:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    HuskClaims:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    PlotSquared:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Towny:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    BentoBox:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Dominion:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    SuperiorSkyblock2:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+permissions:
+  ultimatequest.battlepass.example.premium:
+    default: false
+  ultimatequest.use:
+    default: true
+  ultimatequest.reload:
+    default: op
+  ultimatequest.admin:
+    default: op
+  ultimatequest.saveitem:
+    default: op
+  ultimatequest.givesaveitem:
+    default: op
+  ultimatequest.generateitemformat:
+    default: op

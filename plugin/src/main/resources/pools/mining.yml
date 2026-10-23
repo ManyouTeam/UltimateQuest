@@ -1,0 +1,8 @@
+enabled: true
+quests:
+  miner: 10
+  coal: 10
+  iron: 8
+  gold: 5
+  redstone: 7
+  diamond: 2

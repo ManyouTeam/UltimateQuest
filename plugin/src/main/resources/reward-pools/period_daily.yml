@@ -1,0 +1,402 @@
+enabled: true
+rewards:
+  common_stick:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: STICK
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_stick}'
+  common_oak_log:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: OAK_LOG
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_oak_log}'
+  common_spruce_log:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: SPRUCE_LOG
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_spruce_log}'
+  common_oak_planks:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: OAK_PLANKS
+          amount: 32
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_oak_planks}'
+  common_cobblestone:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COBBLESTONE
+          amount: 32
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_cobblestone}'
+  common_sand:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: SAND
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_sand}'
+  common_glass:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: GLASS
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_glass}'
+  common_torch:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: TORCH
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_torch}'
+  common_coal:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COAL
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_coal}'
+  common_bread:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: BREAD
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_bread}'
+  common_baked_potato:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: BAKED_POTATO
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_baked_potato}'
+  common_carrot:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: CARROT
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_carrot}'
+  common_wheat_seeds:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: WHEAT_SEEDS
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_wheat_seeds}'
+  common_sugar_cane:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: SUGAR_CANE
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_sugar_cane}'
+  common_leather:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: LEATHER
+          amount: 4
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_leather}'
+  common_string:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: STRING
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.daily_common_string}'
+  uncommon_iron_ingot:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: IRON_INGOT
+          amount: 4
+        display:
+          name: '{lang:defaults.period-rewards.daily_uncommon_iron_ingot}'
+  uncommon_copper_ingot:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: COPPER_INGOT
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.daily_uncommon_copper_ingot}'
+  uncommon_flint:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: FLINT
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.daily_uncommon_flint}'
+  uncommon_bone:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: BONE
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.daily_uncommon_bone}'
+  uncommon_arrow:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: ARROW
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_uncommon_arrow}'
+  uncommon_cooked_beef:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: COOKED_BEEF
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.daily_uncommon_cooked_beef}'
+  uncommon_book:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: BOOK
+          amount: 4
+        display:
+          name: '{lang:defaults.period-rewards.daily_uncommon_book}'
+  uncommon_paper:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: PAPER
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_uncommon_paper}'
+  uncommon_lantern:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: LANTERN
+          amount: 4
+        display:
+          name: '{lang:defaults.period-rewards.daily_uncommon_lantern}'
+  uncommon_white_wool:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: WHITE_WOOL
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.daily_uncommon_white_wool}'
+  rare_gold_ingot:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLD_INGOT
+          amount: 4
+        display:
+          name: '{lang:defaults.period-rewards.daily_rare_gold_ingot}'
+  rare_lapis_lazuli:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: LAPIS_LAZULI
+          amount: 12
+        display:
+          name: '{lang:defaults.period-rewards.daily_rare_lapis_lazuli}'
+  rare_redstone:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: REDSTONE
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.daily_rare_redstone}'
+  rare_emerald:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: EMERALD
+          amount: 3
+        display:
+          name: '{lang:defaults.period-rewards.daily_rare_emerald}'
+  rare_experience_bottle:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 4
+        display:
+          name: '{lang:defaults.period-rewards.daily_rare_experience_bottle}'
+  rare_iron_pickaxe:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: IRON_PICKAXE
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.daily_rare_iron_pickaxe}'
+  rare_shield:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: SHIELD
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.daily_rare_shield}'
+  rare_fishing_rod:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: FISHING_ROD
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.daily_rare_fishing_rod}'
+  epic_diamond:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.daily_epic_diamond}'
+  epic_golden_carrot:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLDEN_CARROT
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.daily_epic_golden_carrot}'
+  epic_ender_pearl:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: ENDER_PEARL
+          amount: 2
+        display:
+          name: '{lang:defaults.period-rewards.daily_epic_ender_pearl}'
+  epic_name_tag:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: NAME_TAG
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.daily_epic_name_tag}'
+  legendary_diamond_pickaxe:
+    rate: 1
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_PICKAXE
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.daily_legendary_diamond_pickaxe}'
+  legendary_golden_apple:
+    rate: 1
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLDEN_APPLE
+          amount: 2
+        display:
+          name: '{lang:defaults.period-rewards.daily_legendary_golden_apple}'

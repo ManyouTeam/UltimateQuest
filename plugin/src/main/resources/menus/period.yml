@@ -1,0 +1,180 @@
+enabled: true
+permission: ultimatequest.use
+title: '{lang:defaults.ui.menus.period.title}'
+layout:
+- FFFFSFFFF
+- FQQQQQQQF
+- FQQQQQQQF
+- FQQQQQQQF
+- PKVHCRFFN
+period-filter:
+  enabled: true
+category-filter:
+  enabled: true
+  hide-empty: true
+contents:
+  Q:
+    type: period
+    filterable: true
+    categories: []
+    sort: actionable
+    use-quest-icon: true
+    include: []
+    exclude: []
+    item:
+      name: '{lang:defaults.ui.quest-name}'
+      lore:
+      - '{lang:defaults.ui.description}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:defaults.ui.menus.main.contents.q.item.lore.2}'
+      - '{lang:defaults.ui.objectives}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:defaults.ui.progress}'
+      - '{lang:period.source}'
+      - '{lang:period.expires}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:defaults.ui.hint}'
+      - '{lang:defaults.ui.reward-title}'
+      - '{lang:defaults.ui.rewards}'
+      - '{lang:defaults.ui.task-categories}'
+    state-items:
+      COMPLETED:
+        material: CHEST_MINECART
+        name: '{lang:defaults.ui.menus.main.contents.q.state-items.completed.name}'
+        glow: true
+        lore:
+        - '{lang:defaults.ui.description}'
+        - '{lang:defaults.ui.blank}'
+        - '{lang:defaults.ui.menus.main.contents.q.item.lore.2}'
+        - '{lang:defaults.ui.objectives}'
+        - '{lang:defaults.ui.blank}'
+        - '{lang:defaults.ui.progress}'
+        - '{lang:period.source}'
+        - '{lang:period.expires}'
+        - '{lang:defaults.ui.blank}'
+        - '{lang:defaults.ui.hint}'
+        - '{lang:defaults.ui.reward-title}'
+        - '{lang:defaults.ui.rewards}'
+        - '{lang:defaults.ui.task-categories}'
+    empty-item:
+      material: CLOCK
+      name: '{lang:menu-empty-title}'
+      lore:
+      - '{lang:menu-empty-period}'
+    click-actions:
+      LEFT:
+        interact:
+          type: quest
+      RIGHT:
+        info:
+          type: quest_info
+items:
+  V:
+    period-items:
+      all:
+        material: CLOCK
+        name: '{lang:period.filter-title}'
+        lore:
+        - '{lang:period.filter-current}'
+        - '{lang:period.filter-switch}'
+      daily:
+        material: SUNFLOWER
+        name: '{lang:period.filter-title}'
+        lore:
+        - '{lang:period.filter-current}'
+        - '{lang:period.filter-switch}'
+      weekly:
+        material: BOOK
+        name: '{lang:period.filter-title}'
+        lore:
+        - '{lang:period.filter-current}'
+        - '{lang:period.filter-switch}'
+      monthly:
+        material: ENCHANTED_BOOK
+        name: '{lang:period.filter-title}'
+        lore:
+        - '{lang:period.filter-current}'
+        - '{lang:period.filter-switch}'
+    item:
+      material: CLOCK
+      name: '{lang:period.filter-title}'
+      lore:
+      - '{lang:period.filter-current}'
+      - '{lang:period.filter-switch}'
+    actions:
+      period:
+        type: cycle_period_group
+  K:
+    item:
+      material: CHEST
+      name: '{lang:category.button}'
+      lore:
+      - '{lang:category.current}'
+      - '{lang:category.select}'
+    actions:
+      category:
+        type: open_categories
+  F:
+    item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: '{lang:defaults.ui.blank}'
+  S:
+    item:
+      material: CLOCK
+      name: '{lang:period.summary-title}'
+      lore:
+      - '{lang:menu-summary-total}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:menu-summary-active}'
+      - '{lang:menu-summary-claimable}'
+      - '{lang:menu-summary-claimed}'
+  P:
+    hide-on-first-page: true
+    item:
+      material: ARROW
+      name: '{lang:menu-previous}'
+      lore:
+      - '{lang:defaults.ui.page-number}'
+    hidden-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: '{lang:defaults.ui.blank}'
+    actions:
+      page:
+        type: previous_page
+  N:
+    hide-on-last-page: true
+    item:
+      material: ARROW
+      name: '{lang:menu-next}'
+      lore:
+      - '{lang:defaults.ui.page-number}'
+    hidden-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: '{lang:defaults.ui.blank}'
+    actions:
+      page:
+        type: next_page
+  H:
+    item:
+      material: COMPASS
+      name: '{lang:menu-back}'
+    actions:
+      open:
+        type: open_menu
+        menu: main
+  C:
+    item:
+      material: BARRIER
+      name: '{lang:menu-close}'
+    actions:
+      close:
+        type: close
+  R:
+    item:
+      material: SUNFLOWER
+      name: '{lang:menu-refresh}'
+      lore:
+      - '{lang:menu-refresh-description}'
+    actions:
+      refresh:
+        type: refresh

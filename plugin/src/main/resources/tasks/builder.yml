@@ -1,0 +1,28 @@
+enabled: true
+name: '{lang:defaults.tasks.builder.name}'
+description:
+- '{lang:defaults.tasks.builder.description}'
+icon:
+  material: BRICKS
+categories:
+- building
+auto-claim: false
+prerequisites: []
+source:
+  quest: builder
+  amount: 32
+rewards:
+  glass:
+    type: item
+    item:
+      material: GLASS
+      amount: 16
+    display:
+      name: '{lang:defaults.rewards.glass_16}'
+  torch:
+    type: item
+    item:
+      material: TORCH
+      amount: 16
+    display:
+      name: '{lang:defaults.rewards.torch_16}'

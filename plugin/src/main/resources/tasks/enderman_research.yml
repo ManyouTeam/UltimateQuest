@@ -1,0 +1,30 @@
+enabled: true
+name: '{lang:defaults.tasks.enderman_research.name}'
+description:
+- '{lang:defaults.tasks.enderman_research.description}'
+icon:
+  material: ENDER_PEARL
+categories:
+- combat
+- adventure
+auto-claim: false
+prerequisites:
+- night_watch
+source:
+  quest: enderman
+  amount: 12
+rewards:
+  ender_pearl:
+    type: item
+    item:
+      material: ENDER_PEARL
+      amount: 4
+    display:
+      name: '{lang:defaults.rewards.ender_pearl_4}'
+  experience_bottle:
+    type: item
+    item:
+      material: EXPERIENCE_BOTTLE
+      amount: 8
+    display:
+      name: '{lang:defaults.rewards.experience_bottle_8}'

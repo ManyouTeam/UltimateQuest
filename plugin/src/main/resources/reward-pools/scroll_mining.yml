@@ -1,0 +1,602 @@
+enabled: true
+rewards:
+  common_cobblestone:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COBBLESTONE
+          amount: 64
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_cobblestone}'
+  common_stone:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: STONE
+          amount: 64
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_stone}'
+  common_cobbled_deepslate:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COBBLED_DEEPSLATE
+          amount: 64
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_cobbled_deepslate}'
+  common_deepslate:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: DEEPSLATE
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_deepslate}'
+  common_andesite:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: ANDESITE
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_andesite}'
+  common_diorite:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIORITE
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_diorite}'
+  common_granite:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: GRANITE
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_granite}'
+  common_tuff:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: TUFF
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_tuff}'
+  common_calcite:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: CALCITE
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_calcite}'
+  common_smooth_basalt:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: SMOOTH_BASALT
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_smooth_basalt}'
+  common_stone_bricks:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: STONE_BRICKS
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_stone_bricks}'
+  common_deepslate_bricks:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: DEEPSLATE_BRICKS
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_deepslate_bricks}'
+  common_polished_andesite:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: POLISHED_ANDESITE
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_polished_andesite}'
+  common_polished_diorite:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: POLISHED_DIORITE
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_polished_diorite}'
+  common_polished_granite:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: POLISHED_GRANITE
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_polished_granite}'
+  common_gravel:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: GRAVEL
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_gravel}'
+  common_sand:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: SAND
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_sand}'
+  common_coal:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COAL
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_coal}'
+  common_charcoal:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: CHARCOAL
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_charcoal}'
+  common_torch:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: TORCH
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_torch}'
+  common_ladder:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: LADDER
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_ladder}'
+  common_stick:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: STICK
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_stick}'
+  common_oak_log:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: OAK_LOG
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_oak_log}'
+  common_rail:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: RAIL
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_common_rail}'
+  uncommon_raw_iron:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: RAW_IRON
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_raw_iron}'
+  uncommon_iron_ingot:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: IRON_INGOT
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_iron_ingot}'
+  uncommon_raw_copper:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: RAW_COPPER
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_raw_copper}'
+  uncommon_copper_ingot:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: COPPER_INGOT
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_copper_ingot}'
+  uncommon_redstone:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: REDSTONE
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_redstone}'
+  uncommon_lapis_lazuli:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: LAPIS_LAZULI
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_lapis_lazuli}'
+  uncommon_flint:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: FLINT
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_flint}'
+  uncommon_amethyst_shard:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: AMETHYST_SHARD
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_amethyst_shard}'
+  uncommon_quartz:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: QUARTZ
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_quartz}'
+  uncommon_glowstone_dust:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: GLOWSTONE_DUST
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_glowstone_dust}'
+  uncommon_lantern:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: LANTERN
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_lantern}'
+  uncommon_powered_rail:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: POWERED_RAIL
+          amount: 6
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_powered_rail}'
+  uncommon_minecart:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: MINECART
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_minecart}'
+  uncommon_hopper:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: HOPPER
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_hopper}'
+  uncommon_blast_furnace:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: BLAST_FURNACE
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_blast_furnace}'
+  uncommon_iron_pickaxe:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: IRON_PICKAXE
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_uncommon_iron_pickaxe}'
+  rare_raw_gold:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: RAW_GOLD
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_raw_gold}'
+  rare_gold_ingot:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLD_INGOT
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_gold_ingot}'
+  rare_emerald:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: EMERALD
+          amount: 6
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_emerald}'
+  rare_experience_bottle:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_experience_bottle}'
+  rare_obsidian:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: OBSIDIAN
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_obsidian}'
+  rare_crying_obsidian:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: CRYING_OBSIDIAN
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_crying_obsidian}'
+  rare_magma_block:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: MAGMA_BLOCK
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_magma_block}'
+  rare_prismarine_crystals:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: PRISMARINE_CRYSTALS
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_prismarine_crystals}'
+  rare_iron_block:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: IRON_BLOCK
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_iron_block}'
+  rare_coal_block:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: COAL_BLOCK
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_coal_block}'
+  rare_redstone_block:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: REDSTONE_BLOCK
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_redstone_block}'
+  rare_lapis_block:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: LAPIS_BLOCK
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_rare_lapis_block}'
+  epic_diamond:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_epic_diamond}'
+  epic_diamond_pickaxe:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_PICKAXE
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_epic_diamond_pickaxe}'
+  epic_diamond_shovel:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_SHOVEL
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_epic_diamond_shovel}'
+  epic_diamond_axe:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_AXE
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_epic_diamond_axe}'
+  epic_gold_block:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLD_BLOCK
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_epic_gold_block}'
+  epic_emerald_block:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: EMERALD_BLOCK
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_epic_emerald_block}'
+  legendary_netherite_scrap:
+    rate: 1
+    rewards:
+      item:
+        type: item
+        item:
+          material: NETHERITE_SCRAP
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_legendary_netherite_scrap}'
+  legendary_diamond_block:
+    rate: 1
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_BLOCK
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.mining_legendary_diamond_block}'

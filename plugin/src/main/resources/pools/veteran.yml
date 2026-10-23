@@ -1,0 +1,9 @@
+enabled: true
+quests:
+  weekly_miner: 10
+  weekly_champion: 8
+  weekly_angler: 6
+  nether_miner: 6
+  blaze: 4
+  enderman: 5
+  enchanter: 4

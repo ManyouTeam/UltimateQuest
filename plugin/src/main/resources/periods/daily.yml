@@ -1,0 +1,22 @@
+enabled: true
+name: '{lang:defaults.periods.daily.name}'
+reset-mode: CRON
+reset-time: 0 0 0 * * ?
+claim-grace-seconds: 3600
+source:
+  pool: daily
+  count: 3
+task:
+  auto-claim: false
+  description:
+  - '{lang:defaults.periods.daily.description}'
+  - '{lang:defaults.periods.reward-note}'
+  - '{lang:defaults.periods.claim-note}'
+  rewards:
+    supply:
+      type: random
+      pool: period_daily
+      count: 3
+      repeat: false
+      display:
+        name: '{lang:defaults.periods.daily-pack}'

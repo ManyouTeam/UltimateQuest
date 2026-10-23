@@ -1,0 +1,25 @@
+enabled: true
+categories:
+- gathering
+name: '{lang:defaults.objectives.diamond}'
+icon:
+  material: DIAMOND
+trigger: block_break
+amount: 4
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  blocks:
+    type: block_type
+    types:
+    - DIAMOND_ORE
+    - DEEPSLATE_DIAMOND_ORE
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true
+  ignore-player-placed: true

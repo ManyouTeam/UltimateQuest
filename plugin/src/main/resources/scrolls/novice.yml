@@ -1,0 +1,37 @@
+enabled: true
+name: '{lang:defaults.scrolls.novice.name}'
+description:
+- '{lang:defaults.scrolls.carry}'
+- '{lang:defaults.scrolls.novice.duration}'
+- '{lang:defaults.scrolls.reward-note}'
+- '{lang:defaults.scrolls.claim}'
+categories:
+- adventure
+item:
+  material: MAP
+  lore:
+  - '{lang:defaults.scrolls.carry}'
+  - '{lang:defaults.scrolls.novice.duration}'
+  - '{lang:defaults.scrolls.reward-note}'
+  - '{lang:defaults.scrolls.claim}'
+icon:
+  material: MAP
+source:
+  pool: daily
+  count: 1
+tasks:
+  required_veteran:
+    source:
+      quest: veteran
+      amount: 8
+duration-seconds: 86400
+rarity: common
+difficulty: easy
+rewards:
+  supply:
+    type: random
+    pool: scroll_novice
+    count: 3
+    repeat: false
+    display:
+      name: '{lang:defaults.rewards.scroll_pack_novice}'

@@ -1,0 +1,29 @@
+enabled: true
+name: '{lang:defaults.tasks.master_builder.name}'
+description:
+- '{lang:defaults.tasks.master_builder.description}'
+icon:
+  material: STONE_BRICKS
+categories:
+- building
+auto-claim: false
+prerequisites:
+- builder
+source:
+  quest: builder
+  amount: 256
+rewards:
+  glass:
+    type: item
+    item:
+      material: GLASS
+      amount: 64
+    display:
+      name: '{lang:defaults.rewards.glass_64}'
+  experience_bottle:
+    type: item
+    item:
+      material: EXPERIENCE_BOTTLE
+      amount: 8
+    display:
+      name: '{lang:defaults.rewards.experience_bottle_8}'

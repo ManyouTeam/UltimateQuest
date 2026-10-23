@@ -1,0 +1,202 @@
+enabled: true
+permission: ultimatequest.use
+catalog-title: '{lang:defaults.ui.menus.milestone.catalog-title}'
+detail-title: '{lang:defaults.ui.menus.battlepass.detail-title}'
+catalog-layout:
+- FFFFSFFFF
+- FAAAAAAAF
+- FAAAAAAAF
+- FAAAAAAAF
+- PKFHCRFFN
+detail-layout:
+- FFFFDFFFF
+- FLLLLLLLF
+- FLLLLLLLF
+- PFFBCRFFN
+category-filter:
+  enabled: true
+  hide-empty: true
+contents:
+  A:
+    display: catalog
+    type: milestone
+    categories: []
+    sort: actionable
+    use-quest-icon: true
+    include: []
+    exclude: []
+    catalog-item:
+      name: '{lang:defaults.ui.menus.milestone.contents.a.catalog-item.name}'
+      lore:
+      - '{lang:defaults.ui.description}'
+      - '{lang:defaults.ui.objectives}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:progression.summary}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:defaults.ui.hint}'
+    empty-item:
+      material: MINECART
+      name: '{lang:menu-empty-title}'
+      lore:
+      - '{lang:menu-empty-milestone}'
+    click-actions:
+      LEFT:
+        open:
+          type: quest
+  L:
+    display: detail
+    type: milestone
+    track: default
+    sort: natural
+    use-quest-icon: false
+    item:
+      material: GRAY_STAINED_GLASS_PANE
+      name: '{lang:defaults.ui.menus.milestone.contents.l.item.name}'
+      lore:
+      - '{lang:progression.required}'
+      - '{lang:defaults.ui.progress}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:defaults.ui.state}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:defaults.ui.reward-title}'
+      - '{lang:defaults.ui.rewards}'
+    state-items:
+      AVAILABLE:
+        material: CHEST_MINECART
+        name: '{lang:defaults.ui.menus.milestone.contents.l.state-items.available.name}'
+        glow: true
+        lore:
+        - '{lang:progression.required}'
+        - '{lang:defaults.ui.progress}'
+        - '{lang:defaults.ui.blank}'
+        - '{lang:defaults.ui.menus.battlepass.contents.q.state-items.available.lore.6}'
+        - '{lang:defaults.ui.blank}'
+        - '{lang:defaults.ui.reward-title}'
+        - '{lang:defaults.ui.rewards}'
+      CLAIMED:
+        material: LIME_STAINED_GLASS_PANE
+        name: '{lang:defaults.ui.menus.milestone.contents.l.state-items.claimed.name}'
+        lore:
+        - '{lang:progression.required}'
+        - '{lang:defaults.ui.progress}'
+        - '{lang:defaults.ui.blank}'
+        - '{lang:defaults.ui.state}'
+        - '{lang:defaults.ui.blank}'
+        - '{lang:defaults.ui.reward-title}'
+        - '{lang:defaults.ui.rewards}'
+      CLAIMING:
+        material: YELLOW_STAINED_GLASS_PANE
+        name: '{lang:defaults.ui.menus.milestone.contents.l.state-items.claiming.name}'
+        lore:
+        - '{lang:defaults.ui.state}'
+        - '{lang:defaults.ui.blank}'
+        - '{lang:defaults.ui.reward-title}'
+        - '{lang:defaults.ui.rewards}'
+      REVIEW:
+        material: RED_STAINED_GLASS_PANE
+        name: '{lang:defaults.ui.menus.milestone.contents.l.state-items.review.name}'
+        lore:
+        - '{lang:defaults.ui.state}'
+        - '{lang:defaults.ui.blank}'
+        - '{lang:defaults.ui.reward-title}'
+        - '{lang:defaults.ui.rewards}'
+    click-actions:
+      LEFT:
+        claim:
+          type: quest
+items:
+  K:
+    item:
+      material: CHEST
+      name: '{lang:category.button}'
+      lore:
+      - '{lang:category.current}'
+    actions:
+      category:
+        type: open_categories
+  F:
+    item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: '{lang:defaults.ui.blank}'
+  S:
+    display: catalog
+    item:
+      material: NETHER_STAR
+      name: '{lang:progression.milestone-catalog-title}'
+      lore:
+      - '{lang:progression.catalog-count}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:progression.milestone-catalog-description}'
+  D:
+    display: detail
+    item:
+      material: STONE_PICKAXE
+      name: '{lang:defaults.ui.menus.milestone.contents.a.catalog-item.name}'
+      lore:
+      - '{lang:defaults.ui.objectives}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:progression.summary}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:defaults.ui.progress}'
+      - '{lang:defaults.ui.blank}'
+      - '{lang:progression.claimable-summary}'
+  P:
+    hide-on-first-page: true
+    item:
+      material: ARROW
+      name: '{lang:menu-previous}'
+      lore:
+      - '{lang:defaults.ui.page-number}'
+    hidden-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: '{lang:defaults.ui.blank}'
+    actions:
+      page:
+        type: previous_page
+  N:
+    hide-on-last-page: true
+    item:
+      material: ARROW
+      name: '{lang:menu-next}'
+      lore:
+      - '{lang:defaults.ui.page-number}'
+    hidden-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: '{lang:defaults.ui.blank}'
+    actions:
+      page:
+        type: next_page
+  H:
+    display: catalog
+    item:
+      material: COMPASS
+      name: '{lang:menu-back}'
+    actions:
+      open:
+        type: open_menu
+        menu: main
+  B:
+    display: detail
+    item:
+      material: KNOWLEDGE_BOOK
+      name: '{lang:menu-back-catalog}'
+    actions:
+      open:
+        type: open_menu
+        menu: milestone
+  C:
+    item:
+      material: BARRIER
+      name: '{lang:menu-close}'
+    actions:
+      close:
+        type: close
+  R:
+    item:
+      material: SUNFLOWER
+      name: '{lang:menu-refresh}'
+      lore:
+      - '{lang:menu-refresh-description}'
+    actions:
+      refresh:
+        type: refresh

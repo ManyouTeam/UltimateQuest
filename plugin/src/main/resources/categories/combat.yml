@@ -1,0 +1,7 @@
+enabled: true
+name: '{lang:defaults.categories.combat.name}'
+description:
+- '{lang:defaults.categories.combat.description}'
+icon:
+  material: IRON_SWORD
+order: 10

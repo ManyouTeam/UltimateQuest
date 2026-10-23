@@ -1,0 +1,63 @@
+enabled: true
+name: '{lang:defaults.tasks.angler.name}'
+description:
+- '{lang:defaults.tasks.angler.description}'
+icon:
+  material: FISHING_ROD
+categories:
+- fishing
+auto-claim: false
+prerequisites: []
+source:
+  quest: angler
+  amount: 3
+rewards:
+  fishing_rod:
+    type: item
+    item:
+      material: FISHING_ROD
+      amount: 1
+    display:
+      name: '{lang:defaults.rewards.fishing_rod_1}'
+  bread:
+    type: item
+    item:
+      material: BREAD
+      amount: 4
+    display:
+      name: '{lang:defaults.rewards.bread_4}'
+  catch:
+    type: random
+    display:
+      name: '{lang:defaults.rewards.catch_pack}'
+    random:
+      common:
+        rate: 60
+        rewards:
+          cooked_beef:
+            type: item
+            item:
+              material: COOKED_BEEF
+              amount: 2
+            display:
+              name: '{lang:defaults.rewards.cooked_beef_2}'
+      lucky:
+        rate: 30
+        rewards:
+          golden_carrot:
+            type: item
+            item:
+              material: GOLDEN_CARROT
+              amount: 8
+            display:
+              name: '{lang:defaults.rewards.golden_carrot_8}'
+      treasure:
+        rate: 10
+        rewards:
+          heart_of_the_sea:
+            type: item
+            item:
+              material: HEART_OF_THE_SEA
+              amount: 1
+            display:
+              name: '{lang:defaults.rewards.heart_of_the_sea_1}'

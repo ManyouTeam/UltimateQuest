@@ -1,0 +1,22 @@
+enabled: true
+name: '{lang:defaults.periods.monthly.name}'
+reset-mode: CRON
+reset-time: 0 0 0 1 * ?
+claim-grace-seconds: 259200
+source:
+  pool: monthly
+  count: 3
+task:
+  auto-claim: false
+  description:
+  - '{lang:defaults.periods.monthly.description}'
+  - '{lang:defaults.periods.reward-note}'
+  - '{lang:defaults.periods.claim-note}'
+  rewards:
+    supply:
+      type: random
+      pool: period_monthly
+      count: 3
+      repeat: false
+      display:
+        name: '{lang:defaults.periods.monthly-pack}'

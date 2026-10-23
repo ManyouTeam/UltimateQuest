@@ -1,0 +1,28 @@
+enabled: true
+name: '{lang:defaults.tasks.woodworker.name}'
+description:
+- '{lang:defaults.tasks.woodworker.description}'
+icon:
+  material: STONE_AXE
+categories:
+- gathering
+auto-claim: false
+prerequisites: []
+source:
+  quest: veteran
+  amount: 16
+rewards:
+  stone_axe:
+    type: item
+    item:
+      material: STONE_AXE
+      amount: 1
+    display:
+      name: '{lang:defaults.rewards.stone_axe_1}'
+  bread:
+    type: item
+    item:
+      material: BREAD
+      amount: 4
+    display:
+      name: '{lang:defaults.rewards.bread_4}'

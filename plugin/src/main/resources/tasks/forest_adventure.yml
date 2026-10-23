@@ -1,0 +1,36 @@
+enabled: true
+name: '{lang:defaults.tasks.forest_adventure.name}'
+description:
+- '{lang:defaults.tasks.forest_adventure.description}'
+icon:
+  material: IRON_AXE
+categories:
+- combat
+- gathering
+auto-claim: false
+prerequisites:
+- miner
+objectives:
+  hunter:
+    source:
+      quest: hunter
+      amount: 10
+  veteran:
+    source:
+      quest: veteran
+      amount: 32
+rewards:
+  emerald:
+    type: item
+    item:
+      material: EMERALD
+      amount: 5
+    display:
+      name: '{lang:defaults.rewards.emerald_5}'
+  bread:
+    type: item
+    item:
+      material: BREAD
+      amount: 8
+    display:
+      name: '{lang:defaults.rewards.bread_8}'

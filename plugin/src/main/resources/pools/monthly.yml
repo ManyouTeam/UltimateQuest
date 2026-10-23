@@ -1,0 +1,9 @@
+enabled: true
+quests:
+  monthly_miner: 10
+  monthly_veteran: 10
+  monthly_champion: 10
+  monthly_angler: 10
+  monthly_crops: 10
+  monthly_iron: 10
+  monthly_walker: 10

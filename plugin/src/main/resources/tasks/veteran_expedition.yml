@@ -1,0 +1,49 @@
+enabled: true
+name: '{lang:defaults.tasks.veteran_expedition.name}'
+description:
+- '{lang:defaults.tasks.veteran_expedition.description}'
+icon:
+  material: DIAMOND_SWORD
+categories:
+- adventure
+- combat
+auto-claim: false
+prerequisites:
+- survivalist
+objectives:
+  champion:
+    source:
+      quest: champion
+      amount: 128
+  miner:
+    source:
+      quest: miner
+      amount: 1024
+  angler:
+    source:
+      quest: angler
+      amount: 32
+  enchanter:
+    source:
+      quest: enchanter
+      amount: 3
+rewards:
+  diamond:
+    type: item
+    item:
+      material: DIAMOND
+      amount: 8
+    display:
+      name: '{lang:defaults.rewards.diamond_8}'
+  experience_bottle:
+    type: item
+    item:
+      material: EXPERIENCE_BOTTLE
+      amount: 16
+    display:
+      name: '{lang:defaults.rewards.experience_bottle_16}'
+  scroll:
+    type: console_command
+    command: uq scroll give {player} veteran
+    display:
+      name: '{lang:defaults.rewards.scroll_veteran}'

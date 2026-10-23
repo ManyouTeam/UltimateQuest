@@ -1,0 +1,1182 @@
+error:
+  args: '&#98FB98[UltimateQuest] &c用法：/uq [menu|help|accept|info|claim|abandon|battlepass|milestone|period|scroll|editor|reload]'
+  in-game: '&#98FB98[UltimateQuest] &c此命令需要由玩家执行。'
+  miss-permission: '&#98FB98[UltimateQuest] &c你没有执行权限。'
+  player-not-found: '&#98FB98[UltimateQuest] &c玩家 {player} 不在线。'
+  save-item-not-found: '&#98FB98[UltimateQuest] &c找不到已保存的物品 {item}。'
+plugin:
+  reloaded: '&#98FB98[UltimateQuest] &aUltimateQuest 配置已重载。数据库配置修改需要重启生效。'
+  saved: '&#98FB98[UltimateQuest] &a物品已保存。'
+  generated: '&#98FB98[UltimateQuest] &a物品格式已生成。'
+command-tab:
+  type-item-id: '[物品ID]'
+command:
+  console-usage: '&#98FB98[UltimateQuest] &c控制台用法：uq menu [菜单] <玩家> [-b] | uq accept <任务> <玩家> [-b] | uq <info|claim|abandon> <任务> <玩家> | uq <period|scroll> <玩家> [-b] | uq <battlepass|milestone> [ID] <玩家> [-b]'
+give-save-item: '&#98FB98[UltimateQuest] &a已给予 {player} {amount} 份 {item}。'
+quests:
+  help: '&#98FB98[UltimateQuest] &e/uq menu &7| &e/uq accept <任务> &7| &e/uq info <任务> &7| &e/uq claim <任务> &7| &e/uq abandon <任务> &7| &e/uq battlepass
+    &7| &e/uq milestone &7| &e/uq period &7| &e/uq scroll &7| &e/uq editor'
+  loading: '&#98FB98[UltimateQuest] &e任务数据加载中，请稍后重试。'
+  load-failed: '&#98FB98[UltimateQuest] &c任务数据加载失败，已有数据已保留。'
+  save-failed: '&#98FB98[UltimateQuest] &c任务数据保存失败，请稍后重试。'
+  review-needed: '&#98FB98[UltimateQuest] &c有一笔奖励领取需要管理员核查，系统不会自动重新发放。'
+  busy: '&#98FB98[UltimateQuest] &e上一次任务操作仍在保存中。'
+  not-found: '&#98FB98[UltimateQuest] &c找不到这个任务。'
+  already-accepted: '&#98FB98[UltimateQuest] &e你已经接取或领取过这个任务。'
+  admin-only: '&#98FB98[UltimateQuest] &c这个任务只能由管理员派发。'
+  limit: '&#98FB98[UltimateQuest] &c已达到同时进行的任务数量上限。'
+  requirements: '&#98FB98[UltimateQuest] &c尚未满足这个任务的接取条件。'
+  accepted: '&#98FB98[UltimateQuest] &a任务已接取。'
+  abandoned: '&#98FB98[UltimateQuest] &e任务已放弃。'
+  completed: '&#98FB98[UltimateQuest] &a有任务已完成，打开 /uq 领取奖励。'
+  claimed: '&#98FB98[UltimateQuest] &a任务奖励已领取。'
+  cannot-claim: '&#98FB98[UltimateQuest] &c这个任务当前没有可领取的奖励。'
+  cannot-abandon: '&#98FB98[UltimateQuest] &c这个任务当前不能放弃。'
+  objective: '&7{name}：&f{current}/{required}'
+  state:
+    AVAILABLE: '&e可接取'
+    LOCKED: '&c未解锁'
+    ACTIVE: '&b进行中'
+    COMPLETED: '&a可领取奖励'
+    CLAIMING: '&e正在处理领取'
+    CLAIMED: '&7已领取'
+    REVIEW: '&c等待管理员核查'
+progression:
+  objective: '&7{name} &8（每次 +{value} {unit}）'
+  objective-items: '&7{name} &8（每件 +{value} {unit}）'
+  objective-counted: '&7{name} &8（每{count-unit} +{value} {unit}）'
+  count-units:
+    blocks: '个方块'
+    damage: '点伤害'
+    blocked_damage: '点格挡伤害'
+    healing: '点生命回复'
+    durability: '点耐久损耗'
+    experience: '点经验'
+    distance: '格移动距离'
+    exhaustion: '点消耗度'
+  unit:
+    battlepass: 积分
+    milestone: 进度
+  open: '&e点击查看阶段奖励'
+  inactive: '&#98FB98[UltimateQuest] &c当前不在开放时间内。'
+  unlocked: '&#98FB98[UltimateQuest] &a新的阶段奖励已解锁，打开 /uq 领取。'
+  premium-required: '&#98FB98[UltimateQuest] &c领取高级奖励需要高级战令权限。'
+  unavailable: '&#98FB98[UltimateQuest] &c战令不可用、数据尚未加载或积分已达到上限。'
+  xp-added: '&#98FB98[UltimateQuest] &a战令积分已增加并保存。'
+  xp-save-failed: '&#98FB98[UltimateQuest] &c积分已保留在内存中，系统将重试保存，请勿重复发放。'
+  usage: '&#98FB98[UltimateQuest] &e/uq battlepass [ID] | /uq battlepass claim <ID> <等级> [free|premium] | /uq milestone [ID] | /uq milestone claim
+    <ID> <阶段> | /uq battlepass addxp <玩家> <ID> <数量>'
+  track:
+    free: '&a免费'
+    premium: '&6高级'
+    default: '&a里程碑'
+  state:
+    LOCKED: '&7未解锁'
+    AVAILABLE: '&a点击领取'
+    CLAIMING: '&e正在处理领取'
+    CLAIMED: '&7已领取'
+    REVIEW: '&c等待管理员核查'
+    PREMIUM_REQUIRED: '&6需要高级战令权限'
+    INACTIVE: '&c当前不在开放时间内'
+period:
+  ready: '&#98FB98[UltimateQuest] &a周期任务已准备就绪，使用 /uq period 查看。'
+scroll:
+  given: '&#98FB98[UltimateQuest] &a任务卷轴已发放，放在背包中即可推进任务。'
+  activated: '&#98FB98[UltimateQuest] &a已读取背包中的卷轴任务，使用 /uq scroll 查看。'
+  used: '&#98FB98[UltimateQuest] &c此卷轴已使用，或正等待管理员核查。'
+  invalid: '&#98FB98[UltimateQuest] &c此卷轴数据无效，已暂停自动读取，请联系管理员。'
+  read-failed: '&#98FB98[UltimateQuest] &c暂时无法读取卷轴数据，将稍后自动重试。'
+  requirements: '&#98FB98[UltimateQuest] &c请将卷轴放在背包或副手，并预留足够的卷轴任务名额。'
+  usage: '&#98FB98[UltimateQuest] &e/uq scroll | /uq scroll give <玩家> <配置ID> [稀有度] [难度]'
+menu-assigned-active: '&7左键查看进度'
+menu-not-found: '&#98FB98[UltimateQuest] &c找不到此菜单。'
+menu-accept: '&e左键接取任务'
+menu-claim: '&a左键领取奖励'
+menu-active: '&7左键查看进度，右键放弃任务'
+menu-locked: '&c尚未满足接取条件'
+menu-unavailable: '&7这个任务当前不可操作'
+menu-abandon-confirm: '&#98FB98[UltimateQuest] &e再次右键任务 {name} 以确认放弃。'
+menu-abandon-confirm-hint: '&c再次右键确认放弃'
+menu-view:
+  claimable: 可领取
+  claimed: 已领取
+  locked: 未解锁
+  inactive: 未开放
+  all: 全部任务
+  active: 进行中
+  available: 可接取
+  completed: 已完成
+menu-time:
+  unlimited: 不限时
+  expired: 已到期
+  days: '{days} 天 {hours} 小时'
+  hours: '{hours} 小时 {minutes} 分钟'
+  minutes: '{minutes} 分钟'
+battlepass:
+  task-completed: '&#98FB98[UltimateQuest] &a战令任务已完成，积分已自动结算。'
+  group:
+    all: 全部
+    daily: 每日
+    weekly: 每周
+    season: 赛季
+  level-up: '&#98FB98[UltimateQuest] &a{name} &7已达到 &e{level} &7级！'
+  reward-item: '&7• &f{name} &7x{amount}'
+  reward-xp: '&7• &b{amount} 积分 &7({pass})'
+  reward-custom: '&7• &f{name}'
+  reward-random-rate: ' &8({rate}%)'
+  reward-random-count: '&7按权重抽取 &e{count} &7项（{mode}）'
+  reward-random-repeat: '可重复'
+  reward-random-unique: '不重复'
+  reward-random-weight: ' &8(权重 {weight})'
+  reward-empty: '&8此等级没有奖励。'
+  admin-saved: '&#98FB98[UltimateQuest] &a战令变更已保存。'
+  admin-failed: '&#98FB98[UltimateQuest] &c战令操作失败，请检查参数与服务端错误提示。'
+  admin-usage: '&#98FB98[UltimateQuest] &e/uq battlepass <setxp|removexp|setlevel|premium> <玩家/UUID> <战令> <值> | boost <玩家/UUID> <战令> <倍率> <秒> | resolve
+    <玩家/UUID> <战令@赛季> <轨道/等级> <AVAILABLE|CLAIMED> | season <start|schedule|pause|resume|end|globalboost> <战令> [参数]'
+  player-usage: '&#98FB98[UltimateQuest] &e/uq battlepass <claimall|history|challenges|stats> <战令> | /uq battlepass <战令@赛季>'
+  history: '&#98FB98[UltimateQuest] &e已保存赛季：&f{seasons}'
+  stats: '&#98FB98[UltimateQuest] &e{name} &7[{season}] 等级：&f{level} &7积分：&f{total} &7高级资格：&f{premium}'
+override-lang:
+  auto-save:
+    message: '&#98FB98[UltimateQuest] 正在自动保存玩家任务数据……'
+  task-admin-only: '&c仅管理员可以派发'
+  category:
+    all: '&f全部任务'
+    uncategorized: 未分类
+    title: '&8任务分类 &7[{page}/{pages}]'
+    button: '&e任务分类'
+    current: '&7当前分类：&f{category-name}'
+    select: '&e点击选择'
+    selected: '&a当前已选'
+    count: '&7任务数量：&f{category-count}'
+    active: '&7进行中：&f{category-active}'
+    claimable: '&7可领取：&f{category-claimable}'
+    empty: '&7当前分类下没有符合条件的任务。'
+    status: '&e状态：&f{view} &7（点击切换）'
+  objective-action-kill: 击杀
+  objective-action-block-break: 破坏
+  objective-action-fish: 钓取
+  objective-action-consume: 消耗
+  progression:
+    battlepass: '&6战令'
+    milestone: '&a里程碑'
+    catalog-title: '&6&l战令中心'
+    milestone-catalog-title: '&a&l里程碑中心'
+    catalog-count: '&7共 &f{count} &7项内容'
+    catalog-description: '&7选择一个战令查看免费与高级奖励轨道。'
+    milestone-catalog-description: '&7选择一个里程碑查看阶段进度与奖励。'
+    summary: '&7累计：&f{total} &7| 等级：&f{level}'
+    season: '&7赛季：&f{season}'
+    required: '&7进度：&f{total}/{required}'
+    stage-title: '&e第 {level} 阶段 &7- {track}'
+    level-title: 等级 {level}
+    free-reward: 免费奖励
+    premium-reward: 高级奖励
+    claimable-summary: '&a可领取奖励：&f{claimable}'
+    rewards-title: '&6奖励内容'
+    next-level: '&7下一门槛：&f{next-required} &7（还需 {remaining-xp} 积分）'
+    time-left: '&7赛季剩余：&f{season-time}'
+    claim-all: '&a领取全部可用奖励'
+    challenges: '&e赛季挑战'
+    challenges-empty: '&7本赛季暂无已解锁的挑战。'
+  period:
+    filter-all: '全部周期'
+    filter-title: '&e周期筛选：&f{period-group}'
+    filter-current: '&7当前周期：&f{period-group}'
+    filter-switch: '&e点击切换每日、每周、每月等周期'
+    title: '&e周期任务'
+    summary-title: '&e&l周期任务概览'
+    source: '&7来源：&f{source}'
+    expires: '&7剩余时间：&f{expires-in}'
+  scroll:
+    filter-all: '全部卷轴'
+    filter-title: '&e来源卷轴：&f{scroll-group}'
+    filter-current: '&7当前来源：&f{scroll-group}'
+    filter-switch: '&e点击切换卷轴类型'
+    title: '&e卷轴任务'
+    summary-title: '&e&l卷轴任务概览'
+    expires: '&7剩余时间：&f{expires-in}'
+  menu-back-catalog: '&e返回列表'
+  menu-back: '&e返回'
+  menu-disabled: '&#98FB98[UltimateQuest] &c此菜单已禁用。'
+  menu-no-permission: '&#98FB98[UltimateQuest] &c你没有打开此菜单的权限。'
+  menu-title: '&8任务日志 &7• {view} &8[{page}/{pages}]'
+  menu-close: '&c关闭'
+  menu-previous: '&e上一页'
+  menu-next: '&e下一页'
+  menu-refresh: '&e刷新'
+  menu-refresh-description: '&7重新读取当前任务状态。'
+  menu-objectives-title: 任务目标
+  menu-empty-title: '&7这里暂时没有内容'
+  menu-empty-description: '&8切换筛选条件或稍后再来看看。'
+  menu-empty-battlepass: '&8当前没有已配置的战令。'
+  menu-empty-milestone: '&8当前没有已配置的里程碑。'
+  menu-empty-period: '&8新的周期任务会在刷新周期到来时出现。'
+  menu-empty-scroll: '&8背包中没有可进行的任务卷轴。'
+  menu-summary-title: '&e&l任务概览'
+  menu-summary-total: '&7任务总数：&f{count}'
+  menu-summary-active: '&b进行中：&f{active}'
+  menu-summary-claimable: '&a可领取：&f{claimable}'
+  menu-summary-claimed: '&7已领取：&f{claimed}'
+  menu-summary-available: '&e可接取：&f{available}'
+  menu-summary-locked: '&c未解锁：&f{locked}'
+  menu-filter-title: '&e筛选：&f{view}'
+  menu-filter-all: '&a● &f全部任务'
+  menu-filter-active: '&a● &f仅显示进行中的任务'
+  menu-filter-available: '&a● &f仅显示可接取与未解锁任务'
+  menu-filter-completed: '&a● &f仅显示已完成任务'
+  menu-filter-claimable: '&a● &f仅显示奖励可领取的任务'
+  menu-filter-claimed: '&a● &f仅显示已领取奖励的任务'
+  menu-filter-switch: '&e点击切换筛选条件'
+  menu-open-battlepass: '&7查看赛季等级、免费与高级奖励。'
+  menu-open-milestone: '&7查看长期累计进度与阶段奖励。'
+  menu-open-period: '&7查看每日、每周和每月任务。'
+  menu-open-scroll: '&7查看背包中携带的任务卷轴。'
+  menu-abandon-confirm-title: '&c&l确认放弃：{name}'
+  menu-abandon-confirm-loss: '&7任务进度将永久丢失。'
+  menu-abandon-confirm-action: '&c再次右键确认放弃'
+  menu-abandon-confirm-timeout: '&8确认会在 5 秒后失效'
+  defaults:
+    categories:
+      combat:
+        name: '&c战斗'
+        description: '&7讨伐敌对生物，守护聚落安全。'
+      gathering:
+        name: '&a采集'
+        description: '&7开采天然矿石、石料与木材。'
+      adventure:
+        name: '&e冒险'
+        description: '&7探索世界，完成综合挑战。'
+      farming:
+        name: '&2农耕'
+        description: '&7收获成熟作物，建立粮食储备。'
+      fishing:
+        name: '&b垂钓'
+        description: '&7钓获鱼类，积累长期垂钓成就。'
+      building:
+        name: '&6建造'
+        description: '&7使用基础建材扩建自己的家园。'
+      craftsmanship:
+        name: '&d技艺'
+        description: '&7练习附魔与弓箭技艺。'
+      nether:
+        name: '&4下界远征'
+        description: '&7收集下界资源，迎战异界生物。'
+    objectives:
+      miner: '&f开采天然石料'
+      hunter: '&f击杀僵尸'
+      veteran: '&f砍伐天然原木'
+      angler: '&f钓获鱼类'
+      champion: '&f讨伐敌对生物'
+      coal: '&f开采煤矿石'
+      iron: '&f开采铁矿石'
+      gold: '&f开采金矿石'
+      redstone: '&f开采红石矿石'
+      diamond: '&f开采钻石矿石'
+      wheat: '&f收获成熟小麦'
+      crops: '&f收获成熟农作物'
+      builder: '&f放置基础建材'
+      walker: '&f探索方块位置'
+      sprinter: '&f累计疾跑距离'
+      swimmer: '&f累计游泳距离'
+      enchanter: '&f使用附魔台附魔物品'
+      archer: '&f使用弓或弩射击'
+      food: '&f食用生存食物'
+      nether_miner: '&f开采天然下界资源'
+      blaze: '&f击杀烈焰人'
+      enderman: '&f击杀末影人'
+      barter: '&f与猪灵以物易物'
+    tasks:
+      miner:
+        name: '&e初识矿脉'
+        description: '&7开采16块天然石料，领取奖励后获得第一张任务卷轴。'
+      woodworker:
+        name: '&e安家木材'
+        description: '&7砍伐16块天然原木，准备安家物资。'
+      hunter:
+        name: '&e初夜巡逻'
+        description: '&7击杀8只自然生成的僵尸。'
+      angler:
+        name: '&e初次垂钓'
+        description: '&7使用钓鱼竿钓获3条鱼。'
+      farmer:
+        name: '&e第一份收成'
+        description: '&7收获16株完全成熟的小麦，未成熟作物不计数。'
+      builder:
+        name: '&e筑起小家'
+        description: '&7放置32块基础建材：木板、圆石、石砖、红砖或玻璃。'
+      traveler:
+        name: '&e踏出家门'
+        description: '&7累计跨越256次方块位置，每秒最多计数4次。'
+      sprinter:
+        name: '&e加快脚步'
+        description: '&7累计疾跑256格。'
+      swimmer:
+        name: '&e畅游水中'
+        description: '&7在游泳状态下累计游泳128格。'
+      coal_supply:
+        name: '&e点亮前路'
+        description: '&7开采16块天然煤矿石，包含深层煤矿石。'
+      iron_supply:
+        name: '&e迈入铁器时代'
+        description: '&7开采12块天然铁矿石。'
+      forest_adventure:
+        name: '&e林间历练'
+        description: '&7击杀10只僵尸，并砍伐32块天然原木。'
+      night_watch:
+        name: '&e聚落守卫'
+        description: '&7讨伐24只敌对生物，守护聚落安全。'
+      deep_miner:
+        name: '&e深入地底'
+        description: '&7开采256块天然石料和24块铁矿石。'
+      grain_barn:
+        name: '&e粮仓渐满'
+        description: '&7收获64株完全成熟的小麦。'
+      fishing_trip:
+        name: '&e湖畔时光'
+        description: '&7钓获16条鱼，垃圾和宝藏不计数。'
+      ore_prospector:
+        name: '&e寻觅富矿'
+        description: '&7开采8块金矿石和32块红石矿石。'
+      archery_training:
+        name: '&e稳住准星'
+        description: '&7使用弓或弩射击32次，无需命中。'
+      enchant_apprentice:
+        name: '&e初识魔法'
+        description: '&7在附魔台为1件物品附魔。'
+      sustainable_farm:
+        name: '&e沃野丰收'
+        description: '&7收获128株成熟的小麦、胡萝卜、马铃薯或甜菜。'
+      nether_expedition:
+        name: '&e踏入下界'
+        description: '&7开采128块天然下界资源方块，并击杀8只烈焰人。'
+      enderman_research:
+        name: '&e暗夜凝视'
+        description: '&7击杀12只自然生成的末影人。'
+      diamond_expedition:
+        name: '&e深岩之光'
+        description: '&7开采8块天然钻石矿石。'
+      survivalist:
+        name: '&e生存能手'
+        description: '&7开采256块石料、砍伐128块原木、食用16份食物并钓获12条鱼。'
+      master_builder:
+        name: '&e家园扩建'
+        description: '&7放置256块基础建材，扩建自己的家园。'
+      veteran_expedition:
+        name: '&e久经历练'
+        description: '&7讨伐128只敌对生物、开采1024块石料、钓获32条鱼并附魔3次。'
+    rewards:
+      stone_pickaxe_1: '&7• &f石镐 &7x1'
+      torch_16: '&7• &f火把 &7x16'
+      scroll_novice: '&7• &e新手卷轴 &7x1'
+      stone_axe_1: '&7• &f石斧 &7x1'
+      bread_4: '&7• &f面包 &7x4'
+      cooked_beef_6: '&7• &f牛排 &7x6'
+      fishing_rod_1: '&7• &f钓鱼竿 &7x1'
+      wheat_seeds_16: '&7• &f小麦种子 &7x16'
+      bread_6: '&7• &f面包 &7x6'
+      glass_16: '&7• &f玻璃 &7x16'
+      bread_8: '&7• &f面包 &7x8'
+      torch_32: '&7• &f火把 &7x32'
+      experience_bottle_2: '&7• &f附魔之瓶 &7x2'
+      iron_ingot_4: '&7• &f铁锭 &7x4'
+      emerald_5: '&7• &f绿宝石 &7x5'
+      shield_1: '&7• &f盾牌 &7x1'
+      cooked_beef_8: '&7• &f牛排 &7x8'
+      iron_pickaxe_1: '&7• &f铁镐 &7x1'
+      scroll_mining: '&7• &e勘探卷轴 &7x1'
+      bread_16: '&7• &f面包 &7x16'
+      emerald_3: '&7• &f绿宝石 &7x3'
+      experience_bottle_6: '&7• &f附魔之瓶 &7x6'
+      gold_ingot_4: '&7• &f金锭 &7x4'
+      arrow_32: '&7• &f箭 &7x32'
+      experience_bottle_4: '&7• &f附魔之瓶 &7x4'
+      lapis_lazuli_16: '&7• &f青金石 &7x16'
+      emerald_6: '&7• &f绿宝石 &7x6'
+      gold_ingot_8: '&7• &f金锭 &7x8'
+      experience_bottle_12: '&7• &f附魔之瓶 &7x12'
+      ender_pearl_4: '&7• &f末影珍珠 &7x4'
+      experience_bottle_8: '&7• &f附魔之瓶 &7x8'
+      diamond_2: '&7• &f钻石 &7x2'
+      emerald_12: '&7• &f绿宝石 &7x12'
+      cooked_beef_16: '&7• &f牛排 &7x16'
+      scroll_adventure: '&7• &e冒险卷轴 &7x1'
+      glass_64: '&7• &f玻璃 &7x64'
+      diamond_8: '&7• &f钻石 &7x8'
+      experience_bottle_16: '&7• &f附魔之瓶 &7x16'
+      scroll_veteran: '&7• &e老兵卷轴 &7x1'
+      emerald_2: '&7• &f绿宝石 &7x2'
+      diamond_5: '&7• &f钻石 &7x5'
+      iron_ingot_2: '&7• &f铁锭 &7x2'
+      diamond_3: '&7• &f钻石 &7x3'
+      diamond_6: '&7• &f钻石 &7x6'
+      emerald_8: '&7• &f绿宝石 &7x8'
+      diamond_4: '&7• &f钻石 &7x4'
+      cooked_beef_12: '&7• &f牛排 &7x12'
+      gold_ingot_6: '&7• &f金锭 &7x6'
+      diamond_1: '&7• &f钻石 &7x1'
+      name_tag_1: '&7• &f命名牌 &7x1'
+      heart_of_the_sea_1: '&7• &f海洋之心 &7x1'
+      catch_pack: '&e渔获补给'
+      cooked_beef_2: '&7• &f牛排 &7x2'
+      golden_carrot_8: '&7• &f金胡萝卜 &7x8'
+      scroll_pack_novice: '&e新手补给包'
+      scroll_pack_mining: '&e勘探补给包'
+      scroll_pack_adventure: '&e冒险补给包'
+      scroll_pack_veteran: '&e老兵补给包'
+    period-rewards:
+      daily_common_stick: '&7• &f[普通] 木棍 &7x16'
+      daily_common_oak_log: '&7• &f[普通] 橡木原木 &7x16'
+      daily_common_spruce_log: '&7• &f[普通] 云杉原木 &7x16'
+      daily_common_oak_planks: '&7• &f[普通] 橡木木板 &7x32'
+      daily_common_cobblestone: '&7• &f[普通] 圆石 &7x32'
+      daily_common_sand: '&7• &f[普通] 沙子 &7x16'
+      daily_common_glass: '&7• &f[普通] 玻璃 &7x16'
+      daily_common_torch: '&7• &f[普通] 火把 &7x16'
+      daily_common_coal: '&7• &f[普通] 煤炭 &7x8'
+      daily_common_bread: '&7• &f[普通] 面包 &7x8'
+      daily_common_baked_potato: '&7• &f[普通] 烤马铃薯 &7x8'
+      daily_common_carrot: '&7• &f[普通] 胡萝卜 &7x16'
+      daily_common_wheat_seeds: '&7• &f[普通] 小麦种子 &7x16'
+      daily_common_sugar_cane: '&7• &f[普通] 甘蔗 &7x16'
+      daily_common_leather: '&7• &f[普通] 皮革 &7x4'
+      daily_common_string: '&7• &f[普通] 线 &7x8'
+      daily_uncommon_iron_ingot: '&7• &a[优秀] 铁锭 &7x4'
+      daily_uncommon_copper_ingot: '&7• &a[优秀] 铜锭 &7x8'
+      daily_uncommon_flint: '&7• &a[优秀] 燧石 &7x8'
+      daily_uncommon_bone: '&7• &a[优秀] 骨头 &7x8'
+      daily_uncommon_arrow: '&7• &a[优秀] 箭 &7x16'
+      daily_uncommon_cooked_beef: '&7• &a[优秀] 牛排 &7x8'
+      daily_uncommon_book: '&7• &a[优秀] 书 &7x4'
+      daily_uncommon_paper: '&7• &a[优秀] 纸 &7x16'
+      daily_uncommon_lantern: '&7• &a[优秀] 灯笼 &7x4'
+      daily_uncommon_white_wool: '&7• &a[优秀] 白色羊毛 &7x8'
+      daily_rare_gold_ingot: '&7• &9[稀有] 金锭 &7x4'
+      daily_rare_lapis_lazuli: '&7• &9[稀有] 青金石 &7x12'
+      daily_rare_redstone: '&7• &9[稀有] 红石粉 &7x16'
+      daily_rare_emerald: '&7• &9[稀有] 绿宝石 &7x3'
+      daily_rare_experience_bottle: '&7• &9[稀有] 附魔之瓶 &7x4'
+      daily_rare_iron_pickaxe: '&7• &9[稀有] 铁镐 &7x1'
+      daily_rare_shield: '&7• &9[稀有] 盾牌 &7x1'
+      daily_rare_fishing_rod: '&7• &9[稀有] 钓鱼竿 &7x1'
+      daily_epic_diamond: '&7• &5[史诗] 钻石 &7x1'
+      daily_epic_golden_carrot: '&7• &5[史诗] 金胡萝卜 &7x8'
+      daily_epic_ender_pearl: '&7• &5[史诗] 末影珍珠 &7x2'
+      daily_epic_name_tag: '&7• &5[史诗] 命名牌 &7x1'
+      daily_legendary_diamond_pickaxe: '&7• &6[传说] 钻石镐 &7x1'
+      daily_legendary_golden_apple: '&7• &6[传说] 金苹果 &7x2'
+      weekly_common_bread: '&7• &f[普通] 面包 &7x16'
+      weekly_common_cooked_beef: '&7• &f[普通] 牛排 &7x12'
+      weekly_common_cooked_chicken: '&7• &f[普通] 熟鸡肉 &7x12'
+      weekly_common_cooked_porkchop: '&7• &f[普通] 熟猪排 &7x12'
+      weekly_common_cooked_salmon: '&7• &f[普通] 熟鲑鱼 &7x12'
+      weekly_common_baked_potato: '&7• &f[普通] 烤马铃薯 &7x16'
+      weekly_common_torch: '&7• &f[普通] 火把 &7x32'
+      weekly_common_oak_log: '&7• &f[普通] 橡木原木 &7x24'
+      weekly_common_spruce_log: '&7• &f[普通] 云杉原木 &7x24'
+      weekly_common_sugar_cane: '&7• &f[普通] 甘蔗 &7x24'
+      weekly_common_leather: '&7• &f[普通] 皮革 &7x8'
+      weekly_common_string: '&7• &f[普通] 线 &7x16'
+      weekly_common_feather: '&7• &f[普通] 羽毛 &7x16'
+      weekly_common_bone: '&7• &f[普通] 骨头 &7x16'
+      weekly_common_arrow: '&7• &f[普通] 箭 &7x32'
+      weekly_common_paper: '&7• &f[普通] 纸 &7x24'
+      weekly_uncommon_iron_ingot: '&7• &a[优秀] 铁锭 &7x8'
+      weekly_uncommon_gold_ingot: '&7• &a[优秀] 金锭 &7x6'
+      weekly_uncommon_coal: '&7• &a[优秀] 煤炭 &7x16'
+      weekly_uncommon_book: '&7• &a[优秀] 书 &7x8'
+      weekly_uncommon_slime_ball: '&7• &a[优秀] 黏液球 &7x8'
+      weekly_uncommon_gunpowder: '&7• &a[优秀] 火药 &7x12'
+      weekly_uncommon_glow_ink_sac: '&7• &a[优秀] 荧光墨囊 &7x6'
+      weekly_uncommon_compass: '&7• &a[优秀] 指南针 &7x1'
+      weekly_uncommon_clock: '&7• &a[优秀] 时钟 &7x1'
+      weekly_uncommon_spyglass: '&7• &a[优秀] 望远镜 &7x1'
+      weekly_rare_emerald: '&7• &9[稀有] 绿宝石 &7x8'
+      weekly_rare_experience_bottle: '&7• &9[稀有] 附魔之瓶 &7x8'
+      weekly_rare_ender_pearl: '&7• &9[稀有] 末影珍珠 &7x4'
+      weekly_rare_blaze_rod: '&7• &9[稀有] 烈焰棒 &7x4'
+      weekly_rare_phantom_membrane: '&7• &9[稀有] 幻翼膜 &7x2'
+      weekly_rare_nautilus_shell: '&7• &9[稀有] 鹦鹉螺壳 &7x2'
+      weekly_rare_saddle: '&7• &9[稀有] 鞍 &7x1'
+      weekly_rare_golden_carrot: '&7• &9[稀有] 金胡萝卜 &7x12'
+      weekly_epic_diamond: '&7• &5[史诗] 钻石 &7x3'
+      weekly_epic_golden_apple: '&7• &5[史诗] 金苹果 &7x2'
+      weekly_epic_ghast_tear: '&7• &5[史诗] 恶魂之泪 &7x2'
+      weekly_epic_diamond_sword: '&7• &5[史诗] 钻石剑 &7x1'
+      weekly_legendary_heart_of_the_sea: '&7• &6[传说] 海洋之心 &7x1'
+      weekly_legendary_totem_of_undying: '&7• &6[传说] 不死图腾 &7x1'
+      monthly_common_iron_ingot: '&7• &f[普通] 铁锭 &7x16'
+      monthly_common_gold_ingot: '&7• &f[普通] 金锭 &7x12'
+      monthly_common_copper_ingot: '&7• &f[普通] 铜锭 &7x32'
+      monthly_common_coal: '&7• &f[普通] 煤炭 &7x32'
+      monthly_common_redstone: '&7• &f[普通] 红石粉 &7x32'
+      monthly_common_lapis_lazuli: '&7• &f[普通] 青金石 &7x32'
+      monthly_common_quartz: '&7• &f[普通] 下界石英 &7x32'
+      monthly_common_amethyst_shard: '&7• &f[普通] 紫水晶碎片 &7x24'
+      monthly_common_glowstone_dust: '&7• &f[普通] 荧石粉 &7x24'
+      monthly_common_obsidian: '&7• &f[普通] 黑曜石 &7x24'
+      monthly_common_cooked_beef: '&7• &f[普通] 牛排 &7x24'
+      monthly_common_golden_carrot: '&7• &f[普通] 金胡萝卜 &7x16'
+      monthly_common_arrow: '&7• &f[普通] 箭 &7x64'
+      monthly_common_leather: '&7• &f[普通] 皮革 &7x16'
+      monthly_common_book: '&7• &f[普通] 书 &7x12'
+      monthly_common_gunpowder: '&7• &f[普通] 火药 &7x24'
+      monthly_uncommon_emerald: '&7• &a[优秀] 绿宝石 &7x12'
+      monthly_uncommon_experience_bottle: '&7• &a[优秀] 附魔之瓶 &7x16'
+      monthly_uncommon_iron_block: '&7• &a[优秀] 铁块 &7x4'
+      monthly_uncommon_gold_block: '&7• &a[优秀] 金块 &7x2'
+      monthly_uncommon_coal_block: '&7• &a[优秀] 煤炭块 &7x4'
+      monthly_uncommon_crying_obsidian: '&7• &a[优秀] 哭泣的黑曜石 &7x8'
+      monthly_uncommon_ghast_tear: '&7• &a[优秀] 恶魂之泪 &7x2'
+      monthly_uncommon_nautilus_shell: '&7• &a[优秀] 鹦鹉螺壳 &7x4'
+      monthly_uncommon_name_tag: '&7• &a[优秀] 命名牌 &7x2'
+      monthly_uncommon_sea_lantern: '&7• &a[优秀] 海晶灯 &7x8'
+      monthly_rare_diamond: '&7• &9[稀有] 钻石 &7x6'
+      monthly_rare_emerald_block: '&7• &9[稀有] 绿宝石块 &7x2'
+      monthly_rare_golden_apple: '&7• &9[稀有] 金苹果 &7x4'
+      monthly_rare_diamond_sword: '&7• &9[稀有] 钻石剑 &7x1'
+      monthly_rare_diamond_pickaxe: '&7• &9[稀有] 钻石镐 &7x1'
+      monthly_rare_diamond_helmet: '&7• &9[稀有] 钻石头盔 &7x1'
+      monthly_rare_diamond_boots: '&7• &9[稀有] 钻石靴子 &7x1'
+      monthly_rare_shulker_shell: '&7• &9[稀有] 潜影壳 &7x2'
+      monthly_epic_diamond_chestplate: '&7• &5[史诗] 钻石胸甲 &7x1'
+      monthly_epic_diamond_leggings: '&7• &5[史诗] 钻石护腿 &7x1'
+      monthly_epic_netherite_scrap: '&7• &5[史诗] 下界合金碎片 &7x2'
+      monthly_epic_enchanted_golden_apple: '&7• &5[史诗] 附魔金苹果 &7x1'
+      monthly_legendary_netherite_ingot: '&7• &6[传说] 下界合金锭 &7x1'
+      monthly_legendary_totem_of_undying: '&7• &6[传说] 不死图腾 &7x1'
+    periods:
+      reward-note: '&7每个任务从40种奖励中按权重抽取3种，不重复。'
+      daily-pack: '&e每日奖励'
+      weekly-pack: '&e每周奖励'
+      monthly-pack: '&e每月奖励'
+      daily:
+        name: '&e每日委托'
+        description: '&7每期随机3项目标，服务器时间每日零点刷新。'
+      claim-note: '&7请在刷新前完成，已完成任务可在宽限期内领奖。'
+      weekly:
+        name: '&e每周委托'
+        description: '&7每期随机3项目标，服务器时间每周一零点刷新。'
+      monthly:
+        name: '&e每月委托'
+        description: '&7每期随机3项目标，服务器时间每月1日零点刷新。'
+    scroll-rewards:
+      novice_common_stick: '&7• &f[普通] 木棍 &7x16'
+      novice_common_oak_log: '&7• &f[普通] 橡木原木 &7x16'
+      novice_common_spruce_log: '&7• &f[普通] 云杉原木 &7x16'
+      novice_common_birch_log: '&7• &f[普通] 白桦原木 &7x16'
+      novice_common_oak_planks: '&7• &f[普通] 橡木木板 &7x32'
+      novice_common_cobblestone: '&7• &f[普通] 圆石 &7x32'
+      novice_common_stone: '&7• &f[普通] 石头 &7x32'
+      novice_common_dirt: '&7• &f[普通] 泥土 &7x32'
+      novice_common_sand: '&7• &f[普通] 沙子 &7x16'
+      novice_common_gravel: '&7• &f[普通] 沙砾 &7x16'
+      novice_common_glass: '&7• &f[普通] 玻璃 &7x16'
+      novice_common_torch: '&7• &f[普通] 火把 &7x16'
+      novice_common_coal: '&7• &f[普通] 煤炭 &7x8'
+      novice_common_charcoal: '&7• &f[普通] 木炭 &7x8'
+      novice_common_bread: '&7• &f[普通] 面包 &7x8'
+      novice_common_baked_potato: '&7• &f[普通] 烤马铃薯 &7x8'
+      novice_common_carrot: '&7• &f[普通] 胡萝卜 &7x16'
+      novice_common_apple: '&7• &f[普通] 苹果 &7x4'
+      novice_common_wheat_seeds: '&7• &f[普通] 小麦种子 &7x16'
+      novice_common_pumpkin_seeds: '&7• &f[普通] 南瓜种子 &7x8'
+      novice_common_melon_seeds: '&7• &f[普通] 西瓜种子 &7x8'
+      novice_common_sugar_cane: '&7• &f[普通] 甘蔗 &7x16'
+      novice_common_leather: '&7• &f[普通] 皮革 &7x4'
+      novice_common_string: '&7• &f[普通] 线 &7x8'
+      novice_uncommon_iron_ingot: '&7• &a[优秀] 铁锭 &7x4'
+      novice_uncommon_copper_ingot: '&7• &a[优秀] 铜锭 &7x8'
+      novice_uncommon_flint: '&7• &a[优秀] 燧石 &7x8'
+      novice_uncommon_bone: '&7• &a[优秀] 骨头 &7x8'
+      novice_uncommon_arrow: '&7• &a[优秀] 箭 &7x16'
+      novice_uncommon_cooked_beef: '&7• &a[优秀] 牛排 &7x8'
+      novice_uncommon_cooked_chicken: '&7• &a[优秀] 熟鸡肉 &7x8'
+      novice_uncommon_cooked_salmon: '&7• &a[优秀] 熟鲑鱼 &7x8'
+      novice_uncommon_book: '&7• &a[优秀] 书 &7x4'
+      novice_uncommon_paper: '&7• &a[优秀] 纸 &7x16'
+      novice_uncommon_ladder: '&7• &a[优秀] 梯子 &7x16'
+      novice_uncommon_chest: '&7• &a[优秀] 箱子 &7x4'
+      novice_uncommon_barrel: '&7• &a[优秀] 木桶 &7x4'
+      novice_uncommon_lantern: '&7• &a[优秀] 灯笼 &7x4'
+      novice_uncommon_white_wool: '&7• &a[优秀] 白色羊毛 &7x8'
+      novice_uncommon_hay_block: '&7• &a[优秀] 干草捆 &7x4'
+      novice_rare_gold_ingot: '&7• &9[稀有] 金锭 &7x4'
+      novice_rare_lapis_lazuli: '&7• &9[稀有] 青金石 &7x12'
+      novice_rare_redstone: '&7• &9[稀有] 红石粉 &7x16'
+      novice_rare_emerald: '&7• &9[稀有] 绿宝石 &7x3'
+      novice_rare_experience_bottle: '&7• &9[稀有] 附魔之瓶 &7x4'
+      novice_rare_iron_pickaxe: '&7• &9[稀有] 铁镐 &7x1'
+      novice_rare_iron_axe: '&7• &9[稀有] 铁斧 &7x1'
+      novice_rare_iron_sword: '&7• &9[稀有] 铁剑 &7x1'
+      novice_rare_shield: '&7• &9[稀有] 盾牌 &7x1'
+      novice_rare_fishing_rod: '&7• &9[稀有] 钓鱼竿 &7x1'
+      novice_rare_bucket: '&7• &9[稀有] 铁桶 &7x1'
+      novice_rare_shears: '&7• &9[稀有] 剪刀 &7x1'
+      novice_epic_diamond: '&7• &5[史诗] 钻石 &7x1'
+      novice_epic_golden_carrot: '&7• &5[史诗] 金胡萝卜 &7x8'
+      novice_epic_ender_pearl: '&7• &5[史诗] 末影珍珠 &7x2'
+      novice_epic_name_tag: '&7• &5[史诗] 命名牌 &7x1'
+      novice_epic_saddle: '&7• &5[史诗] 鞍 &7x1'
+      novice_epic_obsidian: '&7• &5[史诗] 黑曜石 &7x8'
+      novice_legendary_diamond_pickaxe: '&7• &6[传说] 钻石镐 &7x1'
+      novice_legendary_golden_apple: '&7• &6[传说] 金苹果 &7x2'
+      mining_common_cobblestone: '&7• &f[普通] 圆石 &7x64'
+      mining_common_stone: '&7• &f[普通] 石头 &7x64'
+      mining_common_cobbled_deepslate: '&7• &f[普通] 深板岩圆石 &7x64'
+      mining_common_deepslate: '&7• &f[普通] 深板岩 &7x32'
+      mining_common_andesite: '&7• &f[普通] 安山岩 &7x32'
+      mining_common_diorite: '&7• &f[普通] 闪长岩 &7x32'
+      mining_common_granite: '&7• &f[普通] 花岗岩 &7x32'
+      mining_common_tuff: '&7• &f[普通] 凝灰岩 &7x32'
+      mining_common_calcite: '&7• &f[普通] 方解石 &7x32'
+      mining_common_smooth_basalt: '&7• &f[普通] 平滑玄武岩 &7x32'
+      mining_common_stone_bricks: '&7• &f[普通] 石砖 &7x32'
+      mining_common_deepslate_bricks: '&7• &f[普通] 深板岩砖 &7x32'
+      mining_common_polished_andesite: '&7• &f[普通] 磨制安山岩 &7x32'
+      mining_common_polished_diorite: '&7• &f[普通] 磨制闪长岩 &7x32'
+      mining_common_polished_granite: '&7• &f[普通] 磨制花岗岩 &7x32'
+      mining_common_gravel: '&7• &f[普通] 沙砾 &7x32'
+      mining_common_sand: '&7• &f[普通] 沙子 &7x32'
+      mining_common_coal: '&7• &f[普通] 煤炭 &7x16'
+      mining_common_charcoal: '&7• &f[普通] 木炭 &7x16'
+      mining_common_torch: '&7• &f[普通] 火把 &7x32'
+      mining_common_ladder: '&7• &f[普通] 梯子 &7x32'
+      mining_common_stick: '&7• &f[普通] 木棍 &7x32'
+      mining_common_oak_log: '&7• &f[普通] 橡木原木 &7x16'
+      mining_common_rail: '&7• &f[普通] 铁轨 &7x16'
+      mining_uncommon_raw_iron: '&7• &a[优秀] 粗铁 &7x12'
+      mining_uncommon_iron_ingot: '&7• &a[优秀] 铁锭 &7x8'
+      mining_uncommon_raw_copper: '&7• &a[优秀] 粗铜 &7x24'
+      mining_uncommon_copper_ingot: '&7• &a[优秀] 铜锭 &7x24'
+      mining_uncommon_redstone: '&7• &a[优秀] 红石粉 &7x32'
+      mining_uncommon_lapis_lazuli: '&7• &a[优秀] 青金石 &7x24'
+      mining_uncommon_flint: '&7• &a[优秀] 燧石 &7x16'
+      mining_uncommon_amethyst_shard: '&7• &a[优秀] 紫水晶碎片 &7x16'
+      mining_uncommon_quartz: '&7• &a[优秀] 下界石英 &7x24'
+      mining_uncommon_glowstone_dust: '&7• &a[优秀] 荧石粉 &7x16'
+      mining_uncommon_lantern: '&7• &a[优秀] 灯笼 &7x8'
+      mining_uncommon_powered_rail: '&7• &a[优秀] 动力铁轨 &7x6'
+      mining_uncommon_minecart: '&7• &a[优秀] 矿车 &7x1'
+      mining_uncommon_hopper: '&7• &a[优秀] 漏斗 &7x2'
+      mining_uncommon_blast_furnace: '&7• &a[优秀] 高炉 &7x2'
+      mining_uncommon_iron_pickaxe: '&7• &a[优秀] 铁镐 &7x1'
+      mining_rare_raw_gold: '&7• &9[稀有] 粗金 &7x8'
+      mining_rare_gold_ingot: '&7• &9[稀有] 金锭 &7x8'
+      mining_rare_emerald: '&7• &9[稀有] 绿宝石 &7x6'
+      mining_rare_experience_bottle: '&7• &9[稀有] 附魔之瓶 &7x8'
+      mining_rare_obsidian: '&7• &9[稀有] 黑曜石 &7x16'
+      mining_rare_crying_obsidian: '&7• &9[稀有] 哭泣的黑曜石 &7x4'
+      mining_rare_magma_block: '&7• &9[稀有] 岩浆块 &7x16'
+      mining_rare_prismarine_crystals: '&7• &9[稀有] 海晶砂粒 &7x8'
+      mining_rare_iron_block: '&7• &9[稀有] 铁块 &7x2'
+      mining_rare_coal_block: '&7• &9[稀有] 煤炭块 &7x4'
+      mining_rare_redstone_block: '&7• &9[稀有] 红石块 &7x4'
+      mining_rare_lapis_block: '&7• &9[稀有] 青金石块 &7x2'
+      mining_epic_diamond: '&7• &5[史诗] 钻石 &7x4'
+      mining_epic_diamond_pickaxe: '&7• &5[史诗] 钻石镐 &7x1'
+      mining_epic_diamond_shovel: '&7• &5[史诗] 钻石锹 &7x1'
+      mining_epic_diamond_axe: '&7• &5[史诗] 钻石斧 &7x1'
+      mining_epic_gold_block: '&7• &5[史诗] 金块 &7x2'
+      mining_epic_emerald_block: '&7• &5[史诗] 绿宝石块 &7x1'
+      mining_legendary_netherite_scrap: '&7• &6[传说] 下界合金碎片 &7x1'
+      mining_legendary_diamond_block: '&7• &6[传说] 钻石块 &7x1'
+      adventure_common_bread: '&7• &f[普通] 面包 &7x16'
+      adventure_common_cooked_beef: '&7• &f[普通] 牛排 &7x12'
+      adventure_common_cooked_chicken: '&7• &f[普通] 熟鸡肉 &7x12'
+      adventure_common_cooked_porkchop: '&7• &f[普通] 熟猪排 &7x12'
+      adventure_common_cooked_salmon: '&7• &f[普通] 熟鲑鱼 &7x12'
+      adventure_common_cooked_cod: '&7• &f[普通] 熟鳕鱼 &7x12'
+      adventure_common_baked_potato: '&7• &f[普通] 烤马铃薯 &7x16'
+      adventure_common_apple: '&7• &f[普通] 苹果 &7x8'
+      adventure_common_carrot: '&7• &f[普通] 胡萝卜 &7x16'
+      adventure_common_sweet_berries: '&7• &f[普通] 甜浆果 &7x16'
+      adventure_common_torch: '&7• &f[普通] 火把 &7x32'
+      adventure_common_oak_log: '&7• &f[普通] 橡木原木 &7x24'
+      adventure_common_spruce_log: '&7• &f[普通] 云杉原木 &7x24'
+      adventure_common_jungle_log: '&7• &f[普通] 丛林原木 &7x24'
+      adventure_common_acacia_log: '&7• &f[普通] 金合欢原木 &7x24'
+      adventure_common_dark_oak_log: '&7• &f[普通] 深色橡木原木 &7x24'
+      adventure_common_bamboo: '&7• &f[普通] 竹子 &7x32'
+      adventure_common_sugar_cane: '&7• &f[普通] 甘蔗 &7x24'
+      adventure_common_leather: '&7• &f[普通] 皮革 &7x8'
+      adventure_common_string: '&7• &f[普通] 线 &7x16'
+      adventure_common_feather: '&7• &f[普通] 羽毛 &7x16'
+      adventure_common_bone: '&7• &f[普通] 骨头 &7x16'
+      adventure_common_arrow: '&7• &f[普通] 箭 &7x32'
+      adventure_common_paper: '&7• &f[普通] 纸 &7x24'
+      adventure_uncommon_iron_ingot: '&7• &a[优秀] 铁锭 &7x8'
+      adventure_uncommon_gold_ingot: '&7• &a[优秀] 金锭 &7x6'
+      adventure_uncommon_coal: '&7• &a[优秀] 煤炭 &7x16'
+      adventure_uncommon_book: '&7• &a[优秀] 书 &7x8'
+      adventure_uncommon_slime_ball: '&7• &a[优秀] 黏液球 &7x8'
+      adventure_uncommon_gunpowder: '&7• &a[优秀] 火药 &7x12'
+      adventure_uncommon_ink_sac: '&7• &a[优秀] 墨囊 &7x12'
+      adventure_uncommon_glow_ink_sac: '&7• &a[优秀] 荧光墨囊 &7x6'
+      adventure_uncommon_rabbit_hide: '&7• &a[优秀] 兔子皮 &7x8'
+      adventure_uncommon_honey_bottle: '&7• &a[优秀] 蜂蜜瓶 &7x4'
+      adventure_uncommon_pumpkin_seeds: '&7• &a[优秀] 南瓜种子 &7x16'
+      adventure_uncommon_melon_seeds: '&7• &a[优秀] 西瓜种子 &7x16'
+      adventure_uncommon_cocoa_beans: '&7• &a[优秀] 可可豆 &7x16'
+      adventure_uncommon_compass: '&7• &a[优秀] 指南针 &7x1'
+      adventure_uncommon_clock: '&7• &a[优秀] 时钟 &7x1'
+      adventure_uncommon_spyglass: '&7• &a[优秀] 望远镜 &7x1'
+      adventure_rare_emerald: '&7• &9[稀有] 绿宝石 &7x8'
+      adventure_rare_experience_bottle: '&7• &9[稀有] 附魔之瓶 &7x8'
+      adventure_rare_ender_pearl: '&7• &9[稀有] 末影珍珠 &7x4'
+      adventure_rare_blaze_rod: '&7• &9[稀有] 烈焰棒 &7x4'
+      adventure_rare_magma_cream: '&7• &9[稀有] 岩浆膏 &7x4'
+      adventure_rare_phantom_membrane: '&7• &9[稀有] 幻翼膜 &7x2'
+      adventure_rare_prismarine_shard: '&7• &9[稀有] 海晶碎片 &7x16'
+      adventure_rare_prismarine_crystals: '&7• &9[稀有] 海晶砂粒 &7x8'
+      adventure_rare_nautilus_shell: '&7• &9[稀有] 鹦鹉螺壳 &7x2'
+      adventure_rare_saddle: '&7• &9[稀有] 鞍 &7x1'
+      adventure_rare_name_tag: '&7• &9[稀有] 命名牌 &7x1'
+      adventure_rare_golden_carrot: '&7• &9[稀有] 金胡萝卜 &7x12'
+      adventure_epic_diamond: '&7• &5[史诗] 钻石 &7x3'
+      adventure_epic_golden_apple: '&7• &5[史诗] 金苹果 &7x2'
+      adventure_epic_ghast_tear: '&7• &5[史诗] 恶魂之泪 &7x2'
+      adventure_epic_diamond_sword: '&7• &5[史诗] 钻石剑 &7x1'
+      adventure_epic_diamond_boots: '&7• &5[史诗] 钻石靴子 &7x1'
+      adventure_epic_turtle_scute: '&7• &5[史诗] 海龟鳞甲 &7x2'
+      adventure_legendary_heart_of_the_sea: '&7• &6[传说] 海洋之心 &7x1'
+      adventure_legendary_totem_of_undying: '&7• &6[传说] 不死图腾 &7x1'
+      veteran_common_iron_ingot: '&7• &f[普通] 铁锭 &7x16'
+      veteran_common_gold_ingot: '&7• &f[普通] 金锭 &7x12'
+      veteran_common_copper_ingot: '&7• &f[普通] 铜锭 &7x32'
+      veteran_common_coal: '&7• &f[普通] 煤炭 &7x32'
+      veteran_common_redstone: '&7• &f[普通] 红石粉 &7x32'
+      veteran_common_lapis_lazuli: '&7• &f[普通] 青金石 &7x32'
+      veteran_common_quartz: '&7• &f[普通] 下界石英 &7x32'
+      veteran_common_amethyst_shard: '&7• &f[普通] 紫水晶碎片 &7x24'
+      veteran_common_glowstone_dust: '&7• &f[普通] 荧石粉 &7x24'
+      veteran_common_obsidian: '&7• &f[普通] 黑曜石 &7x24'
+      veteran_common_cooked_beef: '&7• &f[普通] 牛排 &7x24'
+      veteran_common_cooked_porkchop: '&7• &f[普通] 熟猪排 &7x24'
+      veteran_common_cooked_salmon: '&7• &f[普通] 熟鲑鱼 &7x24'
+      veteran_common_golden_carrot: '&7• &f[普通] 金胡萝卜 &7x16'
+      veteran_common_arrow: '&7• &f[普通] 箭 &7x64'
+      veteran_common_torch: '&7• &f[普通] 火把 &7x64'
+      veteran_common_leather: '&7• &f[普通] 皮革 &7x16'
+      veteran_common_book: '&7• &f[普通] 书 &7x12'
+      veteran_common_gunpowder: '&7• &f[普通] 火药 &7x24'
+      veteran_common_slime_ball: '&7• &f[普通] 黏液球 &7x16'
+      veteran_common_blaze_rod: '&7• &f[普通] 烈焰棒 &7x8'
+      veteran_common_ender_pearl: '&7• &f[普通] 末影珍珠 &7x8'
+      veteran_common_prismarine_shard: '&7• &f[普通] 海晶碎片 &7x32'
+      veteran_common_prismarine_crystals: '&7• &f[普通] 海晶砂粒 &7x16'
+      veteran_uncommon_emerald: '&7• &a[优秀] 绿宝石 &7x12'
+      veteran_uncommon_experience_bottle: '&7• &a[优秀] 附魔之瓶 &7x16'
+      veteran_uncommon_iron_block: '&7• &a[优秀] 铁块 &7x4'
+      veteran_uncommon_gold_block: '&7• &a[优秀] 金块 &7x2'
+      veteran_uncommon_redstone_block: '&7• &a[优秀] 红石块 &7x4'
+      veteran_uncommon_lapis_block: '&7• &a[优秀] 青金石块 &7x4'
+      veteran_uncommon_coal_block: '&7• &a[优秀] 煤炭块 &7x4'
+      veteran_uncommon_crying_obsidian: '&7• &a[优秀] 哭泣的黑曜石 &7x8'
+      veteran_uncommon_magma_cream: '&7• &a[优秀] 岩浆膏 &7x8'
+      veteran_uncommon_phantom_membrane: '&7• &a[优秀] 幻翼膜 &7x4'
+      veteran_uncommon_ghast_tear: '&7• &a[优秀] 恶魂之泪 &7x2'
+      veteran_uncommon_nautilus_shell: '&7• &a[优秀] 鹦鹉螺壳 &7x4'
+      veteran_uncommon_name_tag: '&7• &a[优秀] 命名牌 &7x2'
+      veteran_uncommon_saddle: '&7• &a[优秀] 鞍 &7x1'
+      veteran_uncommon_hopper: '&7• &a[优秀] 漏斗 &7x4'
+      veteran_uncommon_sea_lantern: '&7• &a[优秀] 海晶灯 &7x8'
+      veteran_rare_diamond: '&7• &9[稀有] 钻石 &7x6'
+      veteran_rare_emerald_block: '&7• &9[稀有] 绿宝石块 &7x2'
+      veteran_rare_golden_apple: '&7• &9[稀有] 金苹果 &7x4'
+      veteran_rare_diamond_sword: '&7• &9[稀有] 钻石剑 &7x1'
+      veteran_rare_diamond_pickaxe: '&7• &9[稀有] 钻石镐 &7x1'
+      veteran_rare_diamond_axe: '&7• &9[稀有] 钻石斧 &7x1'
+      veteran_rare_diamond_shovel: '&7• &9[稀有] 钻石锹 &7x1'
+      veteran_rare_diamond_helmet: '&7• &9[稀有] 钻石头盔 &7x1'
+      veteran_rare_diamond_boots: '&7• &9[稀有] 钻石靴子 &7x1'
+      veteran_rare_turtle_scute: '&7• &9[稀有] 海龟鳞甲 &7x4'
+      veteran_rare_shulker_shell: '&7• &9[稀有] 潜影壳 &7x2'
+      veteran_rare_heart_of_the_sea: '&7• &9[稀有] 海洋之心 &7x1'
+      veteran_epic_diamond_chestplate: '&7• &5[史诗] 钻石胸甲 &7x1'
+      veteran_epic_diamond_leggings: '&7• &5[史诗] 钻石护腿 &7x1'
+      veteran_epic_diamond_block: '&7• &5[史诗] 钻石块 &7x1'
+      veteran_epic_netherite_scrap: '&7• &5[史诗] 下界合金碎片 &7x2'
+      veteran_epic_enchanted_golden_apple: '&7• &5[史诗] 附魔金苹果 &7x1'
+      veteran_epic_wither_skeleton_skull: '&7• &5[史诗] 凋灵骷髅头颅 &7x1'
+      veteran_legendary_netherite_ingot: '&7• &6[传说] 下界合金锭 &7x1'
+      veteran_legendary_totem_of_undying: '&7• &6[传说] 不死图腾 &7x1'
+    scrolls:
+      reward-note: '&7从60种奖励中按权重抽取3种，不重复，名称颜色代表稀有度。'
+      carry: '&7放在背包或副手中推进任务，移出后暂停进度。'
+      novice:
+        duration: '&7首次激活后24小时内，完成全部固定与随机目标。'
+        name: '&e新手卷轴'
+      claim: '&7完成后在 /uq scroll 领奖，并消耗对应卷轴。'
+      adventure:
+        duration: '&7首次激活后24小时内，完成全部固定与随机目标。'
+        name: '&e冒险卷轴'
+      mining:
+        duration: '&7首次激活后48小时内，完成全部固定与随机目标。'
+        name: '&e勘探卷轴'
+      veteran:
+        duration: '&7首次激活后72小时内，完成全部固定与随机目标。'
+        name: '&e老兵卷轴'
+    milestones:
+      mining:
+        name: '&a矿脉足迹'
+      description: '&7无需接取，永久累计进度，设有5档阶段奖励。'
+      forestry:
+        name: '&a林海守望'
+      hunting:
+        name: '&a荒野守护'
+      fishing:
+        name: '&a渔歌长卷'
+      farming:
+        name: '&a丰收年鉴'
+      exploration:
+        name: '&a行者足迹'
+    battlepasses:
+      example:
+        name: '&6生存远征战令'
+        description: '&7每月轮换，30级奖励，包含每日、每周与赛季远征任务。'
+        free: '&7所有任务与免费奖励轨道均向玩家开放。'
+        season-name: 本月远征
+      tasks:
+        zombie_hunter:
+          name: '&e僵尸巡逻'
+        daily_stone:
+          name: '&e今日石料'
+        daily_logs:
+          name: '&e今日木材'
+        daily_fish:
+          name: '&e鲜鱼入篓'
+        daily_harvest:
+          name: '&e每日收成'
+        daily_explorer:
+          name: '&e出门走走'
+        lumberjack:
+          name: '&e伐木合约'
+        weekly_miner:
+          name: '&e采矿合约'
+        weekly_guardian:
+          name: '&e守卫合约'
+        weekly_fishing:
+          name: '&e垂钓合约'
+        weekly_harvest:
+          name: '&e丰收合约'
+        weekly_enchanter:
+          name: '&e附魔合约'
+        expedition:
+          name: '&e远征准备'
+        season_supplies:
+          name: '&e营地补给'
+        season_harvest:
+          name: '&e满仓之月'
+        season_nether:
+          name: '&e下界勘察'
+        season_treasure:
+          name: '&e深埋珍宝'
+        season_mastery:
+          name: '&e荒野大师'
+      task-instructions: '&7完成下列全部目标，自动获得显示的战令积分。'
+      groups:
+        daily: 每日
+        weekly: 每周
+        season: 赛季
+    ui:
+      menus:
+        battlepass:
+          catalog-title: '&6战令 &8[{page}/{pages}]'
+          detail-title: '&8{name} &7• {level}'
+          contents:
+            j:
+              item:
+                lore:
+                  '2': '&7周期：&f{group}'
+                  '6': '&6完成积分：&e{points}'
+                  '7': '&7解锁周次：&f{unlock-week}'
+            a:
+              catalog-item:
+                name: '&6&l{name}'
+            q:
+              item:
+                name: '&a免费奖励 &8• &f{level}'
+                lore: {}
+              state-items:
+                available:
+                  name: '&a&l免费奖励 &8• &f{level}'
+                  lore:
+                    '6': '&a➜ {state}'
+                claimed:
+                  name: '&8免费奖励 • {level}'
+            l:
+              item:
+                name: '&7等级 {level}'
+              state-items:
+                available:
+                  name: '&a&l等级 {level}'
+                claimed:
+                  name: '&b等级 {level}'
+                claiming:
+                  name: '&e等级 {level}'
+                review:
+                  name: '&c等级 {level}'
+            r:
+              item:
+                name: '&6高级奖励 &8• &f{level}'
+              state-items:
+                available:
+                  name: '&6&l高级奖励 &8• &f{level}'
+                  lore:
+                    '6': '&6➜ {state}'
+                premium_required:
+                  name: '&c高级奖励 &8• &f{level}'
+                claimed:
+                  name: '&8高级奖励 • {level}'
+          items:
+            y:
+              item:
+                name: '&e任务周期：&f{challenge-group}'
+                lore:
+                  '0': '&7点击切换全部、每日、'
+                  '1': '&7每周与赛季任务。'
+            p:
+              item:
+                lore: {}
+        main:
+          contents:
+            q:
+              item:
+                lore:
+                  '2': '&6任务目标'
+                  '8': '&6奖励预览'
+                  '10': '&7分类：&f{categories}'
+                  '11': '&7前置任务：&f{prerequisites}'
+              state-items:
+                completed:
+                  name: '&a&l{name} &8• {state}'
+                locked:
+                  name: '&c{name} &8• {state}'
+        milestone:
+          catalog-title: '&a里程碑 &8[{page}/{pages}]'
+          contents:
+            a:
+              catalog-item:
+                name: '&a&l{name}'
+            l:
+              item:
+                name: '&7&e第 {level} 阶段 &7- {track}'
+              state-items:
+                available:
+                  name: '&a&l&e第 {level} 阶段 &7- {track}'
+                claimed:
+                  name: '&8&e第 {level} 阶段 &7- {track}'
+                claiming:
+                  name: '&e&e第 {level} 阶段 &7- {track}'
+                review:
+                  name: '&c&e第 {level} 阶段 &7- {track}'
+        period:
+          title: '&e周期任务 &7• {period-group} &8[{page}/{pages}]'
+        scroll:
+          title: '&e卷轴任务 &8[{page}/{pages}]'
+      progress-bar:
+        complete: '&a■'
+        remaining: '&8■'
+        suffix: ' &7{percent}%'
+      category-menu:
+        item:
+          lore: {}
+      quest-name: '&f{name} &8• {state}'
+      description: '{description}'
+      blank: ' '
+      objectives: '{objectives}'
+      progress: '{progress-bar}'
+      hint: '{hint}'
+      rewards: '{rewards}'
+      state: '{state}'
+      page-number: '&7{page}/{pages}'
+      category-name: '{category-name}'
+      category-description: '{category-description}'
+      category-selected: '{category-selected}'
+      objective-display:
+        kill: 击杀{target}
+        block_break: 破坏{target}
+        fish: 钓取{target}
+        consume: 消耗{target}
+      reward-title: '&6奖励预览'
+      task-categories: '&7分类：&f{categories}'
+      task-prerequisites: '&7前置任务：&f{prerequisites}'
+      no-prerequisites: '&7无'
+      prerequisite-complete: '&a✓ &f{name}'
+      prerequisite-pending: '&c✗ &f{name}'
+      prerequisite-separator: '&7、'
+    guide:
+      accept: '&e左键接取任务，未解锁任务需先完成并领取前置任务。'
+      progress: '&7接取后开始记录进度，完成后回到此处领奖。'
+      modes: '&7下方按钮可查看周期委托、卷轴、里程碑与战令。'
+objective-display:
+  target-separator: ' / '
+  targets:
+    kill: 生物
+    block_break: 方块
+    fish: 物品
+    consume: 物品
+editor:
+  category:
+    edit: '&e编辑任务分类'
+    select: '&e点击选择'
+    remove: '&a已选中，点击取消'
+  summary:
+    type: '&7类型：&f{value}'
+    section: 配置段
+    keys: '&7字段数：&f{value}'
+    list: 列表
+    size: '&7条目数：&f{value}'
+    value: '&7当前值：&f{value}'
+  message:
+    disabled: '&#98FB98[UltimateQuest] &c配置编辑器已关闭。'
+    target-not-found: '&#98FB98[UltimateQuest] &c找不到配置文件。'
+    invalid-number: '&#98FB98[UltimateQuest] &c请输入有效的有限数值。'
+    saved: '&#98FB98[UltimateQuest] &a已校验并保存 &f{value}'
+    save-failed: '&#98FB98[UltimateQuest] &c未应用更改：{value}'
+    invalid-key: '&#98FB98[UltimateQuest] &c字段名必须未被使用，且只能包含字母、数字、_ 或 -。'
+    invalid-new-child-value: '&#98FB98[UltimateQuest] &c字段值无效。'
+    command-usage: '&#98FB98[UltimateQuest] &c用法：/uq editor [quest|task|category|battlepass|milestone|period|scroll|pool|reward-pool|menu] [ID]'
+    invalid-integer: '&#98FB98[UltimateQuest] &c请输入有效整数。'
+  prompt:
+    description: '&#98FB98[UltimateQuest] &f{value}'
+    cancel-tip: '&#98FB98[UltimateQuest] &7输入 &fcancel &7取消本次输入。'
+    string: 请输入 &f{path} &7的新文本值
+    new-child: 请输入新字段的名称
+    new-child-value: 请输入 &f{path} &7的值：section/{} 建配置段，[] 建空列表，;; 分隔列表，string:文本 强制文本。
+    integer: 请输入 &f{path} &7的新整数
+    double: 请输入 &f{path} &7的新数值
+    integer-list-entry: 请输入 &f{path} &7的新整数列表条目
+    string-list-entry: 请输入 &f{path} &7的新列表条目
+    integer-list-entry-edit: 请输入列表第 &f{index} &7项的新整数
+    string-list-entry-edit: 请输入列表第 &f{index} &7项的新内容
+  root:
+    title: UltimateQuest 配置编辑器
+    close:
+      name: '&c关闭'
+  action:
+    open: '&a左键打开'
+    delete: '&c右键删除'
+    toggle: '&a左键切换开关'
+    increase-ten: '&a左键增加 10'
+    decrease-ten: '&c右键减少 10'
+    increase-one: '&aShift 左键增加 1'
+    decrease-one: '&cShift 右键减少 1'
+    middle-clear: '&e中键清除'
+    input-number: '&e按丢弃键输入准确数值'
+    edit: '&a左键编辑'
+  file-list:
+    title: 配置编辑器：{scope}
+    type: '&7类型：&f{value}'
+    file: '&7文件：&f{value}'
+    back: '&7返回编辑器首页'
+    refresh: '&7刷新文件列表（保留会话草稿）'
+  common:
+    back:
+      name: '&e返回'
+      desc: '&7返回上级页面'
+    refresh:
+      name: '&e刷新'
+    previous-page:
+      name: '&e上一页'
+      desc: '&7前往上一页'
+    next-page:
+      name: '&e下一页'
+      desc: '&7前往下一页'
+    reload:
+      name: '&a校验并应用'
+    clear:
+      name: '&c清除'
+      desc: '&7移除此字段'
+    root: 根配置
+  section:
+    path:
+      name: '&e当前路径'
+      desc: '&f{value}'
+    reload:
+      line-1: '&7更改仅保存在当前会话草稿中。'
+      line-2: '&7校验通过后备份、保存并重载生效。'
+    add-child:
+      name: '&e添加字段'
+      generic: '&7在当前配置段下添加字段'
+  discard:
+    name: '&c丢弃草稿'
+    desc: '&7Shift 点击丢弃更改，并重新读取此文件'
+  lore:
+    path: '&7路径：&f{value}'
+    kind: '&7字段类型：&f{value}'
+  item:
+    raw-hint: '&e右键：原始字段；Shift 右键：删除'
+    title: 物品编辑：{path}
+    slot:
+      name: '&e物品复制槽'
+      line-1: '&7从背包拿起物品后，点击第 13 号槽位。'
+      line-2: '&7仅复制物品，不会消耗；应用后更新草稿。'
+    raw:
+      name: '&e原始配置段'
+      desc: '&7查看此物品的全部字段'
+    apply:
+      name: '&a应用物品到草稿'
+      desc: '&7将第 13 号槽位的物品序列化到当前配置段'
+    clear:
+      name: '&c清空物品配置段'
+      desc: '&7移除此物品的整个配置段'
+    back:
+      desc: '&7返回上级配置段'
+  list:
+    title: 列表编辑：{path}
+    move-up: '&eShift 左键上移'
+    move-down: '&eShift 右键下移'
+    add:
+      name: '&e添加条目'
+      desc: '&7向列表添加一条新内容'
+    clear:
+      name: '&c清空列表'
+      desc: '&7移除列表内全部条目'
+    current: '&7当前值：&f{value}'
+  reset-time:
+    title: 重置时间：{path}
+    mode:
+      name: '&e当前重置模式'
+      value: '&7模式：&f{value}'
+      desc: '&7点击切换模式（Shift 反向），并填入默认时间值。'
+    preview:
+      name: '&e重置边界预览'
+      previous: '&7上次重置：&f{value}'
+      next: '&7下次重置：&f{value}'
+    add:
+      name: '&e添加时间'
+      desc: '&7添加一条重置时间'
+    manual:
+      name: '&e编辑时间值'
+    current: '&7当前值：&f{value}'
+    never:
+      name: '&e未知重置模式'
+      desc: '&7请点击模式按钮选择有效的重置模式。'
+    prompt-add: 请输入 &f{path} &7的新重置时间
+    prompt-edit: 请输入第 &f{index} &7条重置时间的新值
+    invalid: '&#98FB98[UltimateQuest] &c无效的重置时间：{value}'
+  sub-button:
+    not-set: <未设置>
+  scope:
+    reward_pool: 奖励池
+    quest: 目标库
+    task: 普通任务
+    category: 任务分类
+    battlepass: 战令
+    milestone: 里程碑
+    period: 周期任务
+    scroll: 任务卷轴
+    pool: 任务池
+    menu: 菜单
+  value-kind:
+    section: 配置段
+    item_section: 物品配置段
+    boolean: 开关
+    integer: 整数
+    double: 小数
+    string: 文本
+    string_list: 文本列表
+    integer_list: 整数列表
+    unknown: 未知类型

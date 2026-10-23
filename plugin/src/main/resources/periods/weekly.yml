@@ -1,0 +1,22 @@
+enabled: true
+name: '{lang:defaults.periods.weekly.name}'
+reset-mode: CRON
+reset-time: 0 0 0 ? * MON
+claim-grace-seconds: 86400
+source:
+  pool: weekly
+  count: 3
+task:
+  auto-claim: false
+  description:
+  - '{lang:defaults.periods.weekly.description}'
+  - '{lang:defaults.periods.reward-note}'
+  - '{lang:defaults.periods.claim-note}'
+  rewards:
+    supply:
+      type: random
+      pool: period_weekly
+      count: 3
+      repeat: false
+      display:
+        name: '{lang:defaults.periods.weekly-pack}'

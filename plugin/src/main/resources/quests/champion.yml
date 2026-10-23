@@ -1,0 +1,41 @@
+enabled: true
+categories:
+- combat
+name: '{lang:defaults.objectives.champion}'
+icon:
+  material: IRON_SWORD
+trigger: kill
+amount: 20
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  targets:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - ZOMBIE
+      - HUSK
+      - DROWNED
+      - SKELETON
+      - STRAY
+      - WITHER_SKELETON
+      - CREEPER
+      - SPIDER
+      - CAVE_SPIDER
+      - ENDERMAN
+      - BLAZE
+      - WITCH
+      - SLIME
+      - MAGMA_CUBE
+      - PILLAGER
+      - VINDICATOR
+      - EVOKER
+anti-abuse:
+  ignore-spawner-mobs: true
+  ignore-internal-block-breaks: true

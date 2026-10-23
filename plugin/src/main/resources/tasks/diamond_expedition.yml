@@ -1,0 +1,29 @@
+enabled: true
+name: '{lang:defaults.tasks.diamond_expedition.name}'
+description:
+- '{lang:defaults.tasks.diamond_expedition.description}'
+icon:
+  material: DIAMOND
+categories:
+- gathering
+auto-claim: false
+prerequisites:
+- ore_prospector
+source:
+  quest: diamond
+  amount: 8
+rewards:
+  diamond:
+    type: item
+    item:
+      material: DIAMOND
+      amount: 2
+    display:
+      name: '{lang:defaults.rewards.diamond_2}'
+  experience_bottle:
+    type: item
+    item:
+      material: EXPERIENCE_BOTTLE
+      amount: 8
+    display:
+      name: '{lang:defaults.rewards.experience_bottle_8}'
