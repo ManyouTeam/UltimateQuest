@@ -1,9 +1,11 @@
 package cn.superiormc.ultimatequest.objects.quests;
 
+import cn.superiormc.ultimatequest.managers.ConfigManager;
 import cn.superiormc.ultimatequest.managers.RewardManager;
-import cn.superiormc.ultimatequest.managers.QuestManager;
-import java.time.Instant;
+import cn.superiormc.ultimatequest.managers.SeasonManager;
+import cn.superiormc.ultimatequest.objects.time.TimeWindow;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,10 @@ public final class QuestInstance {
     private final UUID instanceId;
 
     private QuestDefinition definition;
+
+    private final String season;
+
+    private TimeWindow seasonWindow;
 
     private final long acceptedAt;
 
@@ -61,6 +67,9 @@ public final class QuestInstance {
     public QuestInstance(QuestDefinition definition, String source, String sourceId, String cycle, long expiresAt) {
         instanceId = UUID.randomUUID();
         this.definition = definition;
+        season = definition.growth() && SeasonManager.seasonManager != null
+                ? SeasonManager.seasonManager.season(definition) : definition.season();
+        seasonWindow = initialWindow(definition, season);
         acceptedAt = System.currentTimeMillis();
         state = "ACTIVE";
         this.source = source;
@@ -72,7 +81,7 @@ public final class QuestInstance {
     }
 
     public QuestInstance(String id, ConfigurationSection section) throws Exception {
-        this(id, section, QuestManager.questManager.resolveDefinition(id, section));
+        this(id, section, ConfigManager.configManager.resolveDefinition(id, section));
     }
 
     public QuestInstance(String id, ConfigurationSection section, QuestDefinition definition) throws Exception {
@@ -85,6 +94,14 @@ public final class QuestInstance {
         instanceId = UUID.fromString(section.getString("instance-id", ""));
         acceptedAt = section.getLong("accepted-at");
         this.definition = definition;
+        String prefix = definition.catalogKey() + "/";
+        season = definition.growth() ? section.getString("season", id.startsWith(prefix)
+                ? id.substring(prefix.length()) : "") : definition.season();
+        if (!season.isEmpty() && !season.matches("[a-z0-9_-]+")) {
+            throw new IllegalArgumentException("Invalid saved season: " + id);
+        }
+        ConfigurationSection savedWindow = section.getConfigurationSection("season-time");
+        seasonWindow = savedWindow == null ? initialWindow(definition, season) : TimeWindow.read(savedWindow);
         source = section.getString("source", "normal");
         sourceId = section.getString("source-id", "");
         cycle = section.getString("cycle", "");
@@ -165,6 +182,50 @@ public final class QuestInstance {
         return instanceId;
     }
 
+    private static TimeWindow initialWindow(QuestDefinition definition, String season) {
+        if (definition.growth() && SeasonManager.seasonManager != null) {
+            return SeasonManager.seasonManager.window(definition, season);
+        }
+        return new TimeWindow(definition.startsAt(), definition.endsAt(),
+                definition.settings().getLong("claim-grace-seconds", 0L), false);
+    }
+
+    public String season() {
+        return season;
+    }
+
+    public Instant startsAt() {
+        return currentWindow().startsAt();
+    }
+
+    public Instant endsAt() {
+        return currentWindow().endsAt();
+    }
+
+    private TimeWindow currentWindow() {
+        return SeasonManager.seasonManager == null || !definition.growth() ? seasonWindow
+                : SeasonManager.seasonManager.window(definition, season, seasonWindow);
+    }
+
+    public boolean active(Instant now) {
+        if (!definition.growth()) {
+            return definition.active(now);
+        }
+        return !paused() && currentWindow().active(now);
+    }
+
+    public boolean claimable(Instant now) {
+        if (!definition.growth()) {
+            return definition.claimable(now);
+        }
+        return !paused() && currentWindow().claimable(now);
+    }
+
+    private boolean paused() {
+        return SeasonManager.seasonManager == null ? definition.settings().getBoolean("paused", false)
+                : SeasonManager.seasonManager.paused(definition);
+    }
+
     private static List<String> drawRewards(QuestDefinition definition) {
         ConfigurationSection rewards = definition.rewards();
         if (!RewardManager.rewardManager.hasRandom(rewards)) {
@@ -225,7 +286,7 @@ public final class QuestInstance {
         if (source.equals("scroll")) {
             return "scroll/" + sourceId + "/" + definition.id();
         }
-        return definition.storageKey();
+        return definition.growth() && !season.isEmpty() ? definition.catalogKey() + "/" + season : definition.catalogKey();
     }
 
     public String source() {
@@ -310,7 +371,7 @@ public final class QuestInstance {
     }
 
     public boolean premium(Player player) {
-        return premium || (definition.settings().getBoolean("premium-by-permission", true) && definition.premium(player));
+        return premium || (definition.settings().getBoolean("premium-by-permission", true) && definition.premium(player, season));
     }
 
     public void premium(boolean value) {
@@ -367,13 +428,16 @@ public final class QuestInstance {
     }
 
     public boolean refreshDefinition(QuestDefinition updated) {
-        if (!definition.growth() || !definition.storageKey().equals(updated.storageKey())) {
+        String currentSeason = SeasonManager.seasonManager == null ? updated.season() : SeasonManager.seasonManager.season(updated);
+        if (!definition.growth() || !definition.catalogKey().equals(updated.catalogKey()) || !season.equals(currentSeason)) {
             throw new IllegalArgumentException("Cannot replace a different progression definition");
         }
-        if (definition == updated || definition.snapshot().equals(updated.snapshot())) {
+        TimeWindow updatedWindow = initialWindow(updated, season);
+        if ((definition == updated || definition.snapshot().equals(updated.snapshot())) && seasonWindow.equals(updatedWindow)) {
             return false;
         }
         definition = updated;
+        seasonWindow = updatedWindow;
         unlockStages();
         return true;
     }
@@ -433,6 +497,14 @@ public final class QuestInstance {
         section.set("instance-id", instanceId.toString());
         section.set("template-id", definition.catalogKey());
         section.set("accepted-at", acceptedAt);
+        if (definition.growth()) {
+            section.set("season", season);
+            section.set("season-time", null);
+            ConfigurationSection savedWindow = section.createSection("season-time");
+            savedWindow.set("starts-at", startsAt() == null ? null : startsAt().toString());
+            savedWindow.set("ends-at", endsAt() == null ? null : endsAt().toString());
+            savedWindow.set("claim-grace-seconds", seasonWindow.claimGraceSeconds());
+        }
         if (source.equals("scroll")) {
             section.set("objective-ids", definition.objectives().stream().map(QuestObjective::getId).toList());
         }

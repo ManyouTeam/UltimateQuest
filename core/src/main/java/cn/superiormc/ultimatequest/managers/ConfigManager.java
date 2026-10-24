@@ -12,29 +12,27 @@ import cn.superiormc.ultimatequest.objects.quests.ObjectScroll;
 import cn.superiormc.ultimatequest.objects.quests.ObjectTask;
 import cn.superiormc.ultimatequest.objects.quests.ObjectTaskLimits;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
+import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
 import cn.superiormc.ultimatequest.objects.rewards.ObjectRewardPool;
-import cn.superiormc.ultimatequest.utils.ConfigurationFileUtil;
-
+import cn.superiormc.ultimatequest.utils.CommonUtil;
+import cn.superiormc.ultimatequest.utils.TextUtil;
+import java.io.File;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 public class ConfigManager extends AbstractManager {
 
     public static ConfigManager configManager;
-
-    private static final List<String> MENU_FILES = List.of("main", "battlepass", "milestone", "period", "scroll");
 
     public Map<String, ObjectQuest> questConfigs = new LinkedHashMap<>();
 
@@ -58,83 +56,171 @@ public class ConfigManager extends AbstractManager {
 
     public FileConfiguration config;
 
-    private volatile YamlConfiguration menuConfig = new YamlConfiguration();
+    public Map<String, ObjectMenu> menuConfigs = new LinkedHashMap<>();
 
-    private volatile List<String> menuIds = List.of();
+    private YamlConfiguration menuSettings = new YamlConfiguration();
 
     public ConfigManager() {
         configManager = this;
-        UltimateQuest.instance.reloadConfig();
-        config = UltimateQuest.instance.getConfig();
-        loadMenus();
-    }
-
-    private void loadMenus() {
         try {
-            reloadMenus();
+            reloadMainConfig();
         } catch (Exception exception) {
-            ErrorManager.errorManager.sendErrorMessage("§cError: Could not load menu configurations: " + exception.getMessage());
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not load configurations: " + exception.getMessage());
+            throw new IllegalStateException("Could not load configurations", exception);
         }
     }
 
-    public synchronized void reloadMenus() throws Exception {
+    public synchronized void reloadMainConfig() {
+        UltimateQuest.instance.reloadConfig();
+        reloadMenus();
+        config = UltimateQuest.instance.getConfig();
+    }
+
+    public synchronized void reloadMenus() {
+        initMenuConfigs();
+    }
+
+    public synchronized void reloadMenuConfigs() {
+        initMenuConfigs();
+    }
+
+    private void initMenuConfigs() {
+        menuConfigs.clear();
+        menuSettings = new YamlConfiguration();
         File directory = new File(UltimateQuest.instance.getDataFolder(), "menus");
         if (!directory.exists() && !directory.mkdirs()) {
-            throw new IllegalStateException("Could not create menu configuration directory: " + directory);
+            ErrorManager.errorManager.sendErrorMessage(
+                    "§cError: Could not create menu configuration directory: " + directory);
+            return;
         }
-        YamlConfiguration candidate = new YamlConfiguration();
-        loadMenuFile(directory, "settings", null, candidate);
-        Set<String> ids = new LinkedHashSet<>(MENU_FILES);
-        File[] files = directory.listFiles((ignored, name) -> name.toLowerCase(Locale.ROOT).endsWith(".yml"));
-        if (files != null) {
-            for (File file : files) {
-                String id = file.getName().substring(0, file.getName().length() - 4).toLowerCase(Locale.ROOT);
-                if (!id.equals("settings")) {
-                    ids.add(id);
+        File settingsFile = new File(directory, "settings.yml");
+        try {
+            menuSettings = YamlConfiguration.loadConfiguration(settingsFile);
+        } catch (Exception exception) {
+            ErrorManager.errorManager.sendErrorMessage(
+                    "§cError: Could not load menu configuration menus/settings.yml: " + exception.getMessage());
+        }
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            if (file.equals(settingsFile)) {
+                continue;
+            }
+            String id = file.getName().substring(0, file.getName().length() - 4)
+                    .toLowerCase(Locale.ROOT);
+            String resource = "menus/" + directory.toPath().relativize(file.toPath())
+                    .toString().replace(File.separatorChar, '/');
+            try {
+                YamlConfiguration section = YamlConfiguration.loadConfiguration(file);
+                ObjectMenu menu = new ObjectMenu(id, section);
+                if (menuConfigs.putIfAbsent(id, menu) != null) {
+                    throw new IllegalArgumentException("Duplicate menu id: " + id);
                 }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded menu: " + id + ".yml!");
+            } catch (Throwable throwable) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load menu " + resource + ": " + throwable.getMessage());
             }
         }
-        for (String id : ids) {
-            loadMenuFile(directory, id, id, candidate);
-        }
-        Map<String, ObjectMenu> menus = new LinkedHashMap<>();
-        for (String id : ids) {
-            menus.put(id, new ObjectMenu(id, candidate.getConfigurationSection(id)));
-        }
-        ObjectMenu.commonMenus = menus;
-        menuConfig = candidate;
-        menuIds = List.copyOf(ids);
     }
 
-    public synchronized void reloadQuestConfigs(SeasonManager seasons) throws Exception {
-        seasons.beginReload();
-        initCategoryConfigs();
-        initQuestConfigs();
-        loadQuestConfigs();
-        initQuestPoolConfigs();
-        initRewardPoolConfigs();
-        loadRewardPoolConfigs();
-        initTaskConfigs();
-        initBattlePassConfigs(seasons);
-        initMilestoneConfigs(seasons);
-        initPeriodConfigs();
-        initScrollConfigs();
-        loadTaskConfigs();
-        initTaskLimits();
-        seasons.commitReload();
-    }
-
-    private void initCategoryConfigs() throws Exception {
-        categoryConfigs.clear();
-        for (var entry : ConfigurationFileUtil.readFolder("categories", true).entrySet()) {
-            categoryConfigs.put(entry.getKey(), new ObjectCategory(entry.getKey(), entry.getValue()));
+    @Override
+    public synchronized void onInit() {
+        Map<String, ObjectCategory> previousCategories = categoryConfigs;
+        Map<String, ObjectQuest> previousQuests = questConfigs;
+        Map<String, ObjectQuestPool> previousQuestPools = questPoolConfigs;
+        Map<String, ObjectRewardPool> previousRewardPools = rewardPoolConfigs;
+        Map<String, ObjectTask> previousTasks = taskConfigs;
+        Map<String, ObjectBattlePass> previousBattlePasses = battlePassConfigs;
+        Map<String, ObjectMilestone> previousMilestones = milestoneConfigs;
+        Map<String, ObjectPeriod> previousPeriods = periodConfigs;
+        Map<String, ObjectScroll> previousScrolls = scrollConfigs;
+        ObjectTaskLimits previousTaskLimits = taskLimits;
+        SeasonManager seasons = SeasonManager.seasonManager;
+        try {
+            seasons.beginReload();
+            initCategoryConfigs();
+            initQuestConfigs();
+            loadQuestConfigs();
+            initQuestPoolConfigs();
+            initRewardPoolConfigs();
+            loadRewardPoolConfigs();
+            initTaskConfigs();
+            initBattlePassConfigs();
+            initMilestoneConfigs();
+            initPeriodConfigs();
+            initScrollConfigs();
+            loadTaskConfigs();
+            initTaskLimits();
+            for (QuestDefinition definition : getDefinitions().values()) {
+                if (definition.growth()) {
+                    seasons.prepare(definition, Instant.now());
+                }
+            }
+            seasons.commitReload();
+        } catch (Exception | Error exception) {
+            categoryConfigs = previousCategories;
+            questConfigs = previousQuests;
+            questPoolConfigs = previousQuestPools;
+            rewardPoolConfigs = previousRewardPools;
+            taskConfigs = previousTasks;
+            battlePassConfigs = previousBattlePasses;
+            milestoneConfigs = previousMilestones;
+            periodConfigs = previousPeriods;
+            scrollConfigs = previousScrolls;
+            taskLimits = previousTaskLimits;
+            seasons.cancelReload();
+            if (exception instanceof Error error) {
+                throw error;
+            }
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not load quest configurations: " + exception.getMessage());
+            throw new IllegalStateException("Could not load quest configurations", exception);
         }
     }
 
-    private void initQuestConfigs() throws Exception {
-        questConfigs.clear();
-        for (var entry : ConfigurationFileUtil.readFolder("quests").entrySet()) {
-            questConfigs.put(entry.getKey(), new ObjectQuest(entry.getKey(), entry.getValue()));
+    private void initCategoryConfigs() {
+        categoryConfigs = new LinkedHashMap<>();
+        File directory = new File(UltimateQuest.instance.getDataFolder(), "categories");
+        if (!directory.exists() && !directory.mkdirs()) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
+            return;
+        }
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            String id = file.getName().substring(0, file.getName().length() - 4)
+                    .toLowerCase(Locale.ROOT);
+            try {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                ObjectCategory value = new ObjectCategory(id, config);
+                if (categoryConfigs.putIfAbsent(id, value) != null) {
+                    throw new IllegalArgumentException("Duplicate category id: " + id);
+                }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded category: " + id + ".yml!");
+            } catch (Throwable throwable) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load category " + file.getName() + ": " + throwable.getMessage());
+            }
+        }
+    }
+
+    private void initQuestConfigs() {
+        questConfigs = new LinkedHashMap<>();
+        File directory = new File(UltimateQuest.instance.getDataFolder(), "quests");
+        if (!directory.exists() && !directory.mkdirs()) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
+            return;
+        }
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            String id = file.getName().substring(0, file.getName().length() - 4)
+                    .toLowerCase(Locale.ROOT);
+            try {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                if (!config.getBoolean("enabled", true)) {
+                    continue;
+                }
+                ObjectQuest value = new ObjectQuest(id, config);
+                if (questConfigs.putIfAbsent(id, value) != null) {
+                    throw new IllegalArgumentException("Duplicate quest id: " + id);
+                }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded quest: " + id + ".yml!");
+            } catch (Throwable throwable) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load quest " + file.getName() + ": " + throwable.getMessage());
+            }
         }
     }
 
@@ -146,18 +232,56 @@ public class ConfigManager extends AbstractManager {
         }
     }
 
-    private void initQuestPoolConfigs() throws Exception {
-        questPoolConfigs.clear();
+    private void initQuestPoolConfigs() {
+        questPoolConfigs = new LinkedHashMap<>();
+        File directory = new File(UltimateQuest.instance.getDataFolder(), "pools");
+        if (!directory.exists() && !directory.mkdirs()) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
+            return;
+        }
         Map<String, YamlConfiguration> library = getQuestConfigurations();
-        for (var entry : ConfigurationFileUtil.readFolder("pools").entrySet()) {
-            questPoolConfigs.put(entry.getKey(), new ObjectQuestPool(entry.getKey(), entry.getValue(), library));
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            String id = file.getName().substring(0, file.getName().length() - 4)
+                    .toLowerCase(Locale.ROOT);
+            try {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                if (!config.getBoolean("enabled", true)) {
+                    continue;
+                }
+                ObjectQuestPool value = new ObjectQuestPool(id, config, library);
+                if (questPoolConfigs.putIfAbsent(id, value) != null) {
+                    throw new IllegalArgumentException("Duplicate quest pool id: " + id);
+                }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded quest pool: " + id + ".yml!");
+            } catch (Throwable throwable) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load quest pool " + file.getName() + ": " + throwable.getMessage());
+            }
         }
     }
 
-    private void initRewardPoolConfigs() throws Exception {
-        rewardPoolConfigs.clear();
-        for (var entry : ConfigurationFileUtil.readFolder("reward-pools").entrySet()) {
-            rewardPoolConfigs.put(entry.getKey(), new ObjectRewardPool(entry.getKey(), entry.getValue()));
+    private void initRewardPoolConfigs() {
+        rewardPoolConfigs = new LinkedHashMap<>();
+        File directory = new File(UltimateQuest.instance.getDataFolder(), "reward-pools");
+        if (!directory.exists() && !directory.mkdirs()) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
+            return;
+        }
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            String id = file.getName().substring(0, file.getName().length() - 4)
+                    .toLowerCase(Locale.ROOT);
+            try {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                if (!config.getBoolean("enabled", true)) {
+                    continue;
+                }
+                ObjectRewardPool value = new ObjectRewardPool(id, config);
+                if (rewardPoolConfigs.putIfAbsent(id, value) != null) {
+                    throw new IllegalArgumentException("Duplicate reward pool id: " + id);
+                }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded reward pool: " + id + ".yml!");
+            } catch (Throwable throwable) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load reward pool " + file.getName() + ": " + throwable.getMessage());
+            }
         }
     }
 
@@ -168,50 +292,145 @@ public class ConfigManager extends AbstractManager {
         }
     }
 
-    private void initTaskConfigs() throws Exception {
-        taskConfigs.clear();
+    private void initTaskConfigs() {
+        taskConfigs = new LinkedHashMap<>();
+        File directory = new File(UltimateQuest.instance.getDataFolder(), "tasks");
+        if (!directory.exists() && !directory.mkdirs()) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
+            return;
+        }
         Map<String, YamlConfiguration> library = getQuestConfigurations();
         Map<String, YamlConfiguration> rewards = getRewardPoolConfigurations();
-        for (var entry : ConfigurationFileUtil.readFolder("tasks").entrySet()) {
-            taskConfigs.put(entry.getKey(), new ObjectTask(entry.getKey(), entry.getValue(), library, rewards));
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            String id = file.getName().substring(0, file.getName().length() - 4)
+                    .toLowerCase(Locale.ROOT);
+            try {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                if (!config.getBoolean("enabled", true)) {
+                    continue;
+                }
+                ObjectTask value = new ObjectTask(id, config, library, rewards);
+                if (taskConfigs.putIfAbsent(id, value) != null) {
+                    throw new IllegalArgumentException("Duplicate task id: " + id);
+                }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded task: " + id + ".yml!");
+            } catch (Throwable throwable) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load task " + file.getName() + ": " + throwable.getMessage());
+            }
         }
     }
 
-    private void initBattlePassConfigs(SeasonManager seasons) throws Exception {
-        battlePassConfigs.clear();
+    private void initBattlePassConfigs() {
+        battlePassConfigs = new LinkedHashMap<>();
+        File directory = new File(UltimateQuest.instance.getDataFolder(), "battlepasses");
+        if (!directory.exists() && !directory.mkdirs()) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
+            return;
+        }
         Map<String, YamlConfiguration> library = getQuestConfigurations();
         Map<String, YamlConfiguration> rewards = getRewardPoolConfigurations();
-        for (var entry : ConfigurationFileUtil.readFolder("battlepasses").entrySet()) {
-            battlePassConfigs.put(entry.getKey(), new ObjectBattlePass(entry.getKey(), entry.getValue(), library, rewards, seasons));
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            String id = file.getName().substring(0, file.getName().length() - 4)
+                    .toLowerCase(Locale.ROOT);
+            try {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                if (!config.getBoolean("enabled", true)) {
+                    continue;
+                }
+                ObjectBattlePass value = new ObjectBattlePass(id, config, library, rewards);
+                if (battlePassConfigs.putIfAbsent(id, value) != null) {
+                    throw new IllegalArgumentException("Duplicate battle pass id: " + id);
+                }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded battle pass: " + id + ".yml!");
+            } catch (Throwable throwable) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load battle pass " + file.getName() + ": " + throwable.getMessage());
+            }
         }
     }
 
-    private void initMilestoneConfigs(SeasonManager seasons) throws Exception {
-        milestoneConfigs.clear();
+    private void initMilestoneConfigs() {
+        milestoneConfigs = new LinkedHashMap<>();
+        File directory = new File(UltimateQuest.instance.getDataFolder(), "milestones");
+        if (!directory.exists() && !directory.mkdirs()) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
+            return;
+        }
         Map<String, YamlConfiguration> library = getQuestConfigurations();
         Map<String, YamlConfiguration> rewards = getRewardPoolConfigurations();
-        for (var entry : ConfigurationFileUtil.readFolder("milestones").entrySet()) {
-            milestoneConfigs.put(entry.getKey(), new ObjectMilestone(entry.getKey(), entry.getValue(), library, rewards, seasons));
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            String id = file.getName().substring(0, file.getName().length() - 4)
+                    .toLowerCase(Locale.ROOT);
+            try {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                if (!config.getBoolean("enabled", true)) {
+                    continue;
+                }
+                ObjectMilestone value = new ObjectMilestone(id, config, library, rewards);
+                if (milestoneConfigs.putIfAbsent(id, value) != null) {
+                    throw new IllegalArgumentException("Duplicate milestone id: " + id);
+                }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded milestone: " + id + ".yml!");
+            } catch (Throwable throwable) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load milestone " + file.getName() + ": " + throwable.getMessage());
+            }
         }
     }
 
-    private void initPeriodConfigs() throws Exception {
-        periodConfigs.clear();
+    private void initPeriodConfigs() {
+        periodConfigs = new LinkedHashMap<>();
+        File directory = new File(UltimateQuest.instance.getDataFolder(), "periods");
+        if (!directory.exists() && !directory.mkdirs()) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
+            return;
+        }
         Map<String, YamlConfiguration> pools = getPoolConfigurations();
         Map<String, YamlConfiguration> library = getQuestConfigurations();
         Map<String, YamlConfiguration> rewards = getRewardPoolConfigurations();
-        for (var entry : ConfigurationFileUtil.readFolder("periods").entrySet()) {
-            periodConfigs.put(entry.getKey(), new ObjectPeriod(entry.getKey(), entry.getValue(), pools, library, rewards));
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            String id = file.getName().substring(0, file.getName().length() - 4)
+                    .toLowerCase(Locale.ROOT);
+            try {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                if (!config.getBoolean("enabled", true)) {
+                    continue;
+                }
+                ObjectPeriod value = new ObjectPeriod(id, config, pools, library, rewards);
+                if (periodConfigs.putIfAbsent(id, value) != null) {
+                    throw new IllegalArgumentException("Duplicate period id: " + id);
+                }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded period: " + id + ".yml!");
+            } catch (Throwable throwable) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load period " + file.getName() + ": " + throwable.getMessage());
+            }
         }
     }
 
-    private void initScrollConfigs() throws Exception {
-        scrollConfigs.clear();
+    private void initScrollConfigs() {
+        scrollConfigs = new LinkedHashMap<>();
+        File directory = new File(UltimateQuest.instance.getDataFolder(), "scrolls");
+        if (!directory.exists() && !directory.mkdirs()) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
+            return;
+        }
         Map<String, YamlConfiguration> pools = getPoolConfigurations();
         Map<String, YamlConfiguration> library = getQuestConfigurations();
         Map<String, YamlConfiguration> rewards = getRewardPoolConfigurations();
-        for (var entry : ConfigurationFileUtil.readFolder("scrolls").entrySet()) {
-            scrollConfigs.put(entry.getKey(), new ObjectScroll(entry.getKey(), entry.getValue(), pools, library, rewards));
+        for (File file : CommonUtil.getYamlFiles(directory)) {
+            String id = file.getName().substring(0, file.getName().length() - 4)
+                    .toLowerCase(Locale.ROOT);
+            try {
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                if (!config.getBoolean("enabled", true)) {
+                    continue;
+                }
+                ObjectScroll value = new ObjectScroll(id, config, pools, library, rewards);
+                if (scrollConfigs.putIfAbsent(id, value) != null) {
+                    throw new IllegalArgumentException("Duplicate scroll id: " + id);
+                }
+                TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded scroll: " + id + ".yml!");
+            } catch (Throwable throwable) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load scroll " + file.getName() + ": " + throwable.getMessage());
+            }
         }
     }
 
@@ -233,20 +452,20 @@ public class ConfigManager extends AbstractManager {
         }
     }
 
-    public ObjectTaskLimits getTaskLimits() {
+    public synchronized ObjectTaskLimits getTaskLimits() {
         return taskLimits;
     }
 
-    public boolean getBoolean(String path) {
-        return configuration(path).getBoolean(normalizePath(path), false);
+    public synchronized boolean getBoolean(String path) {
+        return config.getBoolean(path, false);
     }
 
-    public boolean getBoolean(String path, boolean defaultValue) {
-        return configuration(path).getBoolean(normalizePath(path), defaultValue);
+    public synchronized boolean getBoolean(String path, boolean defaultValue) {
+        return config.getBoolean(path, defaultValue);
     }
 
-    public String getString(String path, String... args) {
-        String s = configuration(path).getString(normalizePath(path));
+    public synchronized String getString(String path, String... args) {
+        String s = config.getString(path);
         if (s == null) {
             if (args.length == 0) {
                 return null;
@@ -264,47 +483,50 @@ public class ConfigManager extends AbstractManager {
         return s.replace("{plugin_folder}", String.valueOf(UltimateQuest.instance.getDataFolder()));
     }
 
-    public int getInt(String path, int defaultValue) {
-        return configuration(path).getInt(normalizePath(path), defaultValue);
+    public synchronized int getInt(String path, int defaultValue) {
+        return config.getInt(path, defaultValue);
     }
 
-    public double getDouble(String path, double defaultValue) {
-        return configuration(path).getDouble(normalizePath(path), defaultValue);
+    public synchronized double getDouble(String path, double defaultValue) {
+        return config.getDouble(path, defaultValue);
     }
 
-    public ConfigurationSection getSection(String path) {
-        FileConfiguration selected = configuration(path);
-        String normalized = normalizePath(path);
-        if (selected.getConfigurationSection(normalized) == null) {
+    public synchronized ConfigurationSection getSection(String path) {
+        if (config.getConfigurationSection(path) == null) {
             return new MemoryConfiguration();
         }
-        return selected.getConfigurationSection(normalized);
+        return config.getConfigurationSection(path);
     }
 
-    public ConfigurationSection getMenu(String id) {
-        if (!hasMenu(id)) {
+    public synchronized ConfigurationSection getMenuSettings() {
+        return menuSettings;
+    }
+
+    public synchronized ConfigurationSection getMenu(String id) {
+        if (id == null) {
             return new MemoryConfiguration();
         }
-        return getMenuObject(id).getConfig();
+        ObjectMenu menu = menuConfigs.get(id.toLowerCase(Locale.ROOT));
+        return menu == null ? new MemoryConfiguration() : menu.getConfig();
     }
 
-    public ObjectMenu getMenuObject(String id) {
-        ObjectMenu menu = ObjectMenu.commonMenus.get(id.toLowerCase(Locale.ROOT));
+    public synchronized ObjectMenu getMenuObject(String id) {
+        ObjectMenu menu = id == null ? null : menuConfigs.get(id.toLowerCase(Locale.ROOT));
         if (menu == null) {
             throw new IllegalArgumentException("Unknown menu: " + id);
         }
         return menu;
     }
 
-    public boolean hasMenu(String id) {
-        return id != null && menuIds.contains(id.toLowerCase(Locale.ROOT));
+    public synchronized boolean hasMenu(String id) {
+        return id != null && menuConfigs.containsKey(id.toLowerCase(Locale.ROOT));
     }
 
-    public Collection<String> getMenuIds() {
-        return menuIds;
+    public synchronized Collection<String> getMenuIds() {
+        return List.copyOf(menuConfigs.keySet());
     }
 
-    public ObjectQuest getQuest(String id) {
+    public synchronized ObjectQuest getQuest(String id) {
         ObjectQuest value = questConfigs.get(id);
         if (value == null) {
             throw new IllegalArgumentException("Unknown quest: " + id);
@@ -312,13 +534,13 @@ public class ConfigManager extends AbstractManager {
         return value;
     }
 
-    public Map<String, YamlConfiguration> getQuestConfigurations() {
+    public synchronized Map<String, YamlConfiguration> getQuestConfigurations() {
         Map<String, YamlConfiguration> result = new LinkedHashMap<>();
         questConfigs.forEach((id, value) -> result.put(id, value.getConfig()));
         return Collections.unmodifiableMap(result);
     }
 
-    public ObjectCategory getCategory(String id) {
+    public synchronized ObjectCategory getCategory(String id) {
         ObjectCategory value = categoryConfigs.get(id);
         if (value == null) {
             throw new IllegalArgumentException("Unknown category: " + id);
@@ -326,13 +548,13 @@ public class ConfigManager extends AbstractManager {
         return value;
     }
 
-    public Map<String, YamlConfiguration> getCategoryConfigurations() {
+    public synchronized Map<String, YamlConfiguration> getCategoryConfigurations() {
         Map<String, YamlConfiguration> result = new LinkedHashMap<>();
         categoryConfigs.forEach((id, value) -> result.put(id, value.getConfig()));
         return Collections.unmodifiableMap(result);
     }
 
-    public ObjectTask getTask(String id) {
+    public synchronized ObjectTask getTask(String id) {
         QuestDefinition definition = getDefinitions().get(id);
         if (definition instanceof ObjectTask task) {
             return task;
@@ -340,7 +562,7 @@ public class ConfigManager extends AbstractManager {
         throw new IllegalArgumentException("Unknown task: " + id);
     }
 
-    public ObjectBattlePass getBattlePass(String id) {
+    public synchronized ObjectBattlePass getBattlePass(String id) {
         ObjectBattlePass value = battlePassConfigs.get(id);
         if (value == null) {
             throw new IllegalArgumentException("Unknown battlePass: " + id);
@@ -348,7 +570,7 @@ public class ConfigManager extends AbstractManager {
         return value;
     }
 
-    public ObjectMilestone getMilestone(String id) {
+    public synchronized ObjectMilestone getMilestone(String id) {
         ObjectMilestone value = milestoneConfigs.get(id);
         if (value == null) {
             throw new IllegalArgumentException("Unknown milestone: " + id);
@@ -356,7 +578,7 @@ public class ConfigManager extends AbstractManager {
         return value;
     }
 
-    public ObjectPeriod getPeriod(String id) {
+    public synchronized ObjectPeriod getPeriod(String id) {
         ObjectPeriod value = periodConfigs.get(id);
         if (value == null) {
             throw new IllegalArgumentException("Unknown period: " + id);
@@ -364,13 +586,13 @@ public class ConfigManager extends AbstractManager {
         return value;
     }
 
-    public Map<String, YamlConfiguration> getPeriodConfigurations() {
+    public synchronized Map<String, YamlConfiguration> getPeriodConfigurations() {
         Map<String, YamlConfiguration> result = new LinkedHashMap<>();
         periodConfigs.forEach((id, value) -> result.put(id, value.getConfig()));
         return Collections.unmodifiableMap(result);
     }
 
-    public ObjectScroll getScroll(String id) {
+    public synchronized ObjectScroll getScroll(String id) {
         ObjectScroll value = scrollConfigs.get(id);
         if (value == null) {
             throw new IllegalArgumentException("Unknown scroll: " + id);
@@ -378,13 +600,13 @@ public class ConfigManager extends AbstractManager {
         return value;
     }
 
-    public Map<String, YamlConfiguration> getScrollConfigurations() {
+    public synchronized Map<String, YamlConfiguration> getScrollConfigurations() {
         Map<String, YamlConfiguration> result = new LinkedHashMap<>();
         scrollConfigs.forEach((id, value) -> result.put(id, value.getConfig()));
         return Collections.unmodifiableMap(result);
     }
 
-    public ObjectQuestPool getQuestPool(String id) {
+    public synchronized ObjectQuestPool getQuestPool(String id) {
         ObjectQuestPool value = questPoolConfigs.get(id);
         if (value == null) {
             throw new IllegalArgumentException("Unknown questPool: " + id);
@@ -392,13 +614,13 @@ public class ConfigManager extends AbstractManager {
         return value;
     }
 
-    public Map<String, YamlConfiguration> getPoolConfigurations() {
+    public synchronized Map<String, YamlConfiguration> getPoolConfigurations() {
         Map<String, YamlConfiguration> result = new LinkedHashMap<>();
         questPoolConfigs.forEach((id, value) -> result.put(id, value.getConfig()));
         return Collections.unmodifiableMap(result);
     }
 
-    public ObjectRewardPool getRewardPool(String id) {
+    public synchronized ObjectRewardPool getRewardPool(String id) {
         ObjectRewardPool value = rewardPoolConfigs.get(id);
         if (value == null) {
             throw new IllegalArgumentException("Unknown rewardPool: " + id);
@@ -406,13 +628,13 @@ public class ConfigManager extends AbstractManager {
         return value;
     }
 
-    public Map<String, YamlConfiguration> getRewardPoolConfigurations() {
+    public synchronized Map<String, YamlConfiguration> getRewardPoolConfigurations() {
         Map<String, YamlConfiguration> result = new LinkedHashMap<>();
         rewardPoolConfigs.forEach((id, value) -> result.put(id, value.getConfig()));
         return Collections.unmodifiableMap(result);
     }
 
-    public Map<String, QuestDefinition> getDefinitions() {
+    public synchronized Map<String, QuestDefinition> getDefinitions() {
         Map<String, QuestDefinition> result = new LinkedHashMap<>();
         taskConfigs.values().forEach(task -> registerDefinition(result, task));
         for (ObjectBattlePass pass : battlePassConfigs.values()) {
@@ -423,32 +645,69 @@ public class ConfigManager extends AbstractManager {
         return result;
     }
 
-    private void loadMenuFile(File directory, String fileName, String sectionName, YamlConfiguration candidate) throws Exception {
-        YamlConfiguration loaded = InitManager.loadConfiguration(new File(directory, fileName + ".yml"));
-        ConfigurationSection target = sectionName == null ? candidate : candidate.createSection(sectionName);
-        copySection(loaded, target);
+    public Collection<QuestDefinition> getListedDefinitions() {
+        return getDefinitions().values().stream().filter(definition -> !definition.growth() && definition.listed()
+                && !definition.isBattlePassTask()).toList();
     }
 
-    private static void copySection(ConfigurationSection source, ConfigurationSection target) {
-        for (String key : source.getKeys(false)) {
-            ConfigurationSection child = source.getConfigurationSection(key);
-            if (child == null) {
-                target.set(key, source.get(key));
-            } else {
-                copySection(child, target.createSection(key));
-            }
+    public QuestDefinition getDefinition(String id) {
+        QuestDefinition definition = getDefinitions().get(id.toLowerCase(Locale.ROOT));
+        return definition != null && !definition.growth() ? definition : null;
+    }
+
+    public Collection<QuestDefinition> getGrowthDefinitions(String type) {
+        return getDefinitions().values().stream().filter(definition -> definition.type().equals(type)).toList();
+    }
+
+    public QuestDefinition getGrowthDefinition(String type, String id) {
+        return getDefinitions().get(type + "/" + id.toLowerCase(Locale.ROOT));
+    }
+
+    public synchronized QuestDefinition resolveDefinition(String key, ConfigurationSection section) {
+        if (section == null) {
+            throw new IllegalArgumentException("Missing quest instance: " + key);
         }
+        String templateId = section.getString("template-id", "");
+        String source = section.getString("source", "normal");
+        if (source.equals("period")) {
+            String group = section.getString("source-id", "");
+            ConfigurationSection period = getPeriodConfigurations().get(group);
+            if (period == null) {
+                return null;
+            }
+            ConfigurationSection configured = period.getConfigurationSection("source");
+            if (!templateId.startsWith(group + "_") || configured == null) {
+                throw new IllegalArgumentException("Invalid periodic quest reference: " + key);
+            }
+            String objective = configured.contains("pool") ? templateId.substring(group.length() + 1) : null;
+            if (objective != null && !getQuestConfigurations().containsKey(objective)) {
+                return null;
+            }
+            return getPeriod(group).createDefinition(objective, getQuestConfigurations());
+        }
+        if (source.equals("scroll")) {
+            if (!getScrollConfigurations().containsKey(templateId)) {
+                return null;
+            }
+            return getScroll(templateId).createDefinition(section.getStringList("objective-ids"));
+        }
+        QuestDefinition definition = getDefinitions().get(templateId);
+        if (definition != null && source.equals("normal")
+                && !(definition.growth() ? key.equals(definition.catalogKey()) || key.startsWith(definition.catalogKey() + "/")
+                : definition.storageKey().equals(key))) {
+            return null;
+        }
+        return definition;
     }
 
-    private FileConfiguration configuration(String path) {
-        return path != null && path.startsWith("menu.") ? menuConfig : config;
+    public List<String> getDisplayCategories(QuestDefinition definition, QuestInstance instance) {
+        if (instance != null && Set.of("period", "scroll").contains(instance.source())) {
+            return definition.categories();
+        }
+        return getDefinitions().getOrDefault(definition.catalogKey(), definition).categories();
     }
 
-    private static String normalizePath(String path) {
-        return path != null && path.startsWith("menu.") ? path.substring("menu.".length()) : path;
-    }
-
-    private static void registerDefinition(Map<String, QuestDefinition> definitions, QuestDefinition definition) {
+    private void registerDefinition(Map<String, QuestDefinition> definitions, QuestDefinition definition) {
         if (definitions.putIfAbsent(definition.catalogKey(), definition) != null) {
             throw new IllegalArgumentException("Duplicate definition: " + definition.catalogKey());
         }

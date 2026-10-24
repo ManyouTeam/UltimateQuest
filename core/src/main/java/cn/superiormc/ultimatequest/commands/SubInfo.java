@@ -1,13 +1,15 @@
 package cn.superiormc.ultimatequest.commands;
 
+import cn.superiormc.ultimatequest.managers.CacheManager;
+import cn.superiormc.ultimatequest.managers.ConfigManager;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.QuestManager;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
 import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
+import cn.superiormc.ultimatequest.utils.SchedulerUtil;
 import cn.superiormc.ultimatequest.utils.TextUtil;
 import java.util.ArrayList;
 import java.util.List;
-import cn.superiormc.ultimatequest.utils.SchedulerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -39,8 +41,8 @@ public final class SubInfo extends AbstractCommand {
             return;
         }
         SchedulerUtil.runSync(target, () -> {
-            if (!QuestManager.questManager.ready(target.getUniqueId())) {
-                QuestManager.questManager.join(target);
+            if (!CacheManager.cacheManager.isReady(target.getUniqueId())) {
+                CacheManager.cacheManager.join(target);
                 LanguageManager.languageManager.sendStringText("quests.loading");
                 return;
             }
@@ -51,7 +53,7 @@ public final class SubInfo extends AbstractCommand {
     @Override
     protected List<String> getConsoleTabResult(String[] args) {
         if (args.length == 2) {
-            return QuestManager.questManager.definitions().stream().map(definition -> definition.id()).toList();
+            return ConfigManager.configManager.getListedDefinitions().stream().map(definition -> definition.id()).toList();
         }
         if (args.length == 3) {
             return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
@@ -65,8 +67,8 @@ public final class SubInfo extends AbstractCommand {
             return List.of();
         }
         List<String> ids = new ArrayList<>();
-        QuestManager.questManager.definitions().forEach(definition -> ids.add(definition.id()));
-        QuestManager.questManager.instances(player.getUniqueId()).forEach(quest -> ids.add(quest.key()));
+        ConfigManager.configManager.getListedDefinitions().forEach(definition -> ids.add(definition.id()));
+        CacheManager.cacheManager.instances(player.getUniqueId()).forEach(quest -> ids.add(quest.key()));
         for (String source : List.of("period", "scroll")) {
             QuestManager.questManager.assignedInstances(player.getUniqueId(), source).forEach(quest -> ids.add(quest.key()));
         }
@@ -74,8 +76,8 @@ public final class SubInfo extends AbstractCommand {
     }
 
     public static void showInfo(Player player, String id) {
-        QuestInstance instance = QuestManager.questManager.instance(player.getUniqueId(), id);
-        QuestDefinition definition = instance == null ? QuestManager.questManager.definition(id) : instance.definition();
+        QuestInstance instance = CacheManager.cacheManager.instance(player.getUniqueId(), id);
+        QuestDefinition definition = instance == null ? ConfigManager.configManager.getDefinition(id) : instance.definition();
         if (definition == null) {
             LanguageManager.languageManager.sendStringText(player, "quests.not-found");
             return;

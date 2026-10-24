@@ -7,10 +7,10 @@ import cn.superiormc.ultimatequest.database.SQLDatabase;
 import cn.superiormc.ultimatequest.database.YamlDatabase;
 import cn.superiormc.ultimatequest.objects.quests.QuestPlayerData;
 import cn.superiormc.ultimatequest.utils.TextUtil;
-
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public final class QuestStorage extends AbstractManager {
 
@@ -32,6 +32,14 @@ public final class QuestStorage extends AbstractManager {
         return DatabaseExecutor.supplyDatabaseTask(database::allPlayers);
     }
 
+    public YamlConfiguration loadSeasons() {
+        return database.loadServerData("seasons");
+    }
+
+    public void saveSeasons(YamlConfiguration data, long expectedRevision) {
+        database.saveServerData("seasons", data, expectedRevision);
+    }
+
     public CompletableFuture<Void> saveCritical(QuestPlayerData snapshot) {
         return DatabaseExecutor.executePlayerTask(snapshot.storageId(), () -> database.updateData(snapshot));
     }
@@ -44,20 +52,13 @@ public final class QuestStorage extends AbstractManager {
         return DatabaseExecutor.executePlayerTask("scroll:" + snapshot.storageId(), () -> database.updateData(snapshot, true));
     }
 
-    public void save(QuestPlayerData snapshot) {
-        DatabaseExecutor.executePlayerSave(snapshot.storageId(), () -> {
-            try {
-                database.updateData(snapshot);
-            } catch (RuntimeException exception) {
-                ErrorManager.errorManager.sendErrorMessage("§cError: Could not save player " + snapshot.storageId() + ": " + exception.getMessage());
-            }
-        });
-    }
-
     @Override
     public void onPluginDisable() {
-        DatabaseExecutor.quiesce();
         TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fWaiting for all pending database task finished, this may freeze your server if your database is lost connection.");
+        if (CacheManager.cacheManager != null) {
+            CacheManager.cacheManager.finishShutdown();
+        }
+        DatabaseExecutor.quiesce();
         DatabaseExecutor.await();
         DatabaseExecutor.shutdown();
         database.onClose();

@@ -35,7 +35,7 @@ public final class ProgressionManager implements ProgressionService {
     public Optional<ProgressionView> progress(UUID player, String type, String id) {
         QuestInstance quest = coordinator.growthInstance(player, type, id);
         return quest == null ? Optional.empty() : Optional.of(new ProgressionView(type, quest.definition().id(),
-                quest.definition().season(), quest.total(), quest.level(), quest.stageStates()));
+                quest.season(), quest.total(), quest.level(), quest.stageStates()));
     }
 
     @Override
@@ -46,7 +46,7 @@ public final class ProgressionManager implements ProgressionService {
 
     public void publish(String action, UUID player, QuestInstance quest, String stage) {
         ProgressionEvent event = new ProgressionEvent(action, player, quest.definition().type(), quest.definition().id(),
-                quest.definition().season(), quest.total(), quest.level(), stage);
+                quest.season(), quest.total(), quest.level(), stage);
         for (Consumer<ProgressionEvent> listener : listeners) {
             try {
                 listener.accept(event);
@@ -124,8 +124,8 @@ public final class ProgressionManager implements ProgressionService {
         }
         double multiplier = quest.booster(Instant.now());
         ConfigurationSection settings = quest.definition().settings();
-        if (Instant.now().toEpochMilli() < settings.getLong("global-booster.expires-at", 0L)) {
-            multiplier = Math.max(multiplier, settings.getDouble("global-booster.multiplier", 1D));
+        if (SeasonManager.seasonManager != null) {
+            multiplier = Math.max(multiplier, SeasonManager.seasonManager.globalBooster(quest.definition(), Instant.now()));
         }
         ConfigurationSection permissionBoosters = settings.getConfigurationSection("permission-boosters");
         if (permissionBoosters != null) {
@@ -136,7 +136,9 @@ public final class ProgressionManager implements ProgressionService {
                 }
             }
         }
-        if (!Double.isFinite(multiplier)) return CountMode.MAXIMUM;
+        if (!Double.isFinite(multiplier)) {
+            return CountMode.MAXIMUM;
+        }
         return amount.multiply(BigDecimal.valueOf(Math.max(1D, multiplier)))
                 .min(CountMode.MAXIMUM);
     }

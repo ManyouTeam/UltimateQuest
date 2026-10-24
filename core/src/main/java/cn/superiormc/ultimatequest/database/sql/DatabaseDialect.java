@@ -32,6 +32,15 @@ public abstract class DatabaseDialect {
 
     public abstract String upsertPlayerData();
 
+    public String createServerDataTable() {
+        return "CREATE TABLE IF NOT EXISTS ultimatequest_server_data (data_key VARCHAR(64) NOT NULL PRIMARY KEY, "
+                + "revision BIGINT NOT NULL, payload " + serverDataPayloadType() + " NOT NULL)";
+    }
+
+    protected String serverDataPayloadType() {
+        return "TEXT";
+    }
+
     public String createScrollDataTable() {
         return createPlayerDataTable().replace("ultimatequest_player_data", "ultimatequest_scroll_data");
     }

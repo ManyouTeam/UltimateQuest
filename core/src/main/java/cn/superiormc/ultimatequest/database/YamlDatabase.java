@@ -1,6 +1,7 @@
 package cn.superiormc.ultimatequest.database;
 
 import cn.superiormc.ultimatequest.objects.quests.QuestPlayerData;
+import cn.superiormc.ultimatequest.utils.ConfigurationFileUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -97,6 +98,39 @@ public final class YamlDatabase extends AbstractDatabase {
     @Override
     public void onClose() {
         // No open handles are retained by the YAML backend.
+    }
+
+    @Override
+    public synchronized YamlConfiguration loadServerData(String key) {
+        Path file = serverDataFile(key);
+        YamlConfiguration data = new YamlConfiguration();
+        try {
+            if (Files.exists(file)) {
+                data.load(file.toFile());
+            }
+            return data;
+        } catch (Exception exception) {
+            throw new IllegalStateException("Could not load server data: " + key, exception);
+        }
+    }
+
+    @Override
+    public synchronized void saveServerData(String key, YamlConfiguration data, long expectedRevision) {
+        if (loadServerData(key).getLong("revision") != expectedRevision) {
+            throw new IllegalStateException("Server data changed; try again: " + key);
+        }
+        try {
+            ConfigurationFileUtil.save(serverDataFile(key), data, false);
+        } catch (IOException exception) {
+            throw new IllegalStateException("Could not save server data: " + key, exception);
+        }
+    }
+
+    private Path serverDataFile(String key) {
+        if (!key.matches("[a-z0-9_-]+")) {
+            throw new IllegalArgumentException("Invalid server data key: " + key);
+        }
+        return dataDir.resolve("server").resolve(key + ".yml");
     }
 
     @Override

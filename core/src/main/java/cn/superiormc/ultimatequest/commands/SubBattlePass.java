@@ -1,9 +1,11 @@
 package cn.superiormc.ultimatequest.commands;
 
 import cn.superiormc.ultimatequest.gui.inv.ConfiguredMenuGUI;
+import cn.superiormc.ultimatequest.managers.CacheManager;
+import cn.superiormc.ultimatequest.managers.ConfigManager;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.QuestManager;
-import cn.superiormc.ultimatequest.managers.QuestPeriodManager;
+import cn.superiormc.ultimatequest.managers.SeasonManager;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
@@ -12,9 +14,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 import org.bukkit.Bukkit;
@@ -71,10 +73,10 @@ public final class SubBattlePass extends AbstractCommand {
         Set<String> adminOperations = Set.of("addxp", "setxp", "removexp", "setlevel", "premium", "boost", "resolve");
         if (args.length == 2) {
             result.addAll(playerOperations);
-            for (QuestDefinition definition : manager.growthDefinitions(type)) {
+            for (QuestDefinition definition : ConfigManager.configManager.getGrowthDefinitions(type)) {
                 result.add(definition.id());
-                if (sender instanceof Player player && !definition.season().isEmpty() && args[1].contains("@")) {
-                    result.addAll(manager.seasons(player.getUniqueId(), type, definition.id()));
+                if (sender instanceof Player player && !SeasonManager.seasonManager.season(definition).isEmpty() && args[1].contains("@")) {
+                    result.addAll(CacheManager.cacheManager.seasons(player.getUniqueId(), type, definition.id()));
                 }
             }
             if (admin) {
@@ -91,14 +93,14 @@ public final class SubBattlePass extends AbstractCommand {
             if (args.length == 3) {
                 Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
             } else if (args.length == 4) {
-                for (QuestDefinition definition : manager.growthDefinitions(type)) {
+                for (QuestDefinition definition : ConfigManager.configManager.getGrowthDefinitions(type)) {
                     result.add(definition.id());
-                    if (target != null && !definition.season().isEmpty() && args[3].contains("@")) {
-                        result.addAll(manager.seasons(target.getUniqueId(), type, definition.id()));
+                    if (target != null && !SeasonManager.seasonManager.season(definition).isEmpty() && args[3].contains("@")) {
+                        result.addAll(CacheManager.cacheManager.seasons(target.getUniqueId(), type, definition.id()));
                     }
                 }
             } else {
-                QuestDefinition definition = manager.growthDefinition(type, args[3].split("@", 2)[0]);
+                QuestDefinition definition = ConfigManager.configManager.getGrowthDefinition(type, args[3].split("@", 2)[0]);
                 if (definition == null) {
                     return result;
                 }
@@ -149,14 +151,14 @@ public final class SubBattlePass extends AbstractCommand {
             } else if (!seasonOperations.contains(action)) {
                 return result;
             } else if (args.length == 4) {
-                manager.growthDefinitions(type).forEach(definition -> result.add(definition.id()));
+                ConfigManager.configManager.getGrowthDefinitions(type).forEach(definition -> result.add(definition.id()));
                 for (String targetType : List.of("battlepass", "milestone")) {
-                    manager.growthDefinitions(targetType).forEach(definition -> result.add(targetType + ":" + definition.id()));
+                    ConfigManager.configManager.getGrowthDefinitions(targetType).forEach(definition -> result.add(targetType + ":" + definition.id()));
                 }
-                manager.templates().values().stream().filter(definition -> !definition.growth()
+                ConfigManager.configManager.getDefinitions().values().stream().filter(definition -> !definition.growth()
                         && !definition.isBattlePassTask())
                         .forEach(definition -> result.add("normal:" + definition.id()));
-                QuestPeriodManager.questPeriodManager.definitions().keySet().forEach(id -> result.add("period:" + id));
+                ConfigManager.configManager.getPeriodConfigurations().keySet().forEach(id -> result.add("period:" + id));
             } else if (args.length == 5) {
                 if (Set.of("start", "schedule").contains(action)) {
                     result.add("season_" + Instant.now().getEpochSecond());
@@ -180,15 +182,15 @@ public final class SubBattlePass extends AbstractCommand {
             }
         } else if (playerOperations.contains(operation)) {
             if (args.length == 3) {
-                for (QuestDefinition definition : manager.growthDefinitions(type)) {
+                for (QuestDefinition definition : ConfigManager.configManager.getGrowthDefinitions(type)) {
                     result.add(definition.id());
-                    if (sender instanceof Player player && !definition.season().isEmpty()
+                    if (sender instanceof Player player && !SeasonManager.seasonManager.season(definition).isEmpty()
                             && !Set.of("history", "challenges").contains(operation) && args[2].contains("@")) {
-                        result.addAll(manager.seasons(player.getUniqueId(), type, definition.id()));
+                        result.addAll(CacheManager.cacheManager.seasons(player.getUniqueId(), type, definition.id()));
                     }
                 }
             } else if (operation.equals("claim")) {
-                QuestDefinition definition = manager.growthDefinition(type, args[2].split("@", 2)[0]);
+                QuestDefinition definition = ConfigManager.configManager.getGrowthDefinition(type, args[2].split("@", 2)[0]);
                 if (definition == null) {
                     return result;
                 }
@@ -209,13 +211,13 @@ public final class SubBattlePass extends AbstractCommand {
             }
         } else if (console && admin) {
             if (args.length == 3) {
-                if (manager.growthDefinition(type, operation.split("@", 2)[0]) != null) {
+                if (ConfigManager.configManager.getGrowthDefinition(type, operation.split("@", 2)[0]) != null) {
                     Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
                 }
                 if (Bukkit.getPlayerExact(args[1]) != null) {
                     result.add("-b");
                 }
-            } else if (args.length == 4 && manager.growthDefinition(type, operation.split("@", 2)[0]) != null
+            } else if (args.length == 4 && ConfigManager.configManager.getGrowthDefinition(type, operation.split("@", 2)[0]) != null
                     && Bukkit.getPlayerExact(args[2]) != null) {
                 result.add("-b");
             }
@@ -251,7 +253,7 @@ public final class SubBattlePass extends AbstractCommand {
             String[] target = args[3].toLowerCase(Locale.ROOT).split(":", 2);
             String targetType = target.length == 2 ? target[0] : type;
             String targetId = target.length == 2 ? target[1] : target[0];
-            manager.editSeason(sender, targetType, targetId, args[2].toLowerCase(Locale.ROOT),
+            SeasonManager.seasonManager.editSeason(sender, targetType, targetId, args[2].toLowerCase(Locale.ROOT),
                     Arrays.asList(args).subList(4, args.length));
             return;
         }
@@ -313,8 +315,8 @@ public final class SubBattlePass extends AbstractCommand {
     private static void executePlayerProgression(Player player, String[] args, String type, boolean bypass) {
         String operation = args.length < 2 ? "" : args[1].toLowerCase(Locale.ROOT);
         QuestManager manager = QuestManager.questManager;
-        if (!QuestManager.questManager.ready(player.getUniqueId())) {
-            QuestManager.questManager.join(player);
+        if (!CacheManager.cacheManager.isReady(player.getUniqueId())) {
+            CacheManager.cacheManager.join(player);
             LanguageManager.languageManager.sendStringText(player, "quests.loading");
             return;
         }
@@ -330,15 +332,15 @@ public final class SubBattlePass extends AbstractCommand {
                     manager.claimAll(player, type, pass);
                 }
                 case "history" -> {
-                    QuestDefinition definition = manager.growthDefinition(type, pass);
+                    QuestDefinition definition = ConfigManager.configManager.getGrowthDefinition(type, pass);
                     if (definition == null) {
                         LanguageManager.languageManager.sendStringText(player, "quests.not-found");
                         return;
                     }
-                    List<String> seasons = manager.seasons(player.getUniqueId(), type, pass);
+                    List<String> seasons = CacheManager.cacheManager.seasons(player.getUniqueId(), type, pass);
                     if (seasons.isEmpty()) {
                         LanguageManager.languageManager.sendStringText(player, "battlepass.history-empty", "name", definition.name(player));
-                    } else if (definition.season().isEmpty() && seasons.stream().noneMatch(season -> season.contains("@"))) {
+                    } else if (SeasonManager.seasonManager.season(definition).isEmpty() && seasons.stream().noneMatch(season -> season.contains("@"))) {
                         var quest = manager.growthInstance(player.getUniqueId(), type, pass);
                         LanguageManager.languageManager.sendStringText(player, "battlepass.history-permanent",
                                 "name", definition.name(player), "level", String.valueOf(quest.level()),
@@ -353,12 +355,12 @@ public final class SubBattlePass extends AbstractCommand {
                             }
                             QuestDefinition saved = quest.definition();
                             String period = LanguageManager.languageManager.getStringText(player, "menu-time.unlimited");
-                            if (saved.startsAt() != null && saved.endsAt() != null) {
-                                period = saved.startsAt().atZone(ZoneId.systemDefault()).toLocalDate() + " ~ "
-                                        + saved.endsAt().atZone(ZoneId.systemDefault()).toLocalDate();
+                            if (quest.startsAt() != null && quest.endsAt() != null) {
+                                period = quest.startsAt().atZone(ZoneId.systemDefault()).toLocalDate() + " ~ "
+                                        + quest.endsAt().atZone(ZoneId.systemDefault()).toLocalDate();
                             }
                             LanguageManager.languageManager.sendStringText(player, "battlepass.history-entry",
-                                    "season", CommonUtil.parseLang(player, saved.settings().getString("season-name", saved.season())),
+                                    "season", CommonUtil.parseLang(player, saved.settings().getString("season-name", quest.season())),
                                     "period", period, "level", String.valueOf(quest.level()),
                                     "total", quest.totalAmount().stripTrailingZeros().toPlainString());
                             LanguageManager.languageManager.sendStringText(player, "battlepass.history-details",
@@ -374,9 +376,9 @@ public final class SubBattlePass extends AbstractCommand {
                 case "stats" -> {
                     var quest = manager.growthInstance(player.getUniqueId(), type, pass);
                     if (quest != null) {
-                        String season = quest.definition().season().isEmpty()
+                        String season = quest.season().isEmpty()
                                 ? LanguageManager.languageManager.getStringText(player, "battlepass.permanent")
-                                : CommonUtil.parseLang(player, quest.definition().settings().getString("season-name", quest.definition().season()));
+                                : CommonUtil.parseLang(player, quest.definition().settings().getString("season-name", quest.season()));
                         LanguageManager.languageManager.sendStringText(player,
                                 type.equals("milestone") ? "battlepass.milestone-stats" : "battlepass.stats",
                                 "name", quest.definition().name(player), "season", season, "level", String.valueOf(quest.level()),
@@ -393,7 +395,7 @@ public final class SubBattlePass extends AbstractCommand {
             return;
         }
         if (args.length <= 2) {
-            if (args.length == 2 && QuestManager.questManager.growthDefinition(type, args[1]) == null
+            if (args.length == 2 && ConfigManager.configManager.getGrowthDefinition(type, args[1]) == null
                     && manager.growthInstance(player.getUniqueId(), type, args[1]) == null) {
                 LanguageManager.languageManager.sendStringText(player, "quests.not-found");
                 return;

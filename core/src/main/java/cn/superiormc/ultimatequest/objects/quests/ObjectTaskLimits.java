@@ -1,10 +1,13 @@
 package cn.superiormc.ultimatequest.objects.quests;
 
-import cn.superiormc.ultimatequest.managers.*;
-
+import cn.superiormc.ultimatequest.managers.ConfigManager;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.bukkit.configuration.ConfigurationSection;
-
-import java.util.*;
 
 public final class ObjectTaskLimits {
 
@@ -63,7 +66,7 @@ public final class ObjectTaskLimits {
         Map<String, Long> globalCounts = new HashMap<>();
         Map<String, Long> typeCounts = new HashMap<>();
         for (QuestInstance quest : active) {
-            for (String id : limitCategories(QuestManager.questManager.displayCategories(quest.definition(), quest))) {
+            for (String id : limitCategories(ConfigManager.configManager.getDisplayCategories(quest.definition(), quest))) {
                 globalCounts.merge(id, 1L, Long::sum);
                 if (quest.source().equals(source)) {
                     typeCounts.merge(id, 1L, Long::sum);

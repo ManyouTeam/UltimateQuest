@@ -1,5 +1,6 @@
 package cn.superiormc.ultimatequest.commands;
 
+import cn.superiormc.ultimatequest.managers.ConfigManager;
 import cn.superiormc.ultimatequest.managers.ErrorManager;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.QuestScrollManager;
@@ -79,9 +80,9 @@ public final class SubScroll extends AbstractCommand {
             if (args.length == 3) {
                 Bukkit.getOnlinePlayers().forEach(player -> result.add(player.getName()));
             } else if (args.length == 4) {
-                result.addAll(QuestScrollManager.questScrollManager.definitions().keySet());
+                result.addAll(ConfigManager.configManager.getScrollConfigurations().keySet());
             } else if (args.length == 5 || args.length == 6) {
-                var profile = QuestScrollManager.questScrollManager.definitions().get(args[3].toLowerCase(Locale.ROOT));
+                var profile = ConfigManager.configManager.getScrollConfigurations().get(args[3].toLowerCase(Locale.ROOT));
                 if (profile != null) {
                     var choices = profile.getConfigurationSection(args.length == 5 ? "rarities" : "difficulties");
                     if (choices != null) {

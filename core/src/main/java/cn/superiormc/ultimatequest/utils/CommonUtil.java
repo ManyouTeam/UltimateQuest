@@ -8,13 +8,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.Color;
@@ -26,16 +20,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class CommonUtil {
-
-    public static LocalDateTime getNowTime() {
-        return LocalDateTime.now();
-    }
 
     public static LocalDateTime stringToTime(String time) {
         return time == null ? null : LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -70,40 +57,6 @@ public class CommonUtil {
         }
         AttributeInstance attribute = living.getAttribute(Attribute.MAX_HEALTH);
         return attribute == null ? living.getHealth() : attribute.getValue();
-    }
-
-    public static double getMaxAbsorption(Entity entity) {
-        if (!(entity instanceof LivingEntity living)) {
-            return 0.0D;
-        }
-        AttributeInstance attribute = living.getAttribute(Attribute.MAX_ABSORPTION);
-        return attribute == null ? living.getHealth() : attribute.getValue();
-    }
-
-    public static ItemStack getSlotItem(EntityEquipment equipment, String slot) {
-        return switch(slot.toUpperCase(Locale.ROOT).replace('-', '_')) {
-            case "MAIN_HAND" -> {
-                    yield equipment.getItemInMainHand();
-                }
-            case "OFF_HAND" -> {
-                    yield equipment.getItemInOffHand();
-                }
-            case "HELMET" -> {
-                    yield equipment.getHelmet();
-                }
-            case "CHESTPLATE" -> {
-                    yield equipment.getChestplate();
-                }
-            case "LEGGINGS" -> {
-                    yield equipment.getLeggings();
-                }
-            case "BOOTS" -> {
-                    yield equipment.getBoots();
-                }
-            default -> {
-                    yield null;
-                }
-        };
     }
 
     public static Map<String, Boolean> loadedPlugins = new HashMap<>();
@@ -277,15 +230,21 @@ public class CommonUtil {
         }
     }
 
-    public static boolean hasEnoughDurability(ItemStack itemStack, int requiredDurability) {
-        if (requiredDurability <= 0 || itemStack == null || itemStack.getType().isAir()) {
-            return true;
+    public static List<File> getYamlFiles(File dir) {
+        File[] files = dir.listFiles();
+        if (files == null || files.length == 0) {
+            return Collections.emptyList();
         }
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null || itemMeta.isUnbreakable() || !(itemMeta instanceof Damageable damageable)) {
-            return true;
+
+        Arrays.sort(files, Comparator.comparing(File::getName));
+        List<File> yamlFiles = new ArrayList<>();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                yamlFiles.addAll(getYamlFiles(file));
+            } else if (file.getName().endsWith(".yml")) {
+                yamlFiles.add(file);
+            }
         }
-        int maxDurability = damageable.hasMaxDamage() ? damageable.getMaxDamage() : itemStack.getType().getMaxDurability();
-        return maxDurability <= 0 || maxDurability - damageable.getDamage() >= requiredDurability;
+        return yamlFiles;
     }
 }

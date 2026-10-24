@@ -15,11 +15,8 @@ public final class ObjectSeason {
         this.config = config;
     }
 
-    public void apply(Instant start, Instant end) {
-        config.set("starts-at", start.toString());
-        config.set("ends-at", end.toString());
-        config.set("season", config.getString("season-prefix", "season") + "_" + start.getEpochSecond());
-        config.set("rotation", null);
+    public String getId(Instant start) {
+        return config.getString("season-prefix", "season") + "_" + start.getEpochSecond();
     }
 
     public boolean isRotating() {

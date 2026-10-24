@@ -127,4 +127,6 @@ claim-grace-seconds: 604800
 
 `start`、`schedule` 和 `end` 手动管理会关闭该战令的自动轮换。玩家倍率、全服倍率和权限倍率取其中最大值，不相乘。权限倍率通过 `permission-boosters.<ID>.permission` 和 `.multiplier` 配置。
 
+赛季命令只保存服务器通用的运行数据，不修改任务或战令配置文件。未启用外部 SQL 时，独立保存在 `data/server/seasons.yml`；启用 SQL 时，保存在 `ultimatequest_server_data` 数据表。玩家进度仍由玩家数据存储单独保存。
+
 修改定义不会重抽已经解锁的随机等级奖励。完整管理命令见[命令与权限](../info/commands-permissions.md)。

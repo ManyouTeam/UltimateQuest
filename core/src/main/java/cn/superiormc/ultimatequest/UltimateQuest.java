@@ -1,8 +1,9 @@
 package cn.superiormc.ultimatequest;
 
-import cn.superiormc.ultimatequest.managers.AbstractManager;
 import cn.superiormc.ultimatequest.database.DatabaseExecutor;
+import cn.superiormc.ultimatequest.managers.AbstractManager;
 import cn.superiormc.ultimatequest.managers.AntiAbuseManager;
+import cn.superiormc.ultimatequest.managers.CacheManager;
 import cn.superiormc.ultimatequest.managers.ChangesManager;
 import cn.superiormc.ultimatequest.managers.CommandManager;
 import cn.superiormc.ultimatequest.managers.ConfigManager;
@@ -16,11 +17,12 @@ import cn.superiormc.ultimatequest.managers.ListenerManager;
 import cn.superiormc.ultimatequest.managers.MatchEntityManager;
 import cn.superiormc.ultimatequest.managers.MatchItemManager;
 import cn.superiormc.ultimatequest.managers.QuestManager;
-import cn.superiormc.ultimatequest.managers.QuestPoolManager;
 import cn.superiormc.ultimatequest.managers.QuestPeriodManager;
+import cn.superiormc.ultimatequest.managers.QuestPoolManager;
 import cn.superiormc.ultimatequest.managers.QuestScrollManager;
 import cn.superiormc.ultimatequest.managers.QuestStorage;
 import cn.superiormc.ultimatequest.managers.RewardManager;
+import cn.superiormc.ultimatequest.managers.SeasonManager;
 import cn.superiormc.ultimatequest.managers.TriggerManager;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.SpecialMethodUtil;
@@ -81,6 +83,7 @@ public final class UltimateQuest extends JavaPlugin {
         }
         new ErrorManager();
         new InitManager();
+        new SeasonManager();
         new ConfigManager();
         new HookManager();
         new ItemManager();
@@ -97,6 +100,7 @@ public final class UltimateQuest extends JavaPlugin {
         new QuestPeriodManager();
         new QuestScrollManager();
         new QuestManager();
+        new CacheManager();
         new CommandManager();
         new ListenerManager();
         AbstractManager.initializeManagers();
@@ -107,6 +111,8 @@ public final class UltimateQuest extends JavaPlugin {
     @Override
     public void onDisable() {
         AbstractManager.disableManagers();
+        QuestManager.questManager = null;
+        CacheManager.cacheManager = null;
         if (methodUtil != null) {
             Bukkit.getOnlinePlayers().forEach(methodUtil::clearBossBars);
         }

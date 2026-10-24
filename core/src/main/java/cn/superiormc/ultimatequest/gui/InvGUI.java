@@ -77,8 +77,8 @@ public abstract class InvGUI extends AbstractGUI implements InventoryHolder {
 
     protected final List<String> wrapLore(List<String> configured) {
         List<String> result = new ArrayList<>();
-        int wrapLength = ConfigManager.configManager.getInt(
-                "menu.lore-wrap-length", 30);
+        int wrapLength = ConfigManager.configManager.getMenuSettings().getInt(
+                "lore-wrap-length", 30);
         for (String value : configured) {
             if (value.isBlank()) {
                 result.add("");

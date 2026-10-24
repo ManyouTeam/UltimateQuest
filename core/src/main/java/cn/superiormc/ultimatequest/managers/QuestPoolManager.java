@@ -1,7 +1,6 @@
 package cn.superiormc.ultimatequest.managers;
 
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
-import cn.superiormc.ultimatequest.utils.ConfigurationFileUtil;
 import cn.superiormc.ultimatequest.objects.quests.QuestObjective;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,9 +21,7 @@ public final class QuestPoolManager extends AbstractManager {
         questPoolManager = this;
     }
 
-    public synchronized Map<String, YamlConfiguration> objectives() {
-        return ConfigManager.configManager.getQuestConfigurations();
-    }
+
 
     public static void validateWeights(ConfigurationSection weights) {
         if (weights == null || weights.getKeys(false).isEmpty()) {
@@ -57,12 +54,12 @@ public final class QuestPoolManager extends AbstractManager {
         throw new IllegalStateException("Weighted selection failed");
     }
 
-    public synchronized List<String> draw(String pool, int count, RandomGenerator random) {
+    public List<String> draw(String pool, int count, RandomGenerator random) {
         return ConfigManager.configManager.getQuestPool(pool).draw(count, random);
     }
 
-    public synchronized List<String> draw(ConfigurationSection source, RandomGenerator random) {
-        return draw(source, ConfigManager.configManager.getPoolConfigurations(), objectives(), random);
+    public List<String> draw(ConfigurationSection source, RandomGenerator random) {
+        return draw(source, ConfigManager.configManager.getPoolConfigurations(), ConfigManager.configManager.getQuestConfigurations(), random);
     }
 
     public static List<String> draw(ConfigurationSection source, Map<String, YamlConfiguration> pools,

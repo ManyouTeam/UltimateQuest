@@ -3,6 +3,11 @@ package cn.superiormc.ultimatequest.database.sql;
 public final class H2Dialect extends DatabaseDialect {
 
     @Override
+    protected String serverDataPayloadType() {
+        return "CLOB";
+    }
+
+    @Override
     public boolean matches(String jdbcUrl) {
         return jdbcUrl.startsWith("jdbc:h2:");
     }

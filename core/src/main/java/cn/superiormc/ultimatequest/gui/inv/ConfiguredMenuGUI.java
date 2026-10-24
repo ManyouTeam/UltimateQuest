@@ -1,35 +1,28 @@
 package cn.superiormc.ultimatequest.gui.inv;
 
-import java.math.BigDecimal;
+import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.commands.SubInfo;
 import cn.superiormc.ultimatequest.commands.SubMenu;
+import cn.superiormc.ultimatequest.gui.InvGUI;
 import cn.superiormc.ultimatequest.gui.action.GUIActionContext;
 import cn.superiormc.ultimatequest.gui.action.GUIPageController;
 import cn.superiormc.ultimatequest.gui.action.ObjectSingleGUIAction;
-import cn.superiormc.ultimatequest.gui.InvGUI;
+import cn.superiormc.ultimatequest.managers.CacheManager;
 import cn.superiormc.ultimatequest.managers.ConfigManager;
-import cn.superiormc.ultimatequest.managers.GUIActionManager;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.QuestManager;
-import cn.superiormc.ultimatequest.managers.QuestPeriodManager;
-import cn.superiormc.ultimatequest.managers.QuestScrollManager;
 import cn.superiormc.ultimatequest.managers.RewardManager;
+import cn.superiormc.ultimatequest.managers.SeasonManager;
 import cn.superiormc.ultimatequest.methods.BuildItem;
+import cn.superiormc.ultimatequest.objects.buttons.ObjectButton;
+import cn.superiormc.ultimatequest.objects.menus.ObjectMenu;
+import cn.superiormc.ultimatequest.objects.menus.ObjectMenuContent;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
 import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
 import cn.superiormc.ultimatequest.objects.quests.QuestObjective;
-import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.Material;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -41,9 +34,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import cn.superiormc.ultimatequest.objects.buttons.ObjectButton;
-import cn.superiormc.ultimatequest.objects.menus.ObjectMenu;
-import cn.superiormc.ultimatequest.objects.menus.ObjectMenuContent;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController {
 
@@ -131,7 +130,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             scrollGroup = "all";
             page = 0;
         }
-        ConfigurationSection currentCategory = QuestManager.questManager.categories().get(category);
+        ConfigurationSection currentCategory = ConfigManager.configManager.getCategoryConfigurations().get(category);
         if (!Set.of("all", "uncategorized").contains(category)
                 && (currentCategory == null || !currentCategory.getBoolean("enabled", true))) {
             category = "all";
@@ -298,11 +297,11 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         List<MenuEntry> result = new ArrayList<>();
         if (type.equals("quests")) {
             Map<String, QuestDefinition> available = new LinkedHashMap<>();
-            manager.definitions().forEach(definition -> available.put(definition.id(), definition));
-            manager.instances(player.getUniqueId()).forEach(quest -> available.put(quest.definition().id(), quest.definition()));
+            ConfigManager.configManager.getListedDefinitions().forEach(definition -> available.put(definition.id(), definition));
+            CacheManager.cacheManager.instances(player.getUniqueId()).forEach(quest -> available.put(quest.definition().id(), quest.definition()));
             for (QuestDefinition definition : available.values()) {
-                QuestInstance quest = manager.instance(player.getUniqueId(), definition.id());
-                if (manager.visibleInMenu(player, definition, quest)) {
+                QuestInstance quest = CacheManager.cacheManager.instance(player.getUniqueId(), definition.id());
+                if (visibleInMenu(definition, quest)) {
                     result.add(new MenuEntry(definition, quest, "normal", null, content));
                 }
             }
@@ -313,13 +312,13 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             }
         } else if (Set.of("battlepass", "milestone").contains(type)) {
             if (selected == null) {
-                for (QuestDefinition definition : manager.growthDefinitions(type)) {
+                for (QuestDefinition definition : ConfigManager.configManager.getGrowthDefinitions(type)) {
                     result.add(new MenuEntry(definition,
                             manager.growthInstance(player.getUniqueId(), type, definition.id()), type, null, content));
                 }
             } else {
                 QuestInstance saved = manager.growthInstance(player.getUniqueId(), type, selected);
-                QuestDefinition definition = saved == null ? manager.growthDefinition(type, selected) : saved.definition();
+                QuestDefinition definition = saved == null ? ConfigManager.configManager.getGrowthDefinition(type, selected) : saved.definition();
                 if (definition != null) {
                     QuestInstance quest = manager.growthInstance(player.getUniqueId(), type, selected);
                     Set<String> stages = new LinkedHashSet<>();
@@ -350,8 +349,8 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         if (type.equals("challenge") && selected != null) {
             QuestInstance pass = manager.growthInstance(player.getUniqueId(), "battlepass", selected);
             result.removeIf(entry -> pass == null || !entry.instance().sourceId().equals(pass.definition().id())
-                    || !(entry.instance().cycle().equals(pass.definition().season())
-                    || entry.instance().cycle().startsWith(pass.definition().season() + "--")));
+                    || !(entry.instance().cycle().equals(pass.season())
+                    || entry.instance().cycle().startsWith(pass.season() + "--")));
             if (!challengeGroup.equals("ALL")) {
                 result.removeIf(entry -> !entry.definition().settings().getString("group", "season")
                         .equalsIgnoreCase(challengeGroup));
@@ -409,7 +408,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     private List<String> periodGroups() {
         Set<String> groups = new LinkedHashSet<>();
         groups.add("all");
-        Map<String, YamlConfiguration> definitions = QuestPeriodManager.questPeriodManager.definitions();
+        Map<String, YamlConfiguration> definitions = ConfigManager.configManager.getPeriodConfigurations();
         List<String> configured = normalizedList(config, "period-filter.groups");
         if (!configured.isEmpty()) {
             configured.stream().filter(definitions::containsKey).forEach(groups::add);
@@ -430,7 +429,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         if (periodGroup.equals("all")) {
             return CommonUtil.parseLang(player, "{lang:period.filter-all}");
         }
-        ConfigurationSection definition = QuestPeriodManager.questPeriodManager.definitions().get(periodGroup);
+        ConfigurationSection definition = ConfigManager.configManager.getPeriodConfigurations().get(periodGroup);
         if (definition != null) {
             return CommonUtil.parseLang(player, definition.getString("name", periodGroup));
         }
@@ -447,7 +446,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     private List<String> scrollGroups() {
         Set<String> groups = new LinkedHashSet<>();
         groups.add("all");
-        Map<String, YamlConfiguration> definitions = QuestScrollManager.questScrollManager.definitions();
+        Map<String, YamlConfiguration> definitions = ConfigManager.configManager.getScrollConfigurations();
         List<String> configured = normalizedList(config, "scroll-filter.groups");
         if (!configured.isEmpty()) {
             configured.stream().filter(definitions::containsKey).forEach(groups::add);
@@ -468,7 +467,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         if (scrollGroup.equals("all")) {
             return CommonUtil.parseLang(player, "{lang:scroll.filter-all}");
         }
-        ConfigurationSection definition = QuestScrollManager.questScrollManager.definitions().get(scrollGroup);
+        ConfigurationSection definition = ConfigManager.configManager.getScrollConfigurations().get(scrollGroup);
         if (definition != null) {
             return CommonUtil.parseLang(player, definition.getString("name", scrollGroup));
         }
@@ -477,8 +476,18 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 .map(quest -> quest.definition().name(player)).orElse(scrollGroup);
     }
 
+    private boolean visibleInMenu(QuestDefinition definition, QuestInstance quest) {
+        if (definition.growth() || quest != null && !quest.source().equals("normal")) {
+            return true;
+        }
+        QuestDefinition current = ConfigManager.configManager.getDefinitions().getOrDefault(definition.catalogKey(), definition);
+        return !current.settings().getBoolean("hide-in-menu", false)
+                && (quest != null || !current.settings().getBoolean("auto-hide", false)
+                || QuestManager.questManager.meetsRequirements(player, current));
+    }
+
     private List<String> entryCategories(MenuEntry entry) {
-        return QuestManager.questManager.displayCategories(entry.definition(), entry.instance());
+        return ConfigManager.configManager.getDisplayCategories(entry.definition(), entry.instance());
     }
 
     private boolean matchesCategory(MenuEntry entry, String id) {
@@ -490,7 +499,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         if (Set.of("all", "uncategorized").contains(id)) {
             return CommonUtil.parseLang(player, categorySection(id).getString("name", id));
         }
-        ConfigurationSection definition = QuestManager.questManager.categories().get(id);
+        ConfigurationSection definition = ConfigManager.configManager.getCategoryConfigurations().get(id);
         return definition == null ? id : CommonUtil.parseLang(player, definition.getString("name", id));
     }
 
@@ -528,7 +537,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     private List<String> categoryChoices() {
-        Map<String, YamlConfiguration> definitions = QuestManager.questManager.categories();
+        Map<String, YamlConfiguration> definitions = ConfigManager.configManager.getCategoryConfigurations();
         List<String> choices = new ArrayList<>();
         choices.add("all");
         definitions.entrySet().stream().filter(entry -> entry.getValue().getBoolean("enabled", true))
@@ -555,7 +564,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         if (slots.isEmpty()) {
             throw new IllegalArgumentException("category-filter.layout requires Q slots in menu " + menuId);
         }
-        Map<String, YamlConfiguration> definitions = QuestManager.questManager.categories();
+        Map<String, YamlConfiguration> definitions = ConfigManager.configManager.getCategoryConfigurations();
         List<String> choices = categoryChoices();
         List<MenuEntry> entries = categoryEntries();
         maximumPage = (choices.size() - 1) / slots.size();
@@ -700,8 +709,8 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         List<String> objectives = definition.objectiveLines(player, quest);
         List<String> prerequisites = new ArrayList<>();
         for (String prerequisite : definition.prerequisites()) {
-            QuestDefinition previous = QuestManager.questManager.definition(prerequisite);
-            QuestInstance completed = QuestManager.questManager.instance(player.getUniqueId(), prerequisite);
+            QuestDefinition previous = ConfigManager.configManager.getDefinition(prerequisite);
+            QuestInstance completed = CacheManager.cacheManager.instance(player.getUniqueId(), prerequisite);
             String template = ConfigManager.configManager.getString("task-display."
                     + (completed != null && completed.state().equals("CLAIMED") ? "prerequisite-complete" : "prerequisite-pending"), "{name}");
             prerequisites.add(CommonUtil.modifyString(player, template,
@@ -736,7 +745,8 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 "progress-required", String.valueOf(required),
                 "progress-percent", String.valueOf(progressPercent(progress.doubleValue(), required)),
                 "progress-bar", progressBar(progress.doubleValue(), required), "track", track, "season",
-                CommonUtil.parseLang(player, definition.settings().getString("season-name", definition.season())),
+                CommonUtil.parseLang(player, definition.settings().getString("season-name", quest == null
+                        ? SeasonManager.seasonManager.season(definition) : quest.season())),
                 "rewards", String.join("\\n", RewardManager.rewardManager.preview(player, rewards)),
                 "rarity", definition.rarity(), "difficulty", definition.difficulty(),
                 "points", String.valueOf(definition.getPoints()),
@@ -896,7 +906,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 return;
             }
             String[] parts = entry.stage().split("/");
-            String pass = !entry.definition().season().isEmpty() ? entry.definition().id() + "@" + entry.definition().season()
+            String pass = !entry.instance().season().isEmpty() ? entry.definition().id() + "@" + entry.instance().season()
                     : entry.definition().id();
             QuestManager.questManager.claimStage(player, entry.kind(), pass,
                     Integer.parseInt(parts[1]), parts[0]);
@@ -970,11 +980,11 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         long count;
         if (menuId.equals("main")) {
             Map<String, QuestDefinition> definitions = new LinkedHashMap<>();
-            manager.definitions().forEach(current -> definitions.put(current.id(), current));
-            Collection<QuestInstance> instances = manager.instances(player.getUniqueId());
+            ConfigManager.configManager.getListedDefinitions().forEach(current -> definitions.put(current.id(), current));
+            Collection<QuestInstance> instances = CacheManager.cacheManager.instances(player.getUniqueId());
             instances.forEach(current -> definitions.putIfAbsent(current.definition().id(), current.definition()));
             for (QuestDefinition current : definitions.values()) {
-                QuestInstance instance = manager.instance(player.getUniqueId(), current.id());
+                QuestInstance instance = CacheManager.cacheManager.instance(player.getUniqueId(), current.id());
                 if (instance == null) {
                     if (manager.meetsRequirements(player, current)) {
                         available++;
@@ -997,7 +1007,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             claimed = instances.stream().filter(current -> current.state().equals("CLAIMED")).count();
             count = instances.size();
         } else {
-            count = manager.growthDefinitions(menuId).size();
+            count = ConfigManager.configManager.getGrowthDefinitions(menuId).size();
             if (growth != null) {
                 claimable = growth.stageStates().values().stream().filter(state -> state.equals("AVAILABLE")).count();
                 claimed = growth.stageStates().values().stream().filter(state -> state.equals("CLAIMED")).count();
@@ -1017,6 +1027,8 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         }
         String challengeGroupLabel = LanguageManager.languageManager.getStringText(player,
                 "battlepass.group." + challengeGroup.toLowerCase(Locale.ROOT));
+        Instant seasonEnd = definition == null ? null
+                : growth == null ? SeasonManager.seasonManager.window(definition).endsAt() : growth.endsAt();
         return new String[] {
                 "menu", menuId, "player", player.getName(), "challenge-group", challengeGroupLabel,
                 "period-id", periodGroup, "period-group", periodFilterEnabled() ? periodGroupName() : "",
@@ -1025,7 +1037,8 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 "name", definition == null ? "" : definition.name(player),
                 "objectives", definition == null ? "" : String.join("\\n", definition.objectiveLines(player, growth)),
                 "season", definition == null ? "" : CommonUtil.parseLang(player,
-                        definition.settings().getString("season-name", definition.season())),
+                        definition.settings().getString("season-name", growth == null
+                                ? SeasonManager.seasonManager.season(definition) : growth.season())),
                 "page", String.valueOf(page + 1), "pages", String.valueOf(maximumPage + 1),
                 "view", viewLabel, "count", String.valueOf(count),
                 "active", String.valueOf(active), "claimable", String.valueOf(claimable),
@@ -1036,9 +1049,9 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 "remaining-xp", BigDecimal.valueOf(nextRequired)
                         .subtract(growth == null ? BigDecimal.ZERO : growth.totalAmount())
                         .max(BigDecimal.ZERO).stripTrailingZeros().toPlainString(),
-                "season-time", definition == null || definition.endsAt() == null
+                "season-time", seasonEnd == null
                         ? LanguageManager.languageManager.getStringText(player, "menu-time.unlimited")
-                        : formatRemaining(definition.endsAt().toEpochMilli()),
+                        : formatRemaining(seasonEnd.toEpochMilli()),
                 "progress-bar", progressBar(growth == null ? 0D : growth.totalAmount().doubleValue(), nextRequired)
         };
     }
@@ -1048,7 +1061,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             return null;
         }
         QuestInstance growth = QuestManager.questManager.growthInstance(player.getUniqueId(), menuId, selected);
-        return growth == null ? QuestManager.questManager.growthDefinition(menuId, selected) : growth.definition();
+        return growth == null ? ConfigManager.configManager.getGrowthDefinition(menuId, selected) : growth.definition();
     }
 
     private String entryState(MenuEntry entry) {
@@ -1061,7 +1074,9 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             return QuestManager.questManager.meetsRequirements(player, definition) ? "AVAILABLE" : "LOCKED";
         }
         if (entry.stage() == null) {
-            return definition.active(Instant.now()) ? "ACTIVE" : "INACTIVE";
+            boolean active = quest == null ? !definition.settings().getBoolean("paused", false)
+                    && SeasonManager.seasonManager.window(definition).active(Instant.now()) : quest.active(Instant.now());
+            return active ? "ACTIVE" : "INACTIVE";
         }
         String state = quest == null ? "LOCKED" : quest.stageState(entry.stage());
         if (quest == null || !QuestManager.questManager.claimableGrowth(quest)) {
@@ -1158,18 +1173,19 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     private String progressBar(double current, long required) {
-        int length = Math.max(1, ConfigManager.configManager.getInt("menu.progress-bar.length", 12));
+        ConfigurationSection settings = ConfigManager.configManager.getMenuSettings();
+        int length = Math.max(1, settings.getInt("progress-bar.length", 12));
         int filled = required <= 0L ? 0
                 : (int) Math.min(length, (double) current * (double) length / (double) required);
         if (required > 0L && current >= required) {
             filled = length;
         }
         String complete = CommonUtil.parseLang(player,
-                ConfigManager.configManager.getString("menu.progress-bar.complete", "&a■"));
+                settings.getString("progress-bar.complete", "&a■"));
         String remaining = CommonUtil.parseLang(player,
-                ConfigManager.configManager.getString("menu.progress-bar.remaining", "&8■"));
+                settings.getString("progress-bar.remaining", "&8■"));
         String suffix = CommonUtil.parseLang(player,
-                ConfigManager.configManager.getString("menu.progress-bar.suffix", " &7{percent}%"));
+                settings.getString("progress-bar.suffix", " &7{percent}%"));
         return complete.repeat(filled) + remaining.repeat(length - filled)
                 + suffix.replace("{percent}", String.valueOf(progressPercent(current, required)));
     }

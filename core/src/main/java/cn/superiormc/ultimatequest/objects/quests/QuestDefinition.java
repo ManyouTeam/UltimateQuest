@@ -7,6 +7,7 @@ import cn.superiormc.ultimatequest.managers.SeasonManager;
 import cn.superiormc.ultimatequest.objects.QuestContext;
 import cn.superiormc.ultimatequest.objects.counting.CountMode;
 import cn.superiormc.ultimatequest.objects.rewards.ObjectReward;
+import cn.superiormc.ultimatequest.objects.time.ObjectSeason;
 import cn.superiormc.ultimatequest.objects.time.TimeWindow;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 
@@ -37,6 +38,8 @@ public class QuestDefinition {
 
     private final TimeWindow timeWindow;
 
+    private final ObjectSeason seasonConfig;
+
     public QuestDefinition(String id, YamlConfiguration config) {
         this(id, config, Map.of());
     }
@@ -57,7 +60,12 @@ public class QuestDefinition {
         if (!Set.of("player", "admin").contains(config.getString("accept-mode", "player"))) {
             throw new IllegalArgumentException("Invalid accept-mode in task " + id + ": expected player or admin");
         }
-        if (type.equals("battlepass") && !season().matches("[a-z0-9_-]+")) {
+        seasonConfig = new ObjectSeason(config);
+        if (growth() && seasonConfig.isRotating()
+                && !config.getString("season-prefix", "season").matches("[a-z0-9_-]+")) {
+            throw new IllegalArgumentException("Invalid season prefix: " + id);
+        }
+        if (type.equals("battlepass") && !seasonConfig.isRotating() && !season().matches("[a-z0-9_-]+")) {
             throw new IllegalArgumentException("Battle pass " + id + " requires a valid season");
         }
         if (type.equals("milestone") && !season().isEmpty() && !season().matches("[a-z0-9_-]+")) {
@@ -94,14 +102,11 @@ public class QuestDefinition {
         reward.validate();
     }
 
-    protected static YamlConfiguration prepareConfiguration(String id, String type, YamlConfiguration config, Map<String, YamlConfiguration> rewards, SeasonManager seasons) {
+    protected static YamlConfiguration prepareConfiguration(String id, String type, YamlConfiguration config, Map<String, YamlConfiguration> rewards) {
         if (!config.getString("type", type).equals(type)) {
             throw new IllegalArgumentException("Wrong definition type: " + id);
         }
         config.set("type", type);
-        if (seasons != null) {
-            seasons.prepare(type, id, config, Instant.now());
-        }
         RewardManager.rewardManager.resolveReferences(config, rewards);
         return config;
     }
@@ -125,11 +130,11 @@ public class QuestDefinition {
     }
 
     public boolean active(Instant now) {
-        return timeWindow.active(now);
+        return SeasonManager.seasonManager == null ? timeWindow.active(now) : SeasonManager.seasonManager.window(this).active(now);
     }
 
     public boolean claimable(Instant now) {
-        return timeWindow.claimable(now);
+        return SeasonManager.seasonManager == null ? timeWindow.claimable(now) : SeasonManager.seasonManager.window(this).claimable(now);
     }
 
     public boolean meetsConditions(Player player) {
@@ -137,8 +142,12 @@ public class QuestDefinition {
     }
 
     public boolean premium(Player player) {
+        return premium(player, season());
+    }
+
+    public boolean premium(Player player, String season) {
         String permission = config.getString("premium-permission", "ultimatequest.battlepass.{id}.{season}.premium")
-                .replace("{id}", id).replace("{season}", season());
+                .replace("{id}", id).replace("{season}", season);
         return player.hasPermission(permission);
     }
 
@@ -203,6 +212,10 @@ public class QuestDefinition {
 
     public String season() {
         return config.getString("season", "");
+    }
+
+    public ObjectSeason seasonConfig() {
+        return seasonConfig;
     }
 
     public Instant startsAt() {

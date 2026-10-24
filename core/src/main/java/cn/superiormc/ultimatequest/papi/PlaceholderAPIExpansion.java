@@ -1,11 +1,14 @@
 package cn.superiormc.ultimatequest.papi;
 
-import java.math.BigDecimal;
 import cn.superiormc.ultimatequest.UltimateQuest;
+import cn.superiormc.ultimatequest.managers.CacheManager;
+import cn.superiormc.ultimatequest.managers.ConfigManager;
 import cn.superiormc.ultimatequest.managers.QuestManager;
+import cn.superiormc.ultimatequest.managers.SeasonManager;
 import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
-import java.util.List;
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +49,7 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
         if (player == null || params == null || QuestManager.questManager == null) {
             return null;
         }
-        if (!QuestManager.questManager.ready(player.getUniqueId())) {
+        if (!CacheManager.cacheManager.isReady(player.getUniqueId())) {
             return "LOADING";
         }
         for (String type : List.of("battlepass", "milestone")) {
@@ -56,8 +59,8 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
                     String id = params.substring(prefix.length());
                     QuestInstance growth = QuestManager.questManager.growthInstance(player.getUniqueId(), type, id);
                     if (field.equals("season")) {
-                        var definition = QuestManager.questManager.growthDefinition(type, id);
-                        return definition == null ? "" : definition.season();
+                        var definition = ConfigManager.configManager.getGrowthDefinition(type, id);
+                        return growth != null ? growth.season() : definition == null ? "" : SeasonManager.seasonManager.season(definition);
                     }
                     if (growth != null) {
                         long next = growth.definition().thresholds().values().stream()
@@ -85,8 +88,8 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
                                                 || player.getPlayer() != null && growth.premium(player.getPlayer()))).count());
                             }
                             case "timeleft" -> {
-                                return growth.definition().endsAt() == null ? "-1" : String.valueOf(Math.max(0L,
-                                        growth.definition().endsAt().getEpochSecond() - Instant.now().getEpochSecond()));
+                                return growth.endsAt() == null ? "-1" : String.valueOf(Math.max(0L,
+                                        growth.endsAt().getEpochSecond() - Instant.now().getEpochSecond()));
                             }
                             default -> {
                             }
@@ -100,7 +103,7 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
         if (!params.startsWith("state_")) {
             return null;
         }
-        QuestInstance instance = QuestManager.questManager.instance(player.getUniqueId(), params.substring(6));
+        QuestInstance instance = CacheManager.cacheManager.instance(player.getUniqueId(), params.substring(6));
         return instance == null ? "AVAILABLE" : instance.state();
     }
 }

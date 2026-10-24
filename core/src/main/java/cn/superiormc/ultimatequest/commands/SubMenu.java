@@ -1,12 +1,12 @@
 package cn.superiormc.ultimatequest.commands;
 
 import cn.superiormc.ultimatequest.gui.inv.ConfiguredMenuGUI;
+import cn.superiormc.ultimatequest.managers.CacheManager;
 import cn.superiormc.ultimatequest.managers.ConfigManager;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
-import cn.superiormc.ultimatequest.managers.QuestManager;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -31,8 +31,8 @@ public final class SubMenu extends AbstractCommand {
     }
 
     public static void open(Player player, String menu, boolean bypass) {
-        if (!QuestManager.questManager.ready(player.getUniqueId())) {
-            QuestManager.questManager.join(player);
+        if (!CacheManager.cacheManager.isReady(player.getUniqueId())) {
+            CacheManager.cacheManager.join(player);
             LanguageManager.languageManager.sendStringText(player, "quests.loading");
             return;
         }

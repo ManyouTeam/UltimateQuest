@@ -3,6 +3,11 @@ package cn.superiormc.ultimatequest.database.sql;
 public final class MySQLDialect extends DatabaseDialect {
 
     @Override
+    protected String serverDataPayloadType() {
+        return "LONGTEXT";
+    }
+
+    @Override
     public boolean matches(String jdbcUrl) {
         return jdbcUrl.startsWith("jdbc:mysql:") || jdbcUrl.startsWith("jdbc:mariadb:");
     }

@@ -1,7 +1,5 @@
 package cn.superiormc.ultimatequest.objects.quests;
 
-import cn.superiormc.ultimatequest.managers.SeasonManager;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -14,11 +12,7 @@ public final class ObjectBattlePass extends QuestDefinition {
     private final Map<String, ObjectBattlePassTask> tasks = new LinkedHashMap<>();
 
     public ObjectBattlePass(String id, YamlConfiguration config, Map<String, YamlConfiguration> library, Map<String, YamlConfiguration> rewardPools) {
-        this(id, config, library, rewardPools, null);
-    }
-
-    public ObjectBattlePass(String id, YamlConfiguration config, Map<String, YamlConfiguration> library, Map<String, YamlConfiguration> rewardPools, SeasonManager seasons) {
-        super(id, prepareConfiguration(id, "battlepass", config, rewardPools, seasons), library);
+        super(id, prepareConfiguration(id, "battlepass", config, rewardPools), library);
         initTasks(config, library, rewardPools);
     }
 

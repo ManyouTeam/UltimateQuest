@@ -1,18 +1,13 @@
 package cn.superiormc.ultimatequest.managers;
 
-import cn.superiormc.ultimatequest.utils.ConfigurationFileUtil;
-import cn.superiormc.ultimatequest.objects.quests.QuestObjective;
 import cn.superiormc.ultimatequest.objects.time.TimeWindow;
-import cn.superiormc.ultimatequest.utils.SchedulerUtil;
 import cn.superiormc.ultimatequest.utils.ResetTimeUtil;
-import java.time.ZoneId;
+import cn.superiormc.ultimatequest.utils.SchedulerUtil;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Map;
-import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public final class QuestPeriodManager extends AbstractManager {
 
@@ -22,10 +17,6 @@ public final class QuestPeriodManager extends AbstractManager {
 
     public QuestPeriodManager() {
         questPeriodManager = this;
-    }
-
-    public synchronized Map<String, YamlConfiguration> definitions() {
-        return ConfigManager.configManager.getPeriodConfigurations();
     }
 
     public static ZonedDateTime start(ConfigurationSection config, Instant now) {
@@ -56,13 +47,30 @@ public final class QuestPeriodManager extends AbstractManager {
         return "scheduled_" + start(config, now).toEpochSecond();
     }
 
+    public static ZonedDateTime start(String id, ConfigurationSection config, Instant now) {
+        ZonedDateTime start = ResetTimeUtil.previous(config, now).atZone(ZoneId.systemDefault());
+        TimeWindow window = SeasonManager.seasonManager.periodWindow(id, config);
+        Instant begins = window.startsAt();
+        if (begins != null && !begins.isAfter(now) && begins.isAfter(start.toInstant())) {
+            return begins.atZone(start.getZone());
+        }
+        return start;
+    }
+
+    public static Instant end(String id, ConfigurationSection config, Instant now) {
+        Instant end = ResetTimeUtil.next(config, now);
+        Instant finishes = SeasonManager.seasonManager.periodWindow(id, config).endsAt();
+        return finishes != null && finishes.isAfter(now) && finishes.isBefore(end) ? finishes : end;
+    }
+
+    public static String cycle(String id, ConfigurationSection config, Instant now) {
+        return "scheduled_" + start(id, config, now).toEpochSecond();
+    }
+
     @Override
     public void onInit() {
         timer = SchedulerUtil.runTaskTimer(() -> {
-            QuestManager coordinator = QuestManager.questManager;
-            if (coordinator != null) {
-                coordinator.refreshSeasons();
-            }
+            SeasonManager.seasonManager.refresh();
             for (var player : Bukkit.getOnlinePlayers()) {
                 SchedulerUtil.runSync(player, () -> {
                     QuestManager manager = QuestManager.questManager;

@@ -11,7 +11,7 @@ public class ObjectTask extends QuestDefinition {
     }
 
     public ObjectTask(String id, YamlConfiguration config, Map<String, YamlConfiguration> library, Map<String, YamlConfiguration> rewards) {
-        super(id, prepareConfiguration(id, "normal", config, rewards, null), library);
+        super(id, prepareConfiguration(id, "normal", config, rewards), library);
     }
 
 }

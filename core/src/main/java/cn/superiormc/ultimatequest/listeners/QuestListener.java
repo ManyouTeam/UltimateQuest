@@ -1,9 +1,9 @@
 package cn.superiormc.ultimatequest.listeners;
 
 import cn.superiormc.ultimatequest.UltimateQuest;
-import cn.superiormc.ultimatequest.managers.LanguageManager;
+import cn.superiormc.ultimatequest.managers.CacheManager;
 import cn.superiormc.ultimatequest.managers.EventConditionsManager;
-import cn.superiormc.ultimatequest.managers.QuestManager;
+import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.QuestScrollManager;
 import cn.superiormc.ultimatequest.managers.TriggerManager;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
@@ -68,7 +68,7 @@ public class QuestListener implements Listener, AutoCloseable {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        QuestManager.questManager.join(event.getPlayer());
+        CacheManager.cacheManager.join(event.getPlayer());
         triggerManager.runtime().startPlayerTicks(event.getPlayer());
     }
 
@@ -116,7 +116,7 @@ public class QuestListener implements Listener, AutoCloseable {
         if (EventConditionsManager.eventConditions != null) {
             EventConditionsManager.eventConditions.onEntityUnload(event.getPlayer().getUniqueId());
         }
-        QuestManager.questManager.quit(event.getPlayer());
+        CacheManager.cacheManager.quit(event.getPlayer());
     }
 
     @Override

@@ -18,6 +18,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.UUID;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public final class SQLDatabase extends AbstractDatabase {
 
@@ -47,6 +48,7 @@ public final class SQLDatabase extends AbstractDatabase {
                 Statement statement = connection.createStatement()) {
                 statement.execute(dialect.createPlayerDataTable());
                 statement.execute(dialect.createScrollDataTable());
+                statement.execute(dialect.createServerDataTable());
             }
             TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fConnected to SQL database.");
         } catch (Exception exception) {
@@ -93,6 +95,47 @@ public final class SQLDatabase extends AbstractDatabase {
             statement.executeUpdate();
         } catch (SQLException exception) {
             throw new IllegalStateException("Could not save SQL player data: " + snapshot.storageId(), exception);
+        }
+    }
+
+    @Override
+    public YamlConfiguration loadServerData(String key) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     "SELECT revision, payload FROM ultimatequest_server_data WHERE data_key = ?")) {
+            statement.setString(1, key);
+            YamlConfiguration data = new YamlConfiguration();
+            try (ResultSet result = statement.executeQuery()) {
+                if (result.next()) {
+                    data.loadFromString(result.getString(2));
+                    data.set("revision", result.getLong(1));
+                }
+            }
+            return data;
+        } catch (Exception exception) {
+            throw new IllegalStateException("Could not load SQL server data: " + key, exception);
+        }
+    }
+
+    @Override
+    public void saveServerData(String key, YamlConfiguration data, long expectedRevision) {
+        long revision = Math.addExact(expectedRevision, 1L);
+        String sql = expectedRevision == 0L
+                ? "INSERT INTO ultimatequest_server_data (revision, payload, data_key) VALUES (?, ?, ?)"
+                : "UPDATE ultimatequest_server_data SET revision = ?, payload = ? WHERE data_key = ? AND revision = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, revision);
+            statement.setString(2, data.saveToString());
+            statement.setString(3, key);
+            if (expectedRevision != 0L) {
+                statement.setLong(4, expectedRevision);
+            }
+            if (statement.executeUpdate() != 1) {
+                throw new IllegalStateException("Server data changed on another server; try again: " + key);
+            }
+        } catch (SQLException exception) {
+            throw new IllegalStateException("Could not save SQL server data: " + key, exception);
         }
     }
 

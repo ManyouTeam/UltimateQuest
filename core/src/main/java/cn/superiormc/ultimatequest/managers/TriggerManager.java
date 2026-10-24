@@ -196,7 +196,7 @@ public final class TriggerManager extends AbstractManager {
     }
 
     public boolean isObserved(String id, Player player) {
-        return subscribers.size() > 1 || QuestManager.questManager == null || QuestManager.questManager.hasTrigger(player, id);
+        return subscribers.size() > 1 || CacheManager.cacheManager == null || CacheManager.cacheManager.hasTrigger(player, id);
     }
 
     public void subscribe(Consumer<QuestContext> subscriber) {

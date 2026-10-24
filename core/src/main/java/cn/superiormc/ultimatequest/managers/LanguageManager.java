@@ -4,6 +4,8 @@ import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.utils.TextUtil;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -187,8 +189,19 @@ public class LanguageManager extends AbstractManager {
         if (language == null) {
             return null;
         }
+
         String resourceName = language.replace('-', '_');
-        return InitManager.loadBundledConfiguration("languages/" + resourceName + ".yml");
+        InputStream inputStream = UltimateQuest.instance.getResource("languages/" + resourceName + ".yml");
+        if (inputStream == null) {
+            return null;
+        }
+
+        try (InputStreamReader reader = new InputStreamReader(inputStream)) {
+            return YamlConfiguration.loadConfiguration(reader);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private void mergeMissingKeys(YamlConfiguration target, YamlConfiguration source) {

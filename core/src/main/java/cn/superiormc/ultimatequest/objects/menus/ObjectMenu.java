@@ -12,8 +12,6 @@ import java.util.Map;
 
 public final class ObjectMenu {
 
-    public static Map<String, ObjectMenu> commonMenus = new LinkedHashMap<>();
-
     private final String id;
 
     private final ConfigurationSection config;

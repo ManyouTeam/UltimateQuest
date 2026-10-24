@@ -3,7 +3,7 @@ package cn.superiormc.ultimatequest.objects.triggers;
 import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.api.trigger.AbstractTrigger;
 import cn.superiormc.ultimatequest.api.trigger.TriggerData;
-import cn.superiormc.ultimatequest.managers.QuestManager;
+import cn.superiormc.ultimatequest.managers.CacheManager;
 import cn.superiormc.ultimatequest.managers.TriggerManager;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
 import java.util.List;
@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.Entity;
@@ -21,7 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
-import org.bukkit.damage.DamageSource;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -98,7 +98,7 @@ public final class TriggerRuntime {
         if (closed) {
             return;
         }
-        if (QuestManager.questManager == null || QuestManager.questManager.isLoaded(player)) {
+        if (CacheManager.cacheManager == null || CacheManager.cacheManager.isLoaded(player)) {
             action.run();
         } else {
             pendingSpawns.put(player.getUniqueId(), action);

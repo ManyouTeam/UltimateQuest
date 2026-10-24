@@ -1,7 +1,8 @@
 package cn.superiormc.ultimatequest.commands;
 
-import cn.superiormc.ultimatequest.managers.QuestManager;
+import cn.superiormc.ultimatequest.managers.ConfigManager;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
+import cn.superiormc.ultimatequest.managers.QuestManager;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public final class SubAccept extends AbstractCommand {
     @Override
     protected List<String> getConsoleTabResult(String[] args) {
         if (args.length == 2) {
-            return QuestManager.questManager.definitions().stream().map(definition -> definition.id()).toList();
+            return ConfigManager.configManager.getListedDefinitions().stream().map(definition -> definition.id()).toList();
         }
         if (args.length == 3) {
             return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
@@ -72,7 +73,7 @@ public final class SubAccept extends AbstractCommand {
             return player.hasPermission("ultimatequest.admin") ? getConsoleTabResult(args) : List.of();
         }
         List<String> ids = new ArrayList<>();
-        QuestManager.questManager.definitions().forEach(definition -> ids.add(definition.id()));
+        ConfigManager.configManager.getListedDefinitions().forEach(definition -> ids.add(definition.id()));
         return ids;
     }
 

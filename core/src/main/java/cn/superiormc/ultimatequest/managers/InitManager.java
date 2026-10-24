@@ -3,40 +3,26 @@ package cn.superiormc.ultimatequest.managers;
 import cn.superiormc.ultimatequest.UltimateQuest;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Enumeration;
-import java.util.function.BiConsumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.stream.Stream;
-import org.bukkit.configuration.file.YamlConfiguration;
+
+import cn.superiormc.ultimatequest.utils.CommonUtil;
 
 public final class InitManager extends AbstractManager {
 
     public static InitManager initManager;
 
-    private final Path dataDirectory;
-
-    private final BiConsumer<String, Throwable> errorLogger;
-
     private boolean firstLoad;
 
     public InitManager() {
-        this(UltimateQuest.instance.getDataFolder().toPath(), (message, throwable) -> ErrorManager.errorManager.sendErrorMessage("§cError: " + message + ": " + throwable.getMessage()));
-    }
-
-    // Paper bootstrap runs before a JavaPlugin instance exists.
-    public InitManager(Path dataDirectory, BiConsumer<String, Throwable> errorLogger) {
         initManager = this;
-        this.dataDirectory = dataDirectory;
-        this.errorLogger = errorLogger;
-        firstLoad = !Files.exists(dataDirectory.resolve("config.yml"));
+        File file = new File(UltimateQuest.instance.getDataFolder(), "config.yml");
+        if (!file.exists()) {
+            UltimateQuest.instance.saveDefaultConfig();
+            firstLoad = true;
+        }
         init();
     }
 
@@ -60,23 +46,13 @@ public final class InitManager extends AbstractManager {
         String normalizedFolder = folderName.endsWith("/") ? folderName : folderName + "/";
         File sourceFile;
         try {
-            sourceFile = new File(InitManager.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            // Maven and IDE runs load classes from a directory rather than a plugin JAR.
-            if (sourceFile.isDirectory()) {
-                URL resource = InitManager.class.getResource("/" + normalizedFolder);
-                if (resource == null) {
-                    return;
-                }
-                Path folder = Path.of(resource.toURI());
-                try (Stream<Path> files = Files.walk(folder)) {
-                    files.filter(Files::isRegularFile).forEach(file -> resourceOutput(normalizedFolder + folder.relativize(file).toString().replace('\\', '/'), regenerate));
-                }
-                return;
-            }
-        } catch (URISyntaxException | IOException exception) {
-            errorLogger.accept("Failed to extract resource folder: " + folderName, exception);
+            sourceFile = new File(UltimateQuest.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException exception) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not extract resource folder "
+                    + folderName + ": " + exception.getMessage());
             return;
         }
+
         try (JarFile jarFile = new JarFile(sourceFile)) {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
@@ -91,23 +67,22 @@ public final class InitManager extends AbstractManager {
                 resourceOutput(entryName, regenerate);
             }
         } catch (IOException exception) {
-            errorLogger.accept("Failed to extract resource folder: " + folderName, exception);
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not extract resource folder "
+                    + folderName + ": " + exception.getMessage());
         }
     }
 
     private void resourceOutput(String fileName, boolean regenerate) {
-        Path target = dataDirectory.resolve(fileName);
-        if (Files.exists(target) || (!firstLoad && !regenerate)) {
-            return;
-        }
-        try (InputStream input = InitManager.class.getResourceAsStream("/" + fileName)) {
-            if (input == null) {
-                throw new IOException("Bundled resource not found: " + fileName);
+        File tempVal1 = new File(UltimateQuest.instance.getDataFolder(), fileName);
+        if (!tempVal1.exists()) {
+            if (!firstLoad && !regenerate) {
+                return;
             }
-            Files.createDirectories(target.getParent());
-            Files.copy(input, target);
-        } catch (IOException exception) {
-            errorLogger.accept("Failed to extract default configuration: " + fileName, exception);
+            File tempVal2 = new File(fileName);
+            if (tempVal2.getParentFile() != null) {
+                CommonUtil.mkDir(tempVal2.getParentFile());
+            }
+            UltimateQuest.instance.saveResource(tempVal2.getPath(), false);
         }
     }
 
@@ -119,22 +94,5 @@ public final class InitManager extends AbstractManager {
     public void onPluginReload() {
         firstLoad = false;
         init();
-    }
-
-    public static YamlConfiguration loadConfiguration(File file) throws Exception {
-        YamlConfiguration config = new YamlConfiguration();
-        config.load(file);
-        return config;
-    }
-
-    public static YamlConfiguration loadBundledConfiguration(String resource) {
-        try (InputStream input = InitManager.class.getResourceAsStream("/" + resource)) {
-            if (input == null) {
-                return null;
-            }
-            return YamlConfiguration.loadConfiguration(new InputStreamReader(input, StandardCharsets.UTF_8));
-        } catch (IOException exception) {
-            throw new IllegalStateException("Failed to load bundled configuration: " + resource, exception);
-        }
     }
 }
