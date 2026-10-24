@@ -15,7 +15,7 @@ import java.util.Set;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import cn.superiormc.ultimatequest.objects.configs.ObjectSeason;
+import cn.superiormc.ultimatequest.objects.time.ObjectSeason;
 
 public final class SeasonManager {
 

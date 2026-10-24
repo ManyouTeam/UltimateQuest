@@ -66,10 +66,8 @@ source:
 
 [防刷](anti-abuse.md)仍按事件执行。冷却期间被跳过的事件不会补回距离或其他数量；多件产物或多块放置在一次事件内只进行一次防刷判定。不要同时用 `exp_change` 和 `pickup_experience` 两个来源累计同一次经验获取，除非确实需要分别计算。
 
-## 已有任务与存档
+## 进度存档
 
-省略 `count` 的配置继续按事件次数累计。不支持的 `count` 会在加载时报告允许的值，修正配置后执行 `/uq reload`。
+省略 `count` 时按事件次数累计。不支持的 `count` 会在加载时报告允许的值，修正配置后执行 `/uq reload`。
 
-升级前已保存的普通任务、周期任务和卷轴快照中，非钓鱼触发器的 `count: items` 原来实际上按次数计数；读取旧快照时会转换为 `events` 并记录日志，避免已有进度突然改变含义。新生成任务按新配置执行。里程碑会刷新当前定义，升级时请同时检查其 `sources`。
-
-存档保留原有整数进度字段，另外保存小数余量。现有 Java API 中返回 `long` 的进度接口继续返回整数部分；需要小数时使用 `QuestInstance.progressAmount` 或 `totalAmount`。无需手动修改内部的 `counting-version` 或余量字段。
+存档保留原有整数进度字段，另外保存小数余量。现有 Java API 中返回 `long` 的进度接口继续返回整数部分；需要小数时使用 `QuestInstance.progressAmount` 或 `totalAmount`。无需手动修改余量字段。

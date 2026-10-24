@@ -1,9 +1,10 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.buttons;
 
 import cn.superiormc.ultimatequest.gui.action.GUIActionContext;
 import cn.superiormc.ultimatequest.gui.action.ObjectSingleGUIAction;
 import cn.superiormc.ultimatequest.managers.GUIActionManager;
 import cn.superiormc.ultimatequest.objects.ObjectAction;
+import cn.superiormc.ultimatequest.objects.buttons.subobjects.ObjectDisplayItem;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -31,13 +32,8 @@ public class ObjectButton extends AbstractButton {
         }
     }
 
-    private void initDisplayItems() {
-        for (String path : config.getKeys(true)) {
-            ConfigurationSection section = config.getConfigurationSection(path);
-            if (section != null) {
-                displayItems.put(path, new ObjectDisplayItem(section));
-            }
-        }
+    public void clickEvent(Player player, GUIActionContext context) {
+        GUIActionManager.INSTANCE.execute(actions.get(context.clickType()), player, context);
     }
 
     public String getId() {
@@ -50,10 +46,6 @@ public class ObjectButton extends AbstractButton {
 
     public ObjectDisplayItem getDisplayItem(String path) {
         return displayItems.get(path);
-    }
-
-    public void clickEvent(Player player, GUIActionContext context) {
-        GUIActionManager.INSTANCE.execute(actions.get(context.clickType()), player, context);
     }
 
     public boolean isHidden(int page, int maximumPage) {
@@ -72,4 +64,14 @@ public class ObjectButton extends AbstractButton {
         }
         return config;
     }
+
+    private void initDisplayItems() {
+        for (String path : config.getKeys(true)) {
+            ConfigurationSection section = config.getConfigurationSection(path);
+            if (section != null) {
+                displayItems.put(path, new ObjectDisplayItem(section));
+            }
+        }
+    }
+
 }

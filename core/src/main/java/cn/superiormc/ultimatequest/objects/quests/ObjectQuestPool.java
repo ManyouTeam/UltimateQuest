@@ -1,4 +1,4 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.quests;
 
 import cn.superiormc.ultimatequest.managers.QuestPoolManager;
 
@@ -16,15 +16,9 @@ public final class ObjectQuestPool {
 
     private final YamlConfiguration config;
 
-    public String getId() {
-        return id;
-    }
+    private final Map<String, YamlConfiguration> objectives;
 
-    public YamlConfiguration getConfig() {
-        return config;
-    }
-
-    public ObjectQuestPool(String id, YamlConfiguration config, Map<String, YamlConfiguration> pools, Map<String, YamlConfiguration> objectives, Map<String, YamlConfiguration> rewardPools) {
+    public ObjectQuestPool(String id, YamlConfiguration config, Map<String, YamlConfiguration> objectives) {
         this.id = id;
         this.config = config;
         ConfigurationSection quests = config.getConfigurationSection("quests");
@@ -36,8 +30,6 @@ public final class ObjectQuestPool {
         }
         this.objectives = Map.copyOf(objectives);
     }
-
-    private final Map<String, YamlConfiguration> objectives;
 
     public List<String> draw(int count, RandomGenerator random) {
         String pool = id;
@@ -54,4 +46,13 @@ public final class ObjectQuestPool {
         }
         return QuestPoolManager.drawCandidates(pool, weights, candidates, count, random);
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public YamlConfiguration getConfig() {
+        return config;
+    }
+
 }

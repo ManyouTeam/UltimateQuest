@@ -1,4 +1,4 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.buttons;
 
 import cn.superiormc.ultimatequest.gui.action.GUIActionContext;
 
@@ -13,9 +13,10 @@ public abstract class AbstractButton {
         this.config = config;
     }
 
+    public abstract void clickEvent(Player player, GUIActionContext context);
+
     public ConfigurationSection getConfig() {
         return config;
     }
 
-    public abstract void clickEvent(Player player, GUIActionContext context);
 }

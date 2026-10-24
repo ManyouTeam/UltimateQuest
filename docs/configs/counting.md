@@ -66,10 +66,8 @@ Cancelled events and zero or negative quantities add no quantity progress. Empty
 
 [Anti-abuse](anti-abuse.md) applies once per event. Events skipped during a cooldown do not contribute delayed distance or other quantities. Multiple outputs or blocks in one event share one anti-abuse check. `exp_change` and `pickup_experience` may describe the same XP gain; avoid using both sources unless both contributions are intended.
 
-## Existing tasks and saves
+## Progress saves
 
 Omitted `count` still means event counting. Unsupported modes report the allowed values during loading; correct the configuration and run `/uq reload`.
 
-Old saved normal, periodic, and scroll snapshots used non-fishing `count: items` as event counting. Loading those snapshots converts that setting to `events` and logs the migration, preserving its previous meaning. Newly generated tasks follow the new configuration. Milestones refresh their live definition, so check their `sources` during an upgrade.
-
-Saves retain the integer fields and store fractional remainders separately. Existing Java progress methods returning `long` continue to expose the integer part. Use `QuestInstance.progressAmount` or `totalAmount` for fractional values. Internal `counting-version` and remainder fields do not need manual editing.
+Saves retain the integer fields and store fractional remainders separately. Existing Java progress methods returning `long` continue to expose the integer part. Use `QuestInstance.progressAmount` or `totalAmount` for fractional values. Remainder fields do not need manual editing.

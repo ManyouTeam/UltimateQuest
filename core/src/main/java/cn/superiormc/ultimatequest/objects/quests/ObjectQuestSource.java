@@ -1,7 +1,6 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.quests;
 
 import cn.superiormc.ultimatequest.managers.*;
-import cn.superiormc.ultimatequest.objects.quests.*;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -16,10 +15,6 @@ public final class ObjectQuestSource {
         this.config = config;
     }
 
-    public boolean usesPool() {
-        return config != null && config.contains("pool");
-    }
-
     public List<String> draw(RandomGenerator random) {
         if (config == null) {
             return List.of();
@@ -30,7 +25,12 @@ public final class ObjectQuestSource {
         return QuestPoolManager.questPoolManager.draw(config.getString("pool"), config.getInt("count", 1), random);
     }
 
+    public boolean usesPool() {
+        return config != null && config.contains("pool");
+    }
+
     public ConfigurationSection getConfig() {
         return config;
     }
+
 }

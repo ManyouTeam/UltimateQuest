@@ -20,7 +20,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import cn.superiormc.ultimatequest.objects.configs.ObjectReward;
+import cn.superiormc.ultimatequest.objects.rewards.ObjectReward;
 
 public final class RewardManager extends AbstractManager {
 

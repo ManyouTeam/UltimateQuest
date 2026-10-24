@@ -214,28 +214,6 @@ public final class QuestObjective extends AbstractConfiguredSection<QuestContext
         return amount;
     }
 
-    /** Only for saved pre-count-mode snapshots, never for newly loaded definitions. */
-    public static void migrateLegacyCounts(ConfigurationSection definition) {
-        if (definition.getInt("counting-version", 0) >= 1) return;
-        for (String path : List.of("objectives", "sources")) {
-            ConfigurationSection objectives = definition.getConfigurationSection(path);
-            if (objectives == null) continue;
-            for (String id : objectives.getKeys(false)) {
-                var objective = objectives.getConfigurationSection(id);
-                if (objective == null) continue;
-                var source = objective.getConfigurationSection("source");
-                if (source == null) source = objective;
-                String trigger = source.getString("trigger", "").toLowerCase(Locale.ROOT).replace('-', '_');
-                if (!trigger.contains(":")) trigger = "ultimatequest:" + trigger;
-                if (source.getString("count", "events").equals("items") && !trigger.equals("ultimatequest:fish")) {
-                    source.set("count", "events");
-                    Bukkit.getLogger().warning("[UltimateQuest] Migrated saved objective " + id + " (" + trigger
-                            + ") from legacy count: items to count: events;"
-                            + " existing progress is preserved.");
-                }
-            }
-        }
-        definition.set("counting-version", 1);
-    }
+
 
 }

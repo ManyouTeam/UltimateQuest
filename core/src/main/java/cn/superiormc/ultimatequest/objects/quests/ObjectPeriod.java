@@ -1,10 +1,9 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.quests;
 
 import cn.superiormc.ultimatequest.managers.QuestPeriodManager;
 import cn.superiormc.ultimatequest.managers.QuestPoolManager;
 import cn.superiormc.ultimatequest.managers.RewardManager;
-import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
-import cn.superiormc.ultimatequest.objects.quests.QuestObjective;
+import cn.superiormc.ultimatequest.objects.rewards.ObjectReward;
 import cn.superiormc.ultimatequest.objects.time.TimeWindow;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,14 +20,6 @@ public final class ObjectPeriod {
     private final String id;
 
     private final YamlConfiguration config;
-
-    public String getId() {
-        return id;
-    }
-
-    public YamlConfiguration getConfig() {
-        return config;
-    }
 
     public ObjectPeriod(String id, YamlConfiguration config, Map<String, YamlConfiguration> pools, Map<String, YamlConfiguration> objectives, Map<String, YamlConfiguration> rewardPools) {
         this.id = id;
@@ -53,6 +44,11 @@ public final class ObjectPeriod {
         QuestPeriodManager.start(config, Instant.now());
         QuestPeriodManager.end(config, Instant.now());
         TimeWindow.read(config);
+    }
+
+    public void initReferences(Map<String, YamlConfiguration> categories, Map<String, QuestDefinition> definitions) {
+        ObjectCategory.validateCategories(config.getConfigurationSection("task"), categories, "periods/" + id + ".yml");
+        new ObjectReward(config.getConfigurationSection("task.rewards")).validateTargets(definitions);
     }
 
     public QuestDefinition createDefinition(String objective, Map<String, YamlConfiguration> objectives) {
@@ -85,6 +81,18 @@ public final class ObjectPeriod {
         return new QuestDefinition(group + "_" + (objective == null ? "main" : objective), config, objectives);
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public YamlConfiguration getConfig() {
+        return config;
+    }
+
+    public ObjectQuestSource getSource() {
+        return source;
+    }
+
     private void copySection(ConfigurationSection source, ConfigurationSection target) {
         for (Map.Entry<String, Object> entry : source.getValues(true).entrySet()) {
             if (!(entry.getValue() instanceof ConfigurationSection)) {
@@ -93,7 +101,4 @@ public final class ObjectPeriod {
         }
     }
 
-    public ObjectQuestSource getSource() {
-        return source;
-    }
 }

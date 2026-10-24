@@ -1,4 +1,4 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.time;
 
 import cn.superiormc.ultimatequest.utils.ResetTimeUtil;
 
@@ -15,6 +15,13 @@ public final class ObjectSeason {
         this.config = config;
     }
 
+    public void apply(Instant start, Instant end) {
+        config.set("starts-at", start.toString());
+        config.set("ends-at", end.toString());
+        config.set("season", config.getString("season-prefix", "season") + "_" + start.getEpochSecond());
+        config.set("rotation", null);
+    }
+
     public boolean isRotating() {
         ConfigurationSection rotation = config.getConfigurationSection("rotation");
         return rotation != null && rotation.getBoolean("enabled", false);
@@ -28,10 +35,4 @@ public final class ObjectSeason {
         return ResetTimeUtil.next(config.getConfigurationSection("rotation"), start);
     }
 
-    public void apply(Instant start, Instant end) {
-        config.set("starts-at", start.toString());
-        config.set("ends-at", end.toString());
-        config.set("season", config.getString("season-prefix", "season") + "_" + start.getEpochSecond());
-        config.set("rotation", null);
-    }
 }

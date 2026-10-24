@@ -60,7 +60,7 @@ Each `tasks.<challenge-id>` uses normal `source` or `objectives` syntax and requ
 
 | Field | Default / requirement | Purpose |
 | --- | --- | --- |
-| `reset` | Uses `group`, or `season` when neither is set | `daily`, `weekly`, or `season`. |
+| `reset` | `season` | `daily`, `weekly`, or `season`. |
 | `group`, `group-name` | Optional | Challenge browsing group and display name; set a valid `reset` explicitly for custom groups. |
 | `unlock-week` | `1` | First season week in which the challenge is available. |
 | `catch-up` | `true` | Allows completion in later weeks; `false` restricts it to the unlock week. |

@@ -1,7 +1,6 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.quests;
 
 import cn.superiormc.ultimatequest.managers.RewardManager;
-import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -93,4 +92,5 @@ public final class ObjectProgression {
         }
         return Collections.unmodifiableMap(new LinkedHashMap<>(sorted));
     }
+
 }

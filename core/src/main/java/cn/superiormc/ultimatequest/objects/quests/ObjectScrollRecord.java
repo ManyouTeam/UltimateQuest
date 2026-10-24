@@ -1,7 +1,6 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.quests;
 
 import cn.superiormc.ultimatequest.managers.*;
-import cn.superiormc.ultimatequest.objects.quests.*;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -32,4 +31,5 @@ public final class ObjectScrollRecord {
         QuestDefinition definition = ConfigManager.configManager.getScroll(record.getString("profile", "")).createDefinition(record.getStringList("objective-ids"));
         return List.of(definition);
     }
+
 }

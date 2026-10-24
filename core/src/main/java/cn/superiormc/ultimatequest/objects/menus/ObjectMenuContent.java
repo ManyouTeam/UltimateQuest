@@ -1,4 +1,7 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.menus;
+
+import cn.superiormc.ultimatequest.objects.buttons.ObjectButton;
+import cn.superiormc.ultimatequest.objects.buttons.ObjectQuestButton;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -27,4 +30,5 @@ public final class ObjectMenuContent {
     public ObjectButton getButton() {
         return button;
     }
+
 }

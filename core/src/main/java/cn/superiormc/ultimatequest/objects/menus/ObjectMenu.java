@@ -1,4 +1,6 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.menus;
+
+import cn.superiormc.ultimatequest.objects.buttons.ObjectButton;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -25,28 +27,18 @@ public final class ObjectMenu {
     public ObjectMenu(String id, ConfigurationSection config) {
         this.id = id;
         this.config = config;
+        initMenu();
+    }
+
+    public void initMenu() {
+        layouts.clear();
         initLayouts();
         initButtons();
         initContents();
     }
 
-    private void initLayouts() {
-        for (String path : List.of("layout", "catalog-layout", "detail-layout", "challenge-layout", "category-filter.layout")) {
-            if (!config.contains(path)) {
-                continue;
-            }
-            List<String> rows = config.getStringList(path);
-            if (rows.isEmpty() || rows.size() > 6 || rows.stream().anyMatch(row -> row.length() != 9)) {
-                throw new IllegalArgumentException("Invalid menu layout: " + id + "." + path);
-            }
-            if (path.equals("category-filter.layout") && rows.stream().noneMatch(row -> row.contains("Q"))) {
-                throw new IllegalArgumentException("Category layout requires Q slots: " + id);
-            }
-            layouts.put(path, layoutSlots(rows));
-        }
-    }
-
-    private void initButtons() {
+    public void initButtons() {
+        buttonItems.clear();
         ConfigurationSection section = config.getConfigurationSection("items");
         if (section == null) {
             return;
@@ -59,7 +51,8 @@ public final class ObjectMenu {
         }
     }
 
-    private void initContents() {
+    public void initContents() {
+        contents.clear();
         ConfigurationSection section = config.getConfigurationSection("contents");
         if (section == null) {
             return;
@@ -70,24 +63,6 @@ public final class ObjectMenu {
                 contents.put(key, new ObjectMenuContent(key, content));
             }
         }
-    }
-
-    public ConfigurationSection getConfig() {
-        return config;
-    }
-
-    public Map<String, ObjectButton> getButtons() {
-        return Collections.unmodifiableMap(buttonItems);
-    }
-
-    public Map<String, ObjectMenuContent> getContents() {
-        return Collections.unmodifiableMap(contents);
-    }
-
-    public List<String> getLayout(boolean selected, boolean challenges) {
-        List<String> rows = config.getStringList(challenges ? "challenge-layout" : selected ? "detail-layout"
-                                                                                            : "catalog-layout");
-        return rows.isEmpty() ? config.getStringList("layout") : rows;
     }
 
     public Map<String, List<Integer>> layoutSlots(List<String> layout) {
@@ -108,6 +83,28 @@ public final class ObjectMenu {
         return layoutSlots.getOrDefault(id, List.of());
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public ConfigurationSection getConfig() {
+        return config;
+    }
+
+    public Map<String, ObjectButton> getButtons() {
+        return Collections.unmodifiableMap(buttonItems);
+    }
+
+    public Map<String, ObjectMenuContent> getContents() {
+        return Collections.unmodifiableMap(contents);
+    }
+
+    public List<String> getLayout(boolean selected, boolean challenges) {
+        List<String> rows = config.getStringList(challenges ? "challenge-layout" : selected ? "detail-layout"
+                                                                                            : "catalog-layout");
+        return rows.isEmpty() ? config.getStringList("layout") : rows;
+    }
+
     public ObjectButton getContentButton(ConfigurationSection section) {
         for (ObjectMenuContent content : contents.values()) {
             if (content.getConfig() == section) {
@@ -116,4 +113,21 @@ public final class ObjectMenu {
         }
         return null;
     }
+
+    private void initLayouts() {
+        for (String path : List.of("layout", "catalog-layout", "detail-layout", "challenge-layout", "category-filter.layout")) {
+            if (!config.contains(path)) {
+                continue;
+            }
+            List<String> rows = config.getStringList(path);
+            if (rows.isEmpty() || rows.size() > 6 || rows.stream().anyMatch(row -> row.length() != 9)) {
+                throw new IllegalArgumentException("Invalid menu layout: " + id + "." + path);
+            }
+            if (path.equals("category-filter.layout") && rows.stream().noneMatch(row -> row.contains("Q"))) {
+                throw new IllegalArgumentException("Category layout requires Q slots: " + id);
+            }
+            layouts.put(path, layoutSlots(rows));
+        }
+    }
+
 }

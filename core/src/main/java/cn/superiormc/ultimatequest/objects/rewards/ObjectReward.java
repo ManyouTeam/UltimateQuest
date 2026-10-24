@@ -1,4 +1,4 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.rewards;
 
 import cn.superiormc.ultimatequest.managers.ActionManager;
 import cn.superiormc.ultimatequest.managers.ConfigManager;
@@ -29,13 +29,13 @@ import java.util.function.BiConsumer;
 
 public final class ObjectReward {
 
-    private final ConfigurationSection config;
-
     private static final String RANDOM_TYPE = "random";
 
     private static final Set<String> TYPES = Set.of("item", "console_command", "message", "battlepass-experience", RANDOM_TYPE);
 
     private static final int MAX_RANDOM_DEPTH = 8;
+
+    private final ConfigurationSection config;
 
     private final ActionManager<ObjectSingleAction, QuestContext> actions = new ActionManager<>();
 
@@ -43,37 +43,189 @@ public final class ObjectReward {
         this.config = config;
     }
 
-    public ConfigurationSection getConfig() {
-        return config;
-    }
-
-    public void validate() {
-        validate(config);
-    }
-
-    public List<String> preview(Player player) {
-        return preview(player, config);
-    }
-
-    public CompletableFuture<Void> grant(Player player, String questId) {
-        return grant(player, config, questId);
+    public Map<String, YamlConfiguration> loadPools() {
+        return ConfigManager.configManager.getRewardPoolConfigurations();
     }
 
     public void resolveReferences(ConfigurationSection config) {
         resolveReferences(config, Map.of());
     }
 
-    public Map<String, YamlConfiguration> loadPools() {
-        return ConfigManager.configManager.getRewardPoolConfigurations();
-    }
-
     public void resolveReferences(ConfigurationSection config, Map<String, YamlConfiguration> pools) {
         try {
             resolveReferences(config, pools, 0);
         } catch (RuntimeException exception) {
-            ErrorManager.errorManager.sendErrorMessage("搂cError: Could not resolve reward references at " + config.getCurrentPath() + ": " + exception.getMessage());
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not resolve reward references at " + config.getCurrentPath() + ": " + exception.getMessage());
             throw exception;
         }
+    }
+
+    public void validate() {
+        validate(config);
+    }
+
+    public void validate(ConfigurationSection section) {
+        try {
+            validate(section, 0);
+        } catch (RuntimeException exception) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Invalid reward configuration at " + (section == null ? "rewards" : section.getCurrentPath()) + ": " + exception.getMessage());
+            throw exception;
+        }
+    }
+
+    public void validateTargets(Map<String, QuestDefinition> definitions) {
+        forEachReward(config, (key, reward) -> {
+            if (reward.getString("type", "").equals("battlepass-experience") && !definitions.containsKey("battlepass/" + reward.getString("battlepass", ""))) {
+                throw new IllegalArgumentException("Unknown battle pass reward target: " + key);
+            }
+        });
+    }
+
+    public void forEachReward(ConfigurationSection section, BiConsumer<String, ConfigurationSection> consumer) {
+        forEachReward(section, consumer, 0);
+    }
+
+    public YamlConfiguration resolveSnapshot(ConfigurationSection section) {
+        return resolveKeys(section, drawKeys(section));
+    }
+
+    public List<String> drawKeys(ConfigurationSection section) {
+        return List.copyOf(resolveRandom(section).keySet());
+    }
+
+    public YamlConfiguration resolveKeys(ConfigurationSection section, List<String> keys) {
+        YamlConfiguration snapshot = new YamlConfiguration();
+        ConfigurationSection root = snapshot.createSection("rewards");
+        for (String key : keys) {
+            ConfigurationSection reward = findReward(section, key, 0);
+            if (reward == null) {
+                throw new IllegalArgumentException("Saved reward key no longer exists: " + key);
+            }
+            ConfigurationSection target = root.createSection(key);
+            for (Map.Entry<String, Object> value : reward.getValues(true).entrySet()) {
+                if (!(value.getValue() instanceof ConfigurationSection)) {
+                    target.set(value.getKey(), value.getValue());
+                }
+            }
+        }
+        validate(root);
+        return snapshot;
+    }
+
+    public List<String> preview(Player player) {
+        return preview(player, config);
+    }
+
+    public List<String> preview(Player player, ConfigurationSection section) {
+        List<String> lines = new ArrayList<>();
+        if (section != null) {
+            for (String key : section.getKeys(false)) {
+                ConfigurationSection reward = section.getConfigurationSection(key);
+                if (reward == null) {
+                    continue;
+                }
+                previewReward(player, reward, key, lines);
+            }
+        }
+        if (lines.isEmpty()) {
+            lines.add(LanguageManager.languageManager.getStringText(player, "battlepass.reward-empty"));
+        }
+        return lines;
+    }
+
+    public CompletableFuture<Void> grant(Player player, String questId) {
+        return grant(player, config, questId);
+    }
+
+    public CompletableFuture<Void> grant(Player player, QuestDefinition definition) {
+        return grant(player, definition.rewards(), definition.id());
+    }
+
+    public CompletableFuture<Void> grant(Player player, ConfigurationSection section, String questId) {
+        List<ItemStack> items = new ArrayList<>();
+        List<String> commands = new ArrayList<>();
+        List<ConfigurationSection> feedback = new ArrayList<>();
+        List<ConfigurationSection> experience = new ArrayList<>();
+        if (section == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        try {
+            Map<String, ConfigurationSection> resolved = resolveRandom(section);
+            for (Map.Entry<String, ConfigurationSection> entry : resolved.entrySet()) {
+                String key = entry.getKey();
+                ConfigurationSection reward = entry.getValue();
+                String type = reward.getString("type");
+                if (type.equals("item")) {
+                    ItemStack item = BuildItem.buildItemStack(player, reward.getConfigurationSection("item"));
+                    if (item == null || item.getType().isAir() || item.getAmount() <= 0) {
+                        throw new IllegalArgumentException("Invalid reward item: " + key);
+                    }
+                    items.add(item);
+                } else if (type.equals("console_command")) {
+                    commands.add(CommonUtil.modifyString(player, reward.getString("command"), "player", player.getName(), "uuid", player.getUniqueId().toString(), "quest", questId));
+                } else if (type.equals("battlepass-experience")) {
+                    if (!QuestManager.questManager.canAddExperience(player, reward.getString("battlepass", ""))) {
+                        throw new IllegalArgumentException("Battle pass experience reward target is unavailable");
+                    }
+                    experience.add(reward);
+                } else {
+                    feedback.add(reward);
+                }
+            }
+            for (ConfigurationSection reward : experience) {
+                QuestManager.questManager.addExperience(player, reward.getString("battlepass"), reward.getLong("amount"));
+            }
+            for (ItemStack item : items) {
+                CommonUtil.giveOrDrop(player, item);
+            }
+            for (ConfigurationSection message : feedback) {
+                actions.doAction(new ObjectSingleAction(message), player, new QuestContext(null, null, player));
+            }
+        } catch (RuntimeException exception) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not grant rewards for " + questId + ": " + exception.getMessage());
+            return CompletableFuture.failedFuture(exception);
+        }
+        CompletableFuture<Void> result = new CompletableFuture<>();
+        if (commands.isEmpty()) {
+            result.complete(null);
+        } else {
+            try {
+                SchedulerUtil.runSync(() -> {
+                    try {
+                        for (String command : commands) {
+                            if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) {
+                                throw new IllegalStateException("Reward command was not accepted");
+                            }
+                        }
+                        result.complete(null);
+                    } catch (RuntimeException exception) {
+                        ErrorManager.errorManager.sendErrorMessage("§cError: Could not execute reward commands for " + questId + ": " + exception.getMessage());
+                        result.completeExceptionally(exception);
+                    }
+                });
+            } catch (RuntimeException exception) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Could not schedule reward commands for " + questId + ": " + exception.getMessage());
+                result.completeExceptionally(exception);
+            }
+        }
+        return result;
+    }
+
+    public ConfigurationSection getConfig() {
+        return config;
+    }
+
+    public boolean hasRandom(ConfigurationSection section) {
+        if (section == null) {
+            return false;
+        }
+        for (String key : section.getKeys(false)) {
+            ConfigurationSection reward = section.getConfigurationSection(key);
+            if (reward != null && reward.getString("type", "").equals(RANDOM_TYPE)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void resolveReferences(ConfigurationSection section, Map<String, YamlConfiguration> pools, int depth) {
@@ -123,15 +275,6 @@ public final class ObjectReward {
             if (!(entry.getValue() instanceof ConfigurationSection)) {
                 target.set(entry.getKey(), entry.getValue());
             }
-        }
-    }
-
-    public void validate(ConfigurationSection section) {
-        try {
-            validate(section, 0);
-        } catch (RuntimeException exception) {
-            ErrorManager.errorManager.sendErrorMessage("搂cError: Invalid reward configuration at " + (section == null ? "rewards" : section.getCurrentPath()) + ": " + exception.getMessage());
-            throw exception;
         }
     }
 
@@ -212,10 +355,6 @@ public final class ObjectReward {
         }
     }
 
-    public void forEachReward(ConfigurationSection section, BiConsumer<String, ConfigurationSection> consumer) {
-        forEachReward(section, consumer, 0);
-    }
-
     private void forEachReward(ConfigurationSection section, BiConsumer<String, ConfigurationSection> consumer, int depth) {
         if (section == null || depth > MAX_RANDOM_DEPTH) {
             return;
@@ -238,46 +377,6 @@ public final class ObjectReward {
                 }
             }
         }
-    }
-
-    public boolean hasRandom(ConfigurationSection section) {
-        if (section == null) {
-            return false;
-        }
-        for (String key : section.getKeys(false)) {
-            ConfigurationSection reward = section.getConfigurationSection(key);
-            if (reward != null && reward.getString("type", "").equals(RANDOM_TYPE)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public YamlConfiguration resolveSnapshot(ConfigurationSection section) {
-        return resolveKeys(section, drawKeys(section));
-    }
-
-    public List<String> drawKeys(ConfigurationSection section) {
-        return List.copyOf(resolveRandom(section).keySet());
-    }
-
-    public YamlConfiguration resolveKeys(ConfigurationSection section, List<String> keys) {
-        YamlConfiguration snapshot = new YamlConfiguration();
-        ConfigurationSection root = snapshot.createSection("rewards");
-        for (String key : keys) {
-            ConfigurationSection reward = findReward(section, key, 0);
-            if (reward == null) {
-                throw new IllegalArgumentException("Saved reward key no longer exists: " + key);
-            }
-            ConfigurationSection target = root.createSection(key);
-            for (Map.Entry<String, Object> value : reward.getValues(true).entrySet()) {
-                if (!(value.getValue() instanceof ConfigurationSection)) {
-                    target.set(value.getKey(), value.getValue());
-                }
-            }
-        }
-        validate(root);
-        return snapshot;
     }
 
     private ConfigurationSection findReward(ConfigurationSection section, String path, int depth) {
@@ -318,23 +417,6 @@ public final class ObjectReward {
             }
         }
         return null;
-    }
-
-    public List<String> preview(Player player, ConfigurationSection section) {
-        List<String> lines = new ArrayList<>();
-        if (section != null) {
-            for (String key : section.getKeys(false)) {
-                ConfigurationSection reward = section.getConfigurationSection(key);
-                if (reward == null) {
-                    continue;
-                }
-                previewReward(player, reward, key, lines);
-            }
-        }
-        if (lines.isEmpty()) {
-            lines.add(LanguageManager.languageManager.getStringText(player, "battlepass.reward-empty"));
-        }
-        return lines;
     }
 
     private void previewReward(Player player, ConfigurationSection reward, String key, List<String> lines) {
@@ -419,80 +501,6 @@ public final class ObjectReward {
         return total;
     }
 
-    public CompletableFuture<Void> grant(Player player, QuestDefinition definition) {
-        return grant(player, definition.rewards(), definition.id());
-    }
-
-    public CompletableFuture<Void> grant(Player player, ConfigurationSection section, String questId) {
-        List<ItemStack> items = new ArrayList<>();
-        List<String> commands = new ArrayList<>();
-        List<ConfigurationSection> feedback = new ArrayList<>();
-        List<ConfigurationSection> experience = new ArrayList<>();
-        if (section == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        try {
-            Map<String, ConfigurationSection> resolved = resolveRandom(section);
-            for (Map.Entry<String, ConfigurationSection> entry : resolved.entrySet()) {
-                String key = entry.getKey();
-                ConfigurationSection reward = entry.getValue();
-                String type = reward.getString("type");
-                if (type.equals("item")) {
-                    ItemStack item = BuildItem.buildItemStack(player, reward.getConfigurationSection("item"));
-                    if (item == null || item.getType().isAir() || item.getAmount() <= 0) {
-                        throw new IllegalArgumentException("Invalid reward item: " + key);
-                    }
-                    items.add(item);
-                } else if (type.equals("console_command")) {
-                    commands.add(CommonUtil.modifyString(player, reward.getString("command"), "player", player.getName(), "uuid", player.getUniqueId().toString(), "quest", questId));
-                } else if (type.equals("battlepass-experience")) {
-                    if (!QuestManager.questManager.canAddExperience(player, reward.getString("battlepass", ""))) {
-                        throw new IllegalArgumentException("Battle pass experience reward target is unavailable");
-                    }
-                    experience.add(reward);
-                } else {
-                    feedback.add(reward);
-                }
-            }
-            for (ConfigurationSection reward : experience) {
-                QuestManager.questManager.addExperience(player, reward.getString("battlepass"), reward.getLong("amount"));
-            }
-            for (ItemStack item : items) {
-                CommonUtil.giveOrDrop(player, item);
-            }
-            for (ConfigurationSection message : feedback) {
-                actions.doAction(new ObjectSingleAction(message), player, new QuestContext(null, null, player));
-            }
-        } catch (RuntimeException exception) {
-            ErrorManager.errorManager.sendErrorMessage("搂cError: Could not grant rewards for " + questId + ": " + exception.getMessage());
-            return CompletableFuture.failedFuture(exception);
-        }
-        CompletableFuture<Void> result = new CompletableFuture<>();
-        if (commands.isEmpty()) {
-            result.complete(null);
-        } else {
-            try {
-                SchedulerUtil.runSync(() -> {
-                    try {
-                        for (String command : commands) {
-                            if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) {
-                                throw new IllegalStateException("Reward command was not accepted");
-                            }
-                        }
-                        result.complete(null);
-                    } catch (RuntimeException exception) {
-                        ErrorManager.errorManager.sendErrorMessage("搂cError: Could not execute reward commands for " + questId + ": " + exception.getMessage());
-                        result.completeExceptionally(exception);
-                    }
-                });
-            } catch (RuntimeException exception) {
-                ErrorManager.errorManager.sendErrorMessage("搂cError: Could not schedule reward commands for " + questId + ": " + exception.getMessage());
-                result.completeExceptionally(exception);
-            }
-        }
-        return result;
-    }
-
     private Map<String, ConfigurationSection> resolveRandom(ConfigurationSection section) {
         validate(section);
         Map<String, ConfigurationSection> resolved = new LinkedHashMap<>();
@@ -563,4 +571,5 @@ public final class ObjectReward {
         }
         return selected;
     }
+
 }

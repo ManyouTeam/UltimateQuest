@@ -1,4 +1,4 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.buttons.subobjects;
 
 import cn.superiormc.ultimatequest.methods.BuildItem;
 
@@ -21,4 +21,5 @@ public final class ObjectDisplayItem {
     public ConfigurationSection getConfig() {
         return config;
     }
+
 }

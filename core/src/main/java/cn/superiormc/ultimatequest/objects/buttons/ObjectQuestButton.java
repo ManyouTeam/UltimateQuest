@@ -1,4 +1,4 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.buttons;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -11,4 +11,5 @@ public final class ObjectQuestButton extends ObjectButton {
     public String getContentType() {
         return config.getString("type", "quests");
     }
+
 }

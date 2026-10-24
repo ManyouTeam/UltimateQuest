@@ -1,7 +1,6 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.quests;
 
 import cn.superiormc.ultimatequest.managers.*;
-import cn.superiormc.ultimatequest.objects.quests.*;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -51,26 +50,6 @@ public final class ObjectTaskLimits {
         validateLimitCategories(config.getConfigurationSection("categories"), categories, "task-limits.categories");
     }
 
-    private static void validateLimitCategories(ConfigurationSection section, Set<String> categories, String path) {
-        if (section == null) {
-            return;
-        }
-        for (String id : section.getKeys(false)) {
-            if (!categories.contains(id) && !id.equals("uncategorized")) {
-                throw new IllegalArgumentException(path + ": unknown category " + id);
-            }
-            taskLimit(section, id);
-        }
-    }
-
-    private static long taskLimit(ConfigurationSection section, String path) {
-        Object value = section.get(path, -1);
-        if (!(value instanceof Integer || value instanceof Long) || ((Number) value).longValue() < -1L) {
-            throw new IllegalArgumentException(section.getCurrentPath() + "." + path + " must be an integer >= -1");
-        }
-        return ((Number) value).longValue();
-    }
-
     public boolean allowsTasks(ConfigurationSection config, Collection<QuestInstance> active, String source, List<QuestDefinition> incoming) {
         String type = source.equals("challenge") ? "battlepass-task" : source;
         if (!TASK_LIMIT_TYPES.contains(type)) {
@@ -109,7 +88,28 @@ public final class ObjectTaskLimits {
         return true;
     }
 
+    private static void validateLimitCategories(ConfigurationSection section, Set<String> categories, String path) {
+        if (section == null) {
+            return;
+        }
+        for (String id : section.getKeys(false)) {
+            if (!categories.contains(id) && !id.equals("uncategorized")) {
+                throw new IllegalArgumentException(path + ": unknown category " + id);
+            }
+            taskLimit(section, id);
+        }
+    }
+
+    private static long taskLimit(ConfigurationSection section, String path) {
+        Object value = section.get(path, -1);
+        if (!(value instanceof Integer || value instanceof Long) || ((Number) value).longValue() < -1L) {
+            throw new IllegalArgumentException(section.getCurrentPath() + "." + path + " must be an integer >= -1");
+        }
+        return ((Number) value).longValue();
+    }
+
     private static Set<String> limitCategories(List<String> categories) {
         return categories.isEmpty() ? Set.of("uncategorized") : Set.copyOf(categories);
     }
+
 }

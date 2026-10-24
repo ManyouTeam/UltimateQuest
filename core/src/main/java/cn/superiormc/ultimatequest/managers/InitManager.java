@@ -121,14 +121,9 @@ public final class InitManager extends AbstractManager {
         init();
     }
 
-    public static YamlConfiguration loadConfiguration(File file, String resource) throws Exception {
+    public static YamlConfiguration loadConfiguration(File file) throws Exception {
         YamlConfiguration config = new YamlConfiguration();
         config.load(file);
-        YamlConfiguration defaults = loadBundledConfiguration(resource);
-        if (defaults != null) {
-            config.setDefaults(defaults);
-            config.options().copyDefaults(true);
-        }
         return config;
     }
 

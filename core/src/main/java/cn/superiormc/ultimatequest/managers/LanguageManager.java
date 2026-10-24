@@ -61,11 +61,6 @@ public class LanguageManager extends AbstractManager {
             for (File file : files) {
                 String lang = file.getName().replace(".yml", "");
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-                YamlConfiguration bundledDefaults = loadInternalLanguage(lang);
-                if (bundledDefaults != null) {
-                    // Keep administrator overrides while exposing newly bundled keys after upgrades.
-                    config.setDefaults(bundledDefaults);
-                }
                 languageFiles.put(lang.toLowerCase(), config);
                 TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fLoaded language: " + lang + ".yml!");
             }

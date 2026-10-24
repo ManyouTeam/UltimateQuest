@@ -60,7 +60,7 @@ levels:
 
 | 字段 | 默认 / 要求 | 作用 |
 | --- | --- | --- |
-| `reset` | 默认取 `group`，两者都未填则为 `season` | `daily` 每日、`weekly` 每周、`season` 每赛季刷新。 |
+| `reset` | `season` | `daily` 每日、`weekly` 每周、`season` 每赛季刷新。 |
 | `group`、`group-name` | 可省略 | 挑战列表中的分组和显示名称；自定义分组时应显式填写合法 `reset`。 |
 | `unlock-week` | `1` | 从赛季第几周开始开放。 |
 | `catch-up` | `true` | 开放周过去后仍可做；`false` 只允许在开放周做。 |

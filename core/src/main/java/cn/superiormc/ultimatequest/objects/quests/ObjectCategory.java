@@ -1,4 +1,4 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.quests;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,14 +13,6 @@ public final class ObjectCategory {
 
     private final YamlConfiguration config;
 
-    public String getId() {
-        return id;
-    }
-
-    public YamlConfiguration getConfig() {
-        return config;
-    }
-
     public ObjectCategory(String id, YamlConfiguration config) {
         this.id = id;
         this.config = config;
@@ -31,10 +23,6 @@ public final class ObjectCategory {
         if (!(order instanceof Integer || order instanceof Long)) {
             throw new IllegalArgumentException("categories/" + id + ".yml: order must be an integer");
         }
-    }
-
-    public boolean isEnabled() {
-        return config.getBoolean("enabled", true);
     }
 
     public static void validateCategories(ConfigurationSection section, Map<String, YamlConfiguration> categories, String location) {
@@ -51,4 +39,17 @@ public final class ObjectCategory {
             }
         }
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public YamlConfiguration getConfig() {
+        return config;
+    }
+
+    public boolean isEnabled() {
+        return config.getBoolean("enabled", true);
+    }
+
 }

@@ -1,4 +1,4 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.rewards;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,14 +11,6 @@ public final class ObjectRewardPool {
 
     private final YamlConfiguration config;
 
-    public String getId() {
-        return id;
-    }
-
-    public YamlConfiguration getConfig() {
-        return config;
-    }
-
     public ObjectRewardPool(String id, YamlConfiguration config) {
         this.id = id;
         this.config = config;
@@ -26,10 +18,6 @@ public final class ObjectRewardPool {
         if (rewards == null || rewards.getKeys(false).isEmpty()) {
             throw new IllegalArgumentException("Missing rewards in reward pool: " + id);
         }
-    }
-
-    public ConfigurationSection getRewards() {
-        return config.getConfigurationSection("rewards");
     }
 
     public void initRewards(Map<String, YamlConfiguration> pools) {
@@ -45,4 +33,17 @@ public final class ObjectRewardPool {
         reward.resolveReferences(check, pools);
         reward.validate(check.getConfigurationSection("rewards"));
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public YamlConfiguration getConfig() {
+        return config;
+    }
+
+    public ConfigurationSection getRewards() {
+        return config.getConfigurationSection("rewards");
+    }
+
 }

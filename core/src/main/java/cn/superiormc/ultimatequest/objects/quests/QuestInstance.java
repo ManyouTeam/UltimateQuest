@@ -89,9 +89,6 @@ public final class QuestInstance {
         sourceId = section.getString("source-id", "");
         cycle = section.getString("cycle", "");
         expiresAt = section.getLong("expires-at", 0L);
-        if (section.contains("rewards-snapshot") || section.contains("stage-snapshots")) {
-            throw new IllegalArgumentException("Unsupported reward snapshot format: " + id);
-        }
         rewardKeys = section.contains("reward-keys") ? readRewardKeys(section, "reward-keys") : null;
         if (rewardKeys == null && RewardManager.rewardManager.hasRandom(definition.rewards())) {
             throw new IllegalArgumentException("Missing saved reward keys: " + id);

@@ -1,11 +1,10 @@
-package cn.superiormc.ultimatequest.objects.configs;
+package cn.superiormc.ultimatequest.objects.quests;
 
 import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.managers.QuestPoolManager;
 import cn.superiormc.ultimatequest.managers.RewardManager;
 import cn.superiormc.ultimatequest.methods.BuildItem;
-import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
-import cn.superiormc.ultimatequest.objects.quests.QuestObjective;
+import cn.superiormc.ultimatequest.objects.rewards.ObjectReward;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.ConfigurationFileUtil;
 
@@ -30,13 +29,7 @@ public final class ObjectScroll {
 
     private final YamlConfiguration config;
 
-    public String getId() {
-        return id;
-    }
-
-    public YamlConfiguration getConfig() {
-        return config;
-    }
+    private final Map<String, YamlConfiguration> library;
 
     public ObjectScroll(String id, YamlConfiguration config, Map<String, YamlConfiguration> pools, Map<String, YamlConfiguration> objectives, Map<String, YamlConfiguration> rewardPools) {
         this.id = id;
@@ -71,17 +64,9 @@ public final class ObjectScroll {
         this.library = Map.copyOf(objectives);
     }
 
-    public static long readDuration(YamlConfiguration config) {
-        if (!config.contains("duration-seconds")) {
-            return 0L;
-        }
-        Object value = config.get("duration-seconds");
-        if (!(value instanceof Integer || value instanceof Long) || ((Number) value).longValue() < 0L) {
-            throw new IllegalArgumentException("Scroll duration must be a nonnegative integer");
-        }
-        long seconds = ((Number) value).longValue();
-        Math.addExact(System.currentTimeMillis(), Math.multiplyExact(seconds, 1000L));
-        return seconds;
+    public void initReferences(Map<String, YamlConfiguration> categories, Map<String, QuestDefinition> definitions) {
+        ObjectCategory.validateCategories(config, categories, "scrolls/" + id + ".yml");
+        new ObjectReward(config.getConfigurationSection("rewards")).validateTargets(definitions);
     }
 
     public YamlConfiguration createRecord(String rarity, String difficulty, RandomGenerator random) {
@@ -162,8 +147,6 @@ public final class ObjectScroll {
         return definition;
     }
 
-    private final Map<String, YamlConfiguration> library;
-
     public ItemStack buildItem(Player player, String rarity, String difficulty) {
         ItemStack item = BuildItem.buildItemStack(player, config.getConfigurationSection("item"));
         if (item == null || item.getType().isAir()) {
@@ -176,7 +159,29 @@ public final class ObjectScroll {
         return item;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public YamlConfiguration getConfig() {
+        return config;
+    }
+
     public ObjectQuestSource getSource() {
         return source;
     }
+
+    public static long readDuration(YamlConfiguration config) {
+        if (!config.contains("duration-seconds")) {
+            return 0L;
+        }
+        Object value = config.get("duration-seconds");
+        if (!(value instanceof Integer || value instanceof Long) || ((Number) value).longValue() < 0L) {
+            throw new IllegalArgumentException("Scroll duration must be a nonnegative integer");
+        }
+        long seconds = ((Number) value).longValue();
+        Math.addExact(System.currentTimeMillis(), Math.multiplyExact(seconds, 1000L));
+        return seconds;
+    }
+
 }

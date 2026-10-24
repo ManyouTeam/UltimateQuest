@@ -41,9 +41,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import cn.superiormc.ultimatequest.objects.configs.ObjectButton;
-import cn.superiormc.ultimatequest.objects.configs.ObjectMenu;
-import cn.superiormc.ultimatequest.objects.configs.ObjectMenuContent;
+import cn.superiormc.ultimatequest.objects.buttons.ObjectButton;
+import cn.superiormc.ultimatequest.objects.menus.ObjectMenu;
+import cn.superiormc.ultimatequest.objects.menus.ObjectMenuContent;
 
 public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController {
 

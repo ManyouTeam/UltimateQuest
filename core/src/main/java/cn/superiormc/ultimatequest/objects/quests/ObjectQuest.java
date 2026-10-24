@@ -1,6 +1,4 @@
-package cn.superiormc.ultimatequest.objects.configs;
-
-import cn.superiormc.ultimatequest.objects.quests.QuestObjective;
+package cn.superiormc.ultimatequest.objects.quests;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -11,14 +9,6 @@ public final class ObjectQuest {
     private final String id;
 
     private final YamlConfiguration config;
-
-    public String getId() {
-        return id;
-    }
-
-    public YamlConfiguration getConfig() {
-        return config;
-    }
 
     private QuestObjective objective;
 
@@ -31,7 +21,21 @@ public final class ObjectQuest {
         objective = new QuestObjective(id, QuestObjective.resolve(id, config, library));
     }
 
+    public void initObjective(Map<String, YamlConfiguration> library, Map<String, YamlConfiguration> categories) {
+        initObjective(library);
+        ObjectCategory.validateCategories(config, categories, "quests/" + id + ".yml");
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public YamlConfiguration getConfig() {
+        return config;
+    }
+
     public QuestObjective getObjective() {
         return objective;
     }
+
 }
