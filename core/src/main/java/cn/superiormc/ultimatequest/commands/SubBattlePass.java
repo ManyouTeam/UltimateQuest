@@ -154,7 +154,7 @@ public final class SubBattlePass extends AbstractCommand {
                     manager.growthDefinitions(targetType).forEach(definition -> result.add(targetType + ":" + definition.id()));
                 }
                 manager.templates().values().stream().filter(definition -> !definition.growth()
-                        && !definition.settings().contains("challenge.pass"))
+                        && !definition.isBattlePassTask())
                         .forEach(definition -> result.add("normal:" + definition.id()));
                 QuestPeriodManager.questPeriodManager.definitions().keySet().forEach(id -> result.add("period:" + id));
             } else if (args.length == 5) {

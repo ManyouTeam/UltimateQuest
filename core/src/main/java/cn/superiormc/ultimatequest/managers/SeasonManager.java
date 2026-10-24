@@ -15,6 +15,7 @@ import java.util.Set;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import cn.superiormc.ultimatequest.objects.configs.ObjectSeason;
 
 public final class SeasonManager {
 
@@ -153,20 +154,17 @@ public final class SeasonManager {
     }
 
     public void prepare(String type, String id, YamlConfiguration config, Instant now) {
-        ConfigurationSection rotation = config.getConfigurationSection("rotation");
-        if (rotation == null || !rotation.getBoolean("enabled", false)) {
+        ObjectSeason season = new ObjectSeason(config);
+        if (!season.isRotating()) {
             return;
         }
-        Instant start = ResetTimeUtil.previous(rotation, now);
+        Instant start = season.getPrevious(now);
         long saved = working.getLong(type + "/" + id, Long.MIN_VALUE);
         if (saved > start.getEpochSecond()) {
             start = Instant.ofEpochSecond(saved);
         }
-        Instant end = ResetTimeUtil.next(rotation, start);
-        config.set("starts-at", start.toString());
-        config.set("ends-at", end.toString());
-        config.set("season", config.getString("season-prefix", "season") + "_" + start.getEpochSecond());
-        config.set("rotation", null);
+        Instant end = season.getNext(start);
+        season.apply(start, end);
         working.set(type + "/" + id, start.getEpochSecond());
         if (end.isBefore(candidateNext)) {
             candidateNext = end;

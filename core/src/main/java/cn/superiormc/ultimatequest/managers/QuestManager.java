@@ -46,12 +46,6 @@ public final class QuestManager extends AbstractManager {
 
     public static QuestManager questManager;
 
-    private Map<String, QuestDefinition> definitions = new LinkedHashMap<>();
-
-    private Map<String, YamlConfiguration> objectives = new LinkedHashMap<>();
-
-    private Map<String, YamlConfiguration> categories = Map.of();
-
     private final Map<UUID, Map<String, QuestInstance>> players = new HashMap<>();
 
     private final Map<UUID, Map<String, List<String>>> indexes = new HashMap<>();
@@ -89,171 +83,18 @@ public final class QuestManager extends AbstractManager {
     }
 
     public synchronized void reloadDefinitions() throws Exception {
-        Map<String, YamlConfiguration> loadedCategories = ConfigurationFileUtil.readFolder("categories", true);
-        for (Map.Entry<String, YamlConfiguration> entry : loadedCategories.entrySet()) {
-            if (Set.of("all", "uncategorized").contains(entry.getKey())) {
-                throw new IllegalArgumentException("Reserved category ID: " + entry.getKey());
-            }
-            Object order = entry.getValue().get("order", 0);
-            if (!(order instanceof Integer || order instanceof Long)) {
-                throw new IllegalArgumentException("categories/" + entry.getKey() + ".yml: order must be an integer");
-            }
-        }
-        Map<String, YamlConfiguration> loadedObjectives = ConfigurationFileUtil.readFolder("quests");
-        validateTaskLimits(ConfigManager.configManager.getSection("task-limits"), loadedCategories.keySet());
-        Object savePeriod = ConfigManager.configManager.config.get("auto-save.period-tick", 6000);
-        if (!(savePeriod instanceof Integer || savePeriod instanceof Long) || ((Number) savePeriod).longValue() < 1L) {
-            throw new IllegalArgumentException("auto-save.period-tick must be a positive integer");
-        }
-        for (Map.Entry<String, YamlConfiguration> entry : loadedObjectives.entrySet()) {
-            YamlConfiguration resolved = QuestObjective.resolve(entry.getKey(), entry.getValue(), loadedObjectives);
-            new QuestObjective(entry.getKey(), resolved);
-            validateCategories(entry.getValue(), loadedCategories, "quests/" + entry.getKey() + ".yml");
-        }
-        Map<String, YamlConfiguration> pools = QuestPoolManager.questPoolManager.load(loadedObjectives);
-        Map<String, YamlConfiguration> rewardPools = RewardManager.rewardManager.loadPools();
-        Map<String, QuestDefinition> loaded = new LinkedHashMap<>();
-        seasons.beginReload();
-        loadDefinitions("tasks", "normal", loaded, loadedObjectives, rewardPools);
-        loadDefinitions("battlepasses", "battlepass", loaded, loadedObjectives, rewardPools);
-        loadDefinitions("milestones", "milestone", loaded, loadedObjectives, rewardPools);
-        for (QuestDefinition definition : loaded.values()) {
-            String categoryLocation = definition.growth() ? definition.type().equals("battlepass")
-                    ? "battlepasses/" + definition.id() + ".yml" : "milestones/" + definition.id() + ".yml"
-                    : "tasks/" + definition.id() + ".yml";
-            if (definition.settings().contains("challenge.pass")) {
-                String pass = definition.settings().getString("challenge.pass");
-                categoryLocation = "battlepasses/" + pass + ".yml: tasks."
-                        + definition.id().substring(pass.length() + 1);
-            }
-            validateCategories(definition.settings(), loadedCategories, categoryLocation);
-            if (!definition.growth()) {
-                checkPrerequisites(definition.id(), loaded, new HashSet<>());
-            }
-            validateRewardTargets(definition.rewards(), loaded);
-            for (int level : definition.thresholds().keySet()) {
-                for (String track : definition.tracks()) {
-                    validateRewardTargets(definition.stageRewards(level, track), loaded);
-                }
-            }
-        }
-        Map<String, YamlConfiguration> periods = QuestPeriodManager.questPeriodManager.load(pools, loadedObjectives, rewardPools);
-        Map<String, YamlConfiguration> scrolls = QuestScrollManager.questScrollManager.load(pools, loadedObjectives, rewardPools);
-        for (Map.Entry<String, YamlConfiguration> entry : periods.entrySet()) {
-            validateCategories(entry.getValue().getConfigurationSection("task"), loadedCategories,
-                    "periods/" + entry.getKey() + ".yml: task");
-            validateRewardTargets(entry.getValue().getConfigurationSection("task.rewards"), loaded);
-        }
-        for (Map.Entry<String, YamlConfiguration> entry : scrolls.entrySet()) {
-            validateCategories(entry.getValue(), loadedCategories, "scrolls/" + entry.getKey() + ".yml");
-            validateRewardTargets(entry.getValue().getConfigurationSection("rewards"), loaded);
-        }
-        seasons.commitReload();
-        definitions = loaded;
-        objectives = loadedObjectives;
-        categories = Map.copyOf(loadedCategories);
-        QuestPoolManager.questPoolManager.install(pools, loadedObjectives);
-        QuestPeriodManager.questPeriodManager.install(periods);
-        QuestScrollManager.questScrollManager.install(scrolls);
-    }
-
-    public static void validateCategories(ConfigurationSection section,
-            Map<String, YamlConfiguration> categories, String location) {
-        if (section == null || !section.contains("categories")) {
-            return;
-        }
-        Object configured = section.get("categories");
-        if (!(configured instanceof List<?> values)) {
-            throw new IllegalArgumentException(location + ": categories must be a list");
-        }
-        for (Object value : values) {
-            if (!(value instanceof String id) || !categories.containsKey(id)) {
-                throw new IllegalArgumentException(location + ": unknown categories entry: " + value);
-            }
-        }
+        ConfigManager.configManager.reloadQuestConfigs(seasons);
     }
 
     public synchronized Map<String, YamlConfiguration> categories() {
-        return categories;
+        return ConfigManager.configManager.getCategoryConfigurations();
     }
 
     public synchronized List<String> displayCategories(QuestDefinition definition, QuestInstance instance) {
         if (instance != null && Set.of("period", "scroll").contains(instance.source())) {
             return definition.categories();
         }
-        return definitions.getOrDefault(definition.catalogKey(), definition).categories();
-    }
-
-    private void loadDefinitions(String folder, String type, Map<String, QuestDefinition> loaded,
-            Map<String, YamlConfiguration> library, Map<String, YamlConfiguration> rewardPools) throws Exception {
-        File directory = new File(UltimateQuest.instance.getDataFolder(), folder);
-        if (!directory.isDirectory() && !directory.mkdirs()) {
-            throw new IllegalStateException("Could not create definition directory: " + folder);
-        }
-        File[] files = directory.listFiles((ignored, name) -> name.endsWith(".yml"));
-        if (files == null) {
-            throw new IllegalStateException("Could not list definitions: " + folder);
-        }
-        Arrays.sort(files, Comparator.comparing(File::getName));
-        for (File file : files) {
-            YamlConfiguration config = new YamlConfiguration();
-            config.load(file);
-            if (!config.getBoolean("enabled", true)) {
-                continue;
-            }
-            if (!config.getString("type", type).equals(type)) {
-                throw new IllegalArgumentException("Wrong definition type in " + file.getName());
-            }
-            config.set("type", type);
-            String id = file.getName().substring(0, file.getName().length() - 4).toLowerCase(Locale.ROOT);
-            if (Set.of("battlepass", "milestone").contains(type)) {
-                seasons.prepare(type, id, config, Instant.now());
-            }
-            RewardManager.rewardManager.resolveReferences(config, rewardPools);
-            QuestDefinition definition = new QuestDefinition(id, config, library);
-            if (loaded.putIfAbsent(definition.catalogKey(), definition) != null) {
-                throw new IllegalArgumentException("Duplicate definition: " + definition.catalogKey());
-            }
-            if (type.equals("battlepass")) {
-                loadBattlePassTasks(id, config, loaded, library, rewardPools);
-            }
-        }
-    }
-
-    private void loadBattlePassTasks(String pass, YamlConfiguration battlePass,
-            Map<String, QuestDefinition> loaded, Map<String, YamlConfiguration> library,
-            Map<String, YamlConfiguration> rewardPools) {
-        ConfigurationSection tasks = battlePass.getConfigurationSection("tasks");
-        if (tasks == null) {
-            return;
-        }
-        for (String taskId : tasks.getKeys(false)) {
-            if (!taskId.matches("[a-z0-9_-]+") || !tasks.isConfigurationSection(taskId)) {
-                throw new IllegalArgumentException("Invalid battle pass task: " + pass + "/" + taskId);
-            }
-            ConfigurationSection task = tasks.getConfigurationSection(taskId);
-            YamlConfiguration config = new YamlConfiguration();
-            copySection(task, config);
-            config.set("type", "normal");
-            config.set("listed", false);
-            config.set("auto-claim", false);
-            config.set("challenge.pass", pass);
-            config.set("challenge.points", QuestDefinition.positiveLong(task, "points", 0L));
-            config.set("challenge.week", Math.max(1, task.getInt("unlock-week", 1)));
-            config.set("challenge.catch-up", task.getBoolean("catch-up", true));
-            config.set("challenge.premium", task.getBoolean("premium", false));
-            String reset = task.getString("reset", task.getString("group", "season"));
-            if (!Set.of("daily", "weekly", "season").contains(reset)) {
-                throw new IllegalArgumentException("Invalid battle pass task reset: " + pass + "/" + taskId);
-            }
-            config.set("challenge.reset", reset);
-            String definitionId = pass + "_" + taskId;
-            RewardManager.rewardManager.resolveReferences(config, rewardPools);
-            QuestDefinition definition = new QuestDefinition(definitionId, config, library);
-            if (loaded.putIfAbsent(definition.catalogKey(), definition) != null) {
-                throw new IllegalArgumentException("Duplicate battle pass task: " + definitionId);
-            }
-        }
+        return ConfigManager.configManager.getDefinitions().getOrDefault(definition.catalogKey(), definition).categories();
     }
 
     private void copySection(ConfigurationSection source, ConfigurationSection target) {
@@ -264,32 +105,13 @@ public final class QuestManager extends AbstractManager {
         }
     }
 
-    private void validateRewardTargets(ConfigurationSection rewards, Map<String, QuestDefinition> loaded) {
-        RewardManager.rewardManager.forEachReward(rewards, (key, reward) -> {
-            if (reward.getString("type", "").equals("battlepass-experience")
-                    && !loaded.containsKey("battlepass/" + reward.getString("battlepass", ""))) {
-                throw new IllegalArgumentException("Unknown battle pass reward target: " + key);
-            }
-        });
-    }
-
-    private void checkPrerequisites(String id, Map<String, QuestDefinition> loaded, Set<String> path) {
-        if (!loaded.containsKey(id) || !path.add(id)) {
-            throw new IllegalArgumentException("Missing or cyclic prerequisite: " + id);
-        }
-        for (String previous : loaded.get(id).prerequisites()) {
-            checkPrerequisites(previous, loaded, path);
-        }
-        path.remove(id);
-    }
-
     public synchronized Collection<QuestDefinition> definitions() {
-        return definitions.values().stream().filter(definition -> !definition.growth() && definition.listed()
-                && !definition.settings().contains("challenge.pass")).toList();
+        return ConfigManager.configManager.getDefinitions().values().stream().filter(definition -> !definition.growth() && definition.listed()
+                && !definition.isBattlePassTask()).toList();
     }
 
     public synchronized QuestDefinition definition(String id) {
-        QuestDefinition definition = definitions.get(id.toLowerCase(Locale.ROOT));
+        QuestDefinition definition = ConfigManager.configManager.getDefinitions().get(id.toLowerCase(Locale.ROOT));
         return definition != null && !definition.growth() ? definition : null;
     }
 
@@ -310,7 +132,7 @@ public final class QuestManager extends AbstractManager {
                 throw new IllegalArgumentException("Invalid periodic quest reference: " + key);
             }
             String objective = configured.contains("pool") ? templateId.substring(group.length() + 1) : null;
-            if (objective != null && !objectives.containsKey(objective)) {
+            if (objective != null && !objectiveTemplates().containsKey(objective)) {
                 return null;
             }
             return periodDefinition(group, objective, period);
@@ -321,7 +143,7 @@ public final class QuestManager extends AbstractManager {
             }
             return QuestScrollManager.questScrollManager.definition(templateId, section.getStringList("objective-ids"));
         }
-        QuestDefinition definition = definitions.get(templateId);
+        QuestDefinition definition = ConfigManager.configManager.getDefinitions().get(templateId);
         if (definition != null && source.equals("normal") && !definition.storageKey().equals(key)) {
             return null;
         }
@@ -337,11 +159,11 @@ public final class QuestManager extends AbstractManager {
     }
 
     public synchronized Collection<QuestDefinition> growthDefinitions(String type) {
-        return definitions.values().stream().filter(definition -> definition.type().equals(type)).toList();
+        return ConfigManager.configManager.getDefinitions().values().stream().filter(definition -> definition.type().equals(type)).toList();
     }
 
     public synchronized QuestDefinition growthDefinition(String type, String id) {
-        return definitions.get(type + "/" + id.toLowerCase(Locale.ROOT));
+        return ConfigManager.configManager.getDefinitions().get(type + "/" + id.toLowerCase(Locale.ROOT));
     }
 
     public synchronized QuestInstance growthInstance(UUID playerId, String type, String id) {
@@ -508,7 +330,7 @@ public final class QuestManager extends AbstractManager {
             return;
         }
         QuestDefinition definition = definition(rawId);
-        if (definition == null || !definition.listed() && !administrative || definition.settings().contains("challenge.pass")) {
+        if (definition == null || !definition.listed() && !administrative || definition.isBattlePassTask()) {
             LanguageManager.languageManager.sendStringText(player, "quests.not-found");
             return;
         }
@@ -547,7 +369,7 @@ public final class QuestManager extends AbstractManager {
                 || !Set.of("ACTIVE", "COMPLETED").contains(quest.state())) {
             return false;
         }
-        QuestDefinition definition = definitions.getOrDefault(quest.definition().catalogKey(), quest.definition());
+        QuestDefinition definition = ConfigManager.configManager.getDefinitions().getOrDefault(quest.definition().catalogKey(), quest.definition());
         return definition.settings().getBoolean("allow-abandon", true);
     }
 
@@ -555,7 +377,7 @@ public final class QuestManager extends AbstractManager {
         if (definition.growth() || quest != null && !quest.source().equals("normal")) {
             return true;
         }
-        QuestDefinition current = definitions.getOrDefault(definition.catalogKey(), definition);
+        QuestDefinition current = ConfigManager.configManager.getDefinitions().getOrDefault(definition.catalogKey(), definition);
         return !current.settings().getBoolean("hide-in-menu", false)
                 && (quest != null || !current.settings().getBoolean("auto-hide", false)
                 || meetsRequirements(player, current));
@@ -690,7 +512,8 @@ public final class QuestManager extends AbstractManager {
                         if (saveFailure != null) {
                             claimState(quest, key, "REVIEW");
                             changed(id);
-                            ErrorManager.errorManager.sendErrorMessage("§cError: Quest claim result failed for " + id
+                            ErrorManager.errorManager.sendErrorMessage("§cError: Quest claim result failed for"
+                        + " " + id
                                     + ": " + saveFailure.getMessage());
                             dirty.add(id);
                         }
@@ -741,7 +564,7 @@ public final class QuestManager extends AbstractManager {
                     context.player(), UUID.fromString(quest.sourceId()))) {
                 continue;
             }
-            QuestDefinition liveDefinition = definitions.get(quest.definition().catalogKey());
+            QuestDefinition liveDefinition = ConfigManager.configManager.getDefinitions().get(quest.definition().catalogKey());
             if (liveDefinition != null && !liveDefinition.active(Instant.now())) {
                 continue;
             }
@@ -782,7 +605,7 @@ public final class QuestManager extends AbstractManager {
             }
             if (quest.state().equals("COMPLETED")) {
                 if (quest.source().equals("challenge")) {
-                    long points = quest.definition().settings().getLong("challenge.points", 0L);
+                    long points = quest.definition().getPoints();
                     addExperience(context.player(), quest.sourceId(), points);
                     quest.state("CLAIMED");
                     changed(id);
@@ -803,7 +626,7 @@ public final class QuestManager extends AbstractManager {
             return;
         }
         boolean modified = false;
-        for (QuestDefinition definition : definitions.values()) {
+        for (QuestDefinition definition : ConfigManager.configManager.getDefinitions().values()) {
             if (!definition.growth()) {
                 continue;
             }
@@ -825,7 +648,7 @@ public final class QuestManager extends AbstractManager {
     }
 
     private boolean currentGrowth(QuestInstance quest) {
-        QuestDefinition current = definitions.get(quest.definition().catalogKey());
+        QuestDefinition current = ConfigManager.configManager.getDefinitions().get(quest.definition().catalogKey());
         return current != null && current.storageKey().equals(quest.definition().storageKey()) && current.active(Instant.now());
     }
 
@@ -847,7 +670,7 @@ public final class QuestManager extends AbstractManager {
     }
 
     public synchronized boolean claimableGrowth(QuestInstance quest) {
-        QuestDefinition current = definitions.get(quest.definition().catalogKey());
+        QuestDefinition current = ConfigManager.configManager.getDefinitions().get(quest.definition().catalogKey());
         return quest.definition().claimable(Instant.now())
                 && current != null && !current.settings().getBoolean("paused", false);
     }
@@ -956,20 +779,20 @@ public final class QuestManager extends AbstractManager {
     }
 
     private boolean challengeUnlocked(Player player, QuestDefinition definition) {
-        String pass = definition.settings().getString("challenge.pass", "");
+        String pass = definition.getBattlePass();
         if (pass.isEmpty()) {
             return true;
         }
         QuestInstance growth = growthInstance(player.getUniqueId(), "battlepass", pass);
         if (growth == null || !currentGrowth(growth)
-                || (definition.settings().getBoolean("challenge.premium", false) && !growth.premium(player))) {
+                || (definition.isPremiumTask() && !growth.premium(player))) {
             return false;
         }
         Instant starts = growth.definition().startsAt();
         long elapsed = starts == null ? 0L : Math.max(0L, Instant.now().getEpochSecond() - starts.getEpochSecond());
         long week = elapsed / 604800L + 1L;
-        int unlock = Math.max(1, definition.settings().getInt("challenge.week", 1));
-        return week >= unlock && (definition.settings().getBoolean("challenge.catch-up", true) || week == unlock);
+        int unlock = Math.max(1, definition.getUnlockWeek());
+        return week >= unlock && (definition.allowsCatchUp() || week == unlock);
     }
 
     private void refreshChallenges(Player player) {
@@ -977,8 +800,8 @@ public final class QuestManager extends AbstractManager {
         if (quests == null) {
             return;
         }
-        for (QuestDefinition definition : definitions.values()) {
-            String pass = definition.settings().getString("challenge.pass", "");
+        for (QuestDefinition definition : ConfigManager.configManager.getDefinitions().values()) {
+        String pass = definition.getBattlePass();
             if (pass.isEmpty() || definition.growth() || !eligible(player, definition)) {
                 continue;
             }
@@ -1010,7 +833,7 @@ public final class QuestManager extends AbstractManager {
     }
 
     private String challengeCycle(QuestDefinition pass, QuestDefinition task, Instant now) {
-        String reset = task.settings().getString("challenge.reset", "season");
+        String reset = task.getReset();
         if (reset.equals("season")) {
             return pass.season();
         }
@@ -1026,7 +849,7 @@ public final class QuestManager extends AbstractManager {
     }
 
     private long challengeExpires(QuestDefinition pass, QuestDefinition task, Instant now) {
-        String reset = task.settings().getString("challenge.reset", "season");
+        String reset = task.getReset();
         Instant resetEnd = null;
         if (!reset.equals("season")) {
             ZonedDateTime date = now.atZone(ZoneId.systemDefault());
@@ -1073,11 +896,11 @@ public final class QuestManager extends AbstractManager {
     }
 
     public synchronized Map<String, QuestDefinition> templates() {
-        return Map.copyOf(definitions);
+        return Map.copyOf(ConfigManager.configManager.getDefinitions());
     }
 
     public synchronized Map<String, YamlConfiguration> objectiveTemplates() {
-        return Map.copyOf(objectives);
+        return Map.copyOf(ConfigManager.configManager.getQuestConfigurations());
     }
 
     public synchronized boolean meetsRequirements(Player player, QuestDefinition definition) {
@@ -1092,7 +915,7 @@ public final class QuestManager extends AbstractManager {
     }
 
     private boolean assignmentActive(QuestInstance quest, Instant now) {
-        QuestDefinition live = definitions.get(quest.definition().catalogKey());
+        QuestDefinition live = ConfigManager.configManager.getDefinitions().get(quest.definition().catalogKey());
         if (quest.expired(now) || !quest.definition().claimable(now)
                 || live != null && (live.settings().getBoolean("paused", false)
                 || !quest.definition().growth() && !live.claimable(now))) {
@@ -1242,31 +1065,7 @@ public final class QuestManager extends AbstractManager {
     }
 
     private QuestDefinition periodDefinition(String group, String objective, ConfigurationSection period) {
-        YamlConfiguration config = new YamlConfiguration();
-        ConfigurationSection task = period.getConfigurationSection("task");
-        if (task != null) {
-            copySection(task, config);
-        }
-        config.set("source-name", period.getString("name", group));
-        YamlConfiguration template = objective == null ? null : objectives.get(objective);
-        if (!config.contains("categories") && template != null && template.isList("categories")) {
-            config.set("categories", template.getStringList("categories"));
-        }
-        if (!config.contains("name")) {
-            config.set("name", template == null ? group : template.getString("name", objective));
-        }
-        if (template != null && !config.isConfigurationSection("icon") && template.isConfigurationSection("icon")) {
-            ConfigurationSection icon = config.createSection("icon");
-            copySection(template.getConfigurationSection("icon"), icon);
-        }
-        config.set("type", "normal");
-        config.set("listed", false);
-        if (objective == null) {
-            copySection(period.getConfigurationSection("source"), config.createSection("source"));
-        } else {
-            config.set("source.quest", objective);
-        }
-        return new QuestDefinition(group + "_" + (objective == null ? "main" : objective), config, objectives);
+    return ConfigManager.configManager.getPeriod(group).createDefinition(objective, objectiveTemplates());
     }
 
     public synchronized boolean beginScroll(Player player) {
@@ -1297,101 +1096,7 @@ public final class QuestManager extends AbstractManager {
         List<QuestInstance> active = players.getOrDefault(id, Map.of()).values().stream()
                 .filter(quest -> !quest.definition().growth() && !quest.state().equals("CLAIMED")
                         && !replacing.contains(quest.key()) && assignmentActive(quest, now)).toList();
-        return allowsTasks(ConfigManager.configManager.getSection("task-limits"), active, source, incoming);
-    }
-
-    private static void validateTaskLimits(ConfigurationSection config, Set<String> categories) {
-        for (String key : config.getKeys(false)) {
-            if (!TASK_LIMIT_TYPES.contains(key) && !key.equals("categories")) {
-                throw new IllegalArgumentException("Unknown task-limits section: " + key);
-            }
-            if (!config.isConfigurationSection(key)) {
-                throw new IllegalArgumentException("task-limits." + key + " must be a section");
-            }
-        }
-        for (String type : TASK_LIMIT_TYPES) {
-            ConfigurationSection scoped = config.getConfigurationSection(type);
-            if (scoped != null) {
-                for (String key : scoped.getKeys(false)) {
-                    if (!Set.of("total", "categories").contains(key)) {
-                        throw new IllegalArgumentException("Unknown task-limits." + type + " option: " + key);
-                    }
-                }
-            }
-            if (config.contains(type + ".categories") && !config.isConfigurationSection(type + ".categories")) {
-                throw new IllegalArgumentException("task-limits." + type + ".categories must be a section");
-            }
-            if (config.contains(type + ".total")) {
-                taskLimit(config, type + ".total");
-            }
-            validateLimitCategories(config.getConfigurationSection(type + ".categories"), categories,
-                    "task-limits." + type + ".categories");
-        }
-        validateLimitCategories(config.getConfigurationSection("categories"), categories, "task-limits.categories");
-    }
-
-    private static void validateLimitCategories(ConfigurationSection section, Set<String> categories, String path) {
-        if (section == null) {
-            return;
-        }
-        for (String id : section.getKeys(false)) {
-            if (!categories.contains(id) && !id.equals("uncategorized")) {
-                throw new IllegalArgumentException(path + ": unknown category " + id);
-            }
-            taskLimit(section, id);
-        }
-    }
-
-    private static long taskLimit(ConfigurationSection section, String path) {
-        Object value = section.get(path, -1);
-        if (!(value instanceof Integer || value instanceof Long) || ((Number) value).longValue() < -1L) {
-            throw new IllegalArgumentException(section.getCurrentPath() + "." + path + " must be an integer >= -1");
-        }
-        return ((Number) value).longValue();
-    }
-
-    private boolean allowsTasks(ConfigurationSection config, Collection<QuestInstance> active, String source,
-            List<QuestDefinition> incoming) {
-        String type = source.equals("challenge") ? "battlepass-task" : source;
-        if (!TASK_LIMIT_TYPES.contains(type)) {
-            throw new IllegalArgumentException("Unknown task type: " + type);
-        }
-        long total = active.stream().filter(quest -> quest.source().equals(source)).count() + incoming.size();
-        long maximum = taskLimit(config, type + ".total");
-        if (maximum >= 0L && total > maximum) {
-            return false;
-        }
-        Map<String, Long> globalCounts = new HashMap<>();
-        Map<String, Long> typeCounts = new HashMap<>();
-        for (QuestInstance quest : active) {
-            for (String id : limitCategories(displayCategories(quest.definition(), quest))) {
-                globalCounts.merge(id, 1L, Long::sum);
-                if (quest.source().equals(source)) {
-                    typeCounts.merge(id, 1L, Long::sum);
-                }
-            }
-        }
-        Set<String> affected = new HashSet<>();
-        for (QuestDefinition definition : incoming) {
-            for (String id : limitCategories(definition.categories())) {
-                globalCounts.merge(id, 1L, Long::sum);
-                typeCounts.merge(id, 1L, Long::sum);
-                affected.add(id);
-            }
-        }
-        for (String id : affected) {
-            long global = taskLimit(config, "categories." + id);
-            long scoped = taskLimit(config, type + ".categories." + id);
-            if (global >= 0L && globalCounts.getOrDefault(id, 0L) > global
-                    || scoped >= 0L && typeCounts.getOrDefault(id, 0L) > scoped) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static Set<String> limitCategories(List<String> categories) {
-        return categories.isEmpty() ? Set.of("uncategorized") : Set.copyOf(categories);
+        return ConfigManager.configManager.getTaskLimits().allows(active, source, incoming);
     }
 
     public synchronized CompletableFuture<Boolean> installScroll(Player player, UUID token,

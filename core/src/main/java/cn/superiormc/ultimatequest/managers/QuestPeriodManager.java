@@ -18,56 +18,14 @@ public final class QuestPeriodManager extends AbstractManager {
 
     public static QuestPeriodManager questPeriodManager;
 
-    private Map<String, YamlConfiguration> periods = Map.of();
-
     private SchedulerUtil timer;
 
     public QuestPeriodManager() {
         questPeriodManager = this;
     }
 
-    public Map<String, YamlConfiguration> load(Map<String, YamlConfiguration> pools,
-            Map<String, YamlConfiguration> objectives) throws Exception {
-        return load(pools, objectives, RewardManager.rewardManager.loadPools());
-    }
-
-    public Map<String, YamlConfiguration> load(Map<String, YamlConfiguration> pools,
-            Map<String, YamlConfiguration> objectives, Map<String, YamlConfiguration> rewardPools) throws Exception {
-        Map<String, YamlConfiguration> loaded = ConfigurationFileUtil.readFolder("periods");
-        for (Map.Entry<String, YamlConfiguration> entry : loaded.entrySet()) {
-            YamlConfiguration config = entry.getValue();
-            RewardManager.rewardManager.resolveReferences(config, rewardPools);
-            RewardManager.rewardManager.validate(config.getConfigurationSection("task.rewards"));
-            ConfigurationSection source = config.getConfigurationSection("source");
-            if (source == null) {
-                throw new IllegalArgumentException("Periodic quest " + entry.getKey()
-                        + " requires a source section");
-            }
-            if (source.contains("pool")) {
-                try {
-                    QuestPoolManager.draw(source, pools, objectives, new Random(0L));
-                } catch (IllegalArgumentException exception) {
-                    throw new IllegalArgumentException("Invalid periodic quest pool in " + entry.getKey() + ": "
-                            + exception.getMessage(), exception);
-                }
-            } else {
-                YamlConfiguration resolved = QuestObjective.resolve(
-                        entry.getKey(), source, objectives);
-                new QuestObjective(entry.getKey(), resolved);
-            }
-            start(config, Instant.now());
-            end(config, Instant.now());
-            TimeWindow.read(config);
-        }
-        return loaded;
-    }
-
-    public synchronized void install(Map<String, YamlConfiguration> loaded) {
-        periods = Map.copyOf(loaded);
-    }
-
     public synchronized Map<String, YamlConfiguration> definitions() {
-        return periods;
+        return ConfigManager.configManager.getPeriodConfigurations();
     }
 
     public static ZonedDateTime start(ConfigurationSection config, Instant now) {

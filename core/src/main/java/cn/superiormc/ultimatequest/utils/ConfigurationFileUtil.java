@@ -88,4 +88,18 @@ public final class ConfigurationFileUtil {
             Files.deleteIfExists(temporary);
         }
     }
+
+    public static void copy(org.bukkit.configuration.ConfigurationSection source, org.bukkit.configuration.ConfigurationSection target) {
+        if (source == null) {
+            return;
+        }
+        for (String key : source.getKeys(false)) {
+            org.bukkit.configuration.ConfigurationSection child = source.getConfigurationSection(key);
+            if (child == null) {
+                target.set(key, source.get(key));
+            } else {
+                copy(child, target.createSection(key));
+            }
+        }
+    }
 }

@@ -29,6 +29,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import cn.superiormc.ultimatequest.objects.configs.ObjectScroll;
+import cn.superiormc.ultimatequest.objects.configs.ObjectScrollRecord;
 
 public final class QuestScrollManager extends AbstractManager {
 
@@ -50,183 +52,28 @@ public final class QuestScrollManager extends AbstractManager {
 
     private final Map<UUID, Map<UUID, Long>> activationRetries = new ConcurrentHashMap<>();
 
-    private Map<String, YamlConfiguration> profiles = Map.of();
-
     public QuestScrollManager() {
         questScrollManager = this;
     }
 
-    public Map<String, YamlConfiguration> load(Map<String, YamlConfiguration> pools,
-            Map<String, YamlConfiguration> objectives) throws Exception {
-        return load(pools, objectives, RewardManager.rewardManager.loadPools());
-    }
-
-    public Map<String, YamlConfiguration> load(Map<String, YamlConfiguration> pools,
-            Map<String, YamlConfiguration> objectives, Map<String, YamlConfiguration> rewardPools) throws Exception {
-        Map<String, YamlConfiguration> loaded = ConfigurationFileUtil.readFolder("scrolls");
-        for (Map.Entry<String, YamlConfiguration> entry : loaded.entrySet()) {
-            YamlConfiguration config = entry.getValue();
-            RewardManager.rewardManager.resolveReferences(config, rewardPools);
-            ConfigurationSection source = config.getConfigurationSection("source");
-            YamlConfiguration pool = source == null || !source.contains("pool")
-                    ? null : pools.get(source.getString("pool", ""));
-            long count = pool == null ? 0L : QuestDefinition.positiveLong(source, "count", 1L);
-            if ((source != null && source.contains("pool") && (pool == null || count > 45L))
-                    || !config.isConfigurationSection("item")) {
-                throw new IllegalArgumentException("Invalid scroll configuration: " + entry.getKey());
-            }
-            duration(config);
-            if (pool != null && pool.getConfigurationSection("quests").getKeys(false).size() < count) {
-                throw new IllegalArgumentException("Scroll " + entry.getKey() + " has insufficient objectives");
-            }
-            ConfigurationSection tasks = config.getConfigurationSection("tasks");
-            if (source == null && (tasks == null || tasks.getKeys(false).isEmpty())) {
-                throw new IllegalArgumentException("Scroll " + entry.getKey() + " requires tasks or source.pool");
-            }
-            if (source != null && !source.contains("pool")) {
-                YamlConfiguration resolved = QuestObjective.resolve(
-                        "main", source, objectives);
-                new QuestObjective("main", resolved);
-            }
-            if (tasks != null) {
-                for (String id : tasks.getKeys(false)) {
-                    YamlConfiguration resolved = QuestObjective.resolve(
-                            id, tasks.getConfigurationSection(id), objectives);
-                    new QuestObjective(id, resolved);
-                }
-            }
-            RewardManager.rewardManager.validate(config.getConfigurationSection("rewards"));
-        }
-        return loaded;
-    }
-
-    public synchronized void install(Map<String, YamlConfiguration> loaded) {
-        profiles = Map.copyOf(loaded);
-        activationRetries.clear();
-    }
-
     public synchronized Map<String, YamlConfiguration> definitions() {
-        return profiles;
-    }
-
-    private static long duration(YamlConfiguration config) {
-        if (!config.contains("duration-seconds")) {
-            return 0L;
-        }
-        Object value = config.get("duration-seconds");
-        if (!(value instanceof Integer || value instanceof Long) || ((Number) value).longValue() < 0L) {
-            throw new IllegalArgumentException("Scroll duration must be a nonnegative integer");
-        }
-        long seconds = ((Number) value).longValue();
-        Math.addExact(System.currentTimeMillis(), Math.multiplyExact(seconds, 1000L));
-        return seconds;
+        return ConfigManager.configManager.getScrollConfigurations();
     }
 
     public YamlConfiguration createRecord(String profile, String rarity, String difficulty, RandomGenerator random) {
-        YamlConfiguration config = definitions().get(profile);
-        if (config == null) {
-            throw new IllegalArgumentException("Unknown scroll profile: " + profile);
-        }
-        ConfigurationSection rarities = config.getConfigurationSection("rarities");
-        ConfigurationSection difficulties = config.getConfigurationSection("difficulties");
-        rarity = rarities == null ? config.getString("rarity", "common")
-                : rarity == null ? QuestPoolManager.choose(rarities, random) : rarity;
-        difficulty = difficulties == null ? config.getString("difficulty", "normal")
-                : difficulty == null ? QuestPoolManager.choose(difficulties, random) : difficulty;
-        if (rarities != null && !rarities.contains(rarity)
-                || difficulties != null && !difficulties.contains(difficulty)) {
-            throw new IllegalArgumentException("Unknown scroll rarity or difficulty");
-        }
-        Set<String> objectiveIds = new LinkedHashSet<>();
-        ConfigurationSection fixed = config.getConfigurationSection("tasks");
-        if (fixed != null) {
-            objectiveIds.addAll(fixed.getKeys(false));
-        }
-        ConfigurationSection source = config.getConfigurationSection("source");
-        if (source != null) {
-            if (source.contains("pool")) {
-                objectiveIds.addAll(QuestPoolManager.questPoolManager.draw(source.getString("pool"),
-                        source.getInt("count", 1), random));
-            } else {
-                objectiveIds.add("main");
-            }
-        }
-        definition(profile, List.copyOf(objectiveIds));
-        YamlConfiguration record = new YamlConfiguration();
-        record.set("schema-version", 3);
-        record.set("kind", "scroll");
-        record.set("state", "ISSUED");
-        record.set("profile", profile);
-        record.set("rarity", rarity);
-        record.set("difficulty", difficulty);
-        record.set("duration-seconds", duration(config));
-        record.set("objective-ids", List.copyOf(objectiveIds));
-        return record;
+        return ConfigManager.configManager.getScroll(profile).createRecord(rarity, difficulty, random);
     }
 
     public QuestDefinition definition(String profile, List<String> objectiveIds) {
-        YamlConfiguration config = definitions().get(profile);
-        if (config == null) {
-            throw new IllegalArgumentException("Unknown scroll profile: " + profile);
-        }
-        if (objectiveIds.isEmpty() || objectiveIds.size() > 45
-                || new HashSet<>(objectiveIds).size() != objectiveIds.size()) {
-            throw new IllegalArgumentException("Invalid scroll objective IDs: " + profile);
-        }
-        YamlConfiguration task = new YamlConfiguration();
-        task.set("type", "normal");
-        task.set("listed", false);
-        task.set("name", config.getString("name", profile));
-        task.set("description", config.getStringList("description"));
-        task.set("categories", config.getStringList("categories"));
-        copy(config.getConfigurationSection("icon"), task.createSection("icon"));
-        copy(config.getConfigurationSection("rewards"), task.createSection("rewards"));
-        ConfigurationSection fixed = config.getConfigurationSection("tasks");
-        if (fixed != null) {
-            for (String id : fixed.getKeys(false)) {
-                copy(fixed.getConfigurationSection(id), task.createSection("objectives." + id));
-            }
-        }
-        ConfigurationSection source = config.getConfigurationSection("source");
-        if (source != null) {
-            if (source.contains("pool")) {
-                for (String objective : objectiveIds) {
-                    if (fixed == null || !fixed.contains(objective)) {
-                        task.set("objectives." + objective + ".source.quest", objective);
-                    }
-                }
-            } else {
-                copy(source, task.createSection("objectives.main.source"));
-            }
-        }
-        QuestDefinition definition = new QuestDefinition(profile, task, QuestManager.questManager.objectiveTemplates());
-        Set<String> resolvedIds = new HashSet<>();
-        for (QuestObjective objective : definition.objectives()) {
-            resolvedIds.add(objective.getId());
-        }
-        if (!resolvedIds.equals(new HashSet<>(objectiveIds))) {
-            throw new IllegalArgumentException("Scroll objective IDs do not match profile: " + profile);
-        }
-        return definition;
+        return ConfigManager.configManager.getScroll(profile).createDefinition(objectiveIds);
+    }
+
+    private static long duration(YamlConfiguration config) {
+        return ObjectScroll.readDuration(config);
     }
 
     public static List<QuestDefinition> readQuests(YamlConfiguration record) throws Exception {
-        if (record.getInt("schema-version") != 3) {
-            throw new IllegalArgumentException("Unsupported scroll record schema-version: " + record.get("schema-version"));
-        }
-        if (!record.getString("kind", "").equals("scroll")) {
-            throw new IllegalArgumentException("Invalid scroll record kind: " + record.get("kind"));
-        }
-        if (!Set.of("ISSUED", "ACTIVE", "REDEEMING", "REDEEMED", "REVIEW").contains(record.getString("state", ""))) {
-            throw new IllegalArgumentException("Invalid scroll record state: " + record.get("state"));
-        }
-        if (!record.isList("objective-ids")) {
-            throw new IllegalArgumentException("Missing scroll objective IDs");
-        }
-        duration(record);
-        QuestDefinition definition = questScrollManager.definition(record.getString("profile", ""),
-                record.getStringList("objective-ids"));
-        return List.of(definition);
+        return new ObjectScrollRecord(record).readQuests();
     }
 
     public UUID token(ItemStack item) {
@@ -246,22 +93,15 @@ public final class QuestScrollManager extends AbstractManager {
 
     public void give(Player player, String profile, String rarity, String difficulty) {
         YamlConfiguration record = createRecord(profile, rarity, difficulty, RandomGenerator.getDefault());
-        YamlConfiguration config = definitions().get(profile);
-        ItemStack item = BuildItem.buildItemStack(player, config.getConfigurationSection("item"));
-        if (item == null || item.getType().isAir()) {
-            throw new IllegalArgumentException("Invalid scroll item");
-        }
-        item.setAmount(1);
+        ItemStack item = ConfigManager.configManager.getScroll(profile).buildItem(player, record.getString("rarity"), record.getString("difficulty"));
         UUID token = UUID.randomUUID();
         ItemMeta meta = item.getItemMeta();
-        UltimateQuest.methodUtil.setItemName(meta, CommonUtil.modifyString(player, config.getString("name", profile),
-                "rarity", record.getString("rarity"), "difficulty", record.getString("difficulty")), player);
         meta.getPersistentDataContainer().set(itemKey, PersistentDataType.STRING, token.toString());
         rememberRecord(meta, record);
         item.setItemMeta(meta);
         QuestStorage.questStorage.saveScroll(new QuestPlayerData(token, "", 1L, record.saveToString())).whenComplete((ignored, failure) -> {
             if (failure != null) {
-                ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token + " failed: " + failure.getMessage());
+                ErrorManager.errorManager.sendErrorMessage("搂cError: Scroll " + token + " failed: " + failure.getMessage());
                 SchedulerUtil.runSync(player,
                         () -> LanguageManager.languageManager.sendStringText(player, "quests.save-failed"));
                 return;
@@ -293,7 +133,7 @@ public final class QuestScrollManager extends AbstractManager {
                             () -> release(player.getUniqueId(), token));
                 } catch (RuntimeException exception) {
                     if (deferActivation(player.getUniqueId(), token, false)) {
-                        ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token + " could not be scheduled: "
+                        ErrorManager.errorManager.sendErrorMessage("搂cError: Scroll " + token + " could not be scheduled: "
                                 + exception.getMessage());
                     }
                     release(player.getUniqueId(), token);
@@ -301,7 +141,7 @@ public final class QuestScrollManager extends AbstractManager {
             });
         } catch (RuntimeException exception) {
             if (deferActivation(player.getUniqueId(), token, false)) {
-                ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token + " could not be read: "
+                ErrorManager.errorManager.sendErrorMessage("搂cError: Scroll " + token + " could not be read: "
                         + exception.getMessage());
                 LanguageManager.languageManager.sendStringText(player, "scroll.read-failed");
             }
@@ -313,7 +153,7 @@ public final class QuestScrollManager extends AbstractManager {
         try {
             if (failure != null) {
                 if (deferActivation(player.getUniqueId(), token, false)) {
-                    ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token + " could not be read: " + failure.getMessage());
+                    ErrorManager.errorManager.sendErrorMessage("搂cError: Scroll " + token + " could not be read: " + failure.getMessage());
                     LanguageManager.languageManager.sendStringText(player, "scroll.read-failed");
                 }
                 release(player.getUniqueId(), token);
@@ -359,7 +199,7 @@ public final class QuestScrollManager extends AbstractManager {
                     reserved.saveToString())).whenComplete((ignored, saveFailure) -> {
                 if (saveFailure != null) {
                     if (deferActivation(player.getUniqueId(), token, true)) {
-                        ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token + " failed: "
+                        ErrorManager.errorManager.sendErrorMessage("搂cError: Scroll " + token + " failed: "
                                 + saveFailure.getMessage());
                         SchedulerUtil.runSync(player,
                                 () -> LanguageManager.languageManager.sendStringText(player, "quests.review-needed"));
@@ -373,7 +213,7 @@ public final class QuestScrollManager extends AbstractManager {
             });
         } catch (Exception exception) {
             if (deferActivation(player.getUniqueId(), token, true)) {
-                ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token + " failed: "
+                ErrorManager.errorManager.sendErrorMessage("搂cError: Scroll " + token + " failed: "
                         + exception.getMessage());
                 LanguageManager.languageManager.sendStringText(player, "scroll.invalid");
             }
@@ -385,8 +225,8 @@ public final class QuestScrollManager extends AbstractManager {
             List<QuestDefinition> drawn, QuestInstance restored) {
         if (!player.isOnline() || !hasToken(player, token)) {
             deferActivation(player.getUniqueId(), token, true);
-            ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token
-                    + " failed: Reserved scroll was moved or its owner disconnected; manual review required");
+            ErrorManager.errorManager.sendErrorMessage("搂cError: Scroll " + token + " failed: Reserved scroll was moved or its owner disconnected; manual"
+                    + " review required");
             if (player.isOnline()) {
                 LanguageManager.languageManager.sendStringText(player, "quests.review-needed");
             }
@@ -401,7 +241,7 @@ public final class QuestScrollManager extends AbstractManager {
             QuestStorage.questStorage.saveScroll(new QuestPlayerData(token, player.getName(), revision + 1L,
                     record.saveToString())).whenComplete((ignored, saveFailure) -> {
                 if (saveFailure != null) {
-                    ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token + " failed: "
+                    ErrorManager.errorManager.sendErrorMessage("搂cError: Scroll " + token + " failed: "
                             + saveFailure.getMessage());
                 }
                 SchedulerUtil.runSync(player, () -> {
@@ -415,8 +255,12 @@ public final class QuestScrollManager extends AbstractManager {
                     } else {
                         if (deferActivation(player.getUniqueId(), token, true)) {
                             if (failure != null) {
-                                ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token + " could not be installed: "
-                                        + failure.getMessage());
+                                ErrorManager.errorManager.sendErrorMessage("搂cError:"
+                                        + " Scroll"
+                                        + " " + token + " could"
+                                        + " not be"
+                                        + " installed:"
+                                        + " " + failure.getMessage());
                             }
                             LanguageManager.languageManager.sendStringText(player, "quests.review-needed");
                         }
@@ -494,7 +338,7 @@ public final class QuestScrollManager extends AbstractManager {
                             record.set("instance-key", instanceKey);
                             YamlConfiguration savedInstance = new YamlConfiguration();
                             savedInstance.loadFromString(serializedInstance);
-                            copy(savedInstance, record.createSection("instance"));
+                    cn.superiormc.ultimatequest.utils.ConfigurationFileUtil.copy(savedInstance, record.createSection("instance"));
                             return QuestStorage.questStorage.saveScroll(new QuestPlayerData(token, playerName,
                                     snapshot.revision() + 1L, record.saveToString()));
                         } catch (Exception exception) {
@@ -504,7 +348,7 @@ public final class QuestScrollManager extends AbstractManager {
             next.whenComplete((value, failure) -> {
                 writes.remove(token, next);
                 if (failure != null) {
-                    ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token + " failed: "
+                    ErrorManager.errorManager.sendErrorMessage("搂cError: Scroll " + token + " failed: "
                             + failure.getMessage());
                 }
             });
@@ -540,7 +384,7 @@ public final class QuestScrollManager extends AbstractManager {
                 writes.remove(token, next);
                 if (failure != null) {
                     inFlight.remove(token);
-                    ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token + " failed: "
+                    ErrorManager.errorManager.sendErrorMessage("搂cError: Scroll " + token + " failed: "
                             + failure.getMessage());
                     SchedulerUtil.runSync(player,
                             () -> LanguageManager.languageManager.sendStringText(player, "scroll.used"));
@@ -683,7 +527,8 @@ public final class QuestScrollManager extends AbstractManager {
                             continue;
                         }
                         if (match != null && !match[0].equals(entry.getKey())) {
-                            throw new IllegalArgumentException("Missing scroll record and its item matches multiple profiles");
+                            throw new IllegalArgumentException("Missing scroll record and its item matches multiple"
+                                    + " ConfigManager.configManager.getScrollConfigurations()");
                         }
                         if (match == null) {
                             match = new String[] {entry.getKey(), rarity, difficulty};
@@ -707,17 +552,6 @@ public final class QuestScrollManager extends AbstractManager {
 
     private String plainName(String name) {
         return name == null ? "" : ChatColor.stripColor(TextUtil.colorize(name.replaceAll("<[^>]+>", "")));
-    }
-
-    private static void copy(ConfigurationSection source, ConfigurationSection target) {
-        if (source == null) {
-            return;
-        }
-        for (Map.Entry<String, Object> entry : source.getValues(true).entrySet()) {
-            if (!(entry.getValue() instanceof ConfigurationSection)) {
-                target.set(entry.getKey(), entry.getValue());
-            }
-        }
     }
 
     private void release(UUID player, UUID token) {

@@ -230,7 +230,8 @@ public final class QuestObjective extends AbstractConfiguredSection<QuestContext
                 if (source.getString("count", "events").equals("items") && !trigger.equals("ultimatequest:fish")) {
                     source.set("count", "events");
                     Bukkit.getLogger().warning("[UltimateQuest] Migrated saved objective " + id + " (" + trigger
-                            + ") from legacy count: items to count: events; existing progress is preserved.");
+                            + ") from legacy count: items to count: events;"
+                            + " existing progress is preserved.");
                 }
             }
         }

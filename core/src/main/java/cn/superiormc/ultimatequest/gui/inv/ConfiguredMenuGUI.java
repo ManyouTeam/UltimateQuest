@@ -41,6 +41,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import cn.superiormc.ultimatequest.objects.configs.ObjectButton;
+import cn.superiormc.ultimatequest.objects.configs.ObjectMenu;
+import cn.superiormc.ultimatequest.objects.configs.ObjectMenuContent;
 
 public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController {
 
@@ -60,6 +63,8 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
 
     private final String menuId;
 
+    private final ObjectMenu menu;
+
     private final ConfigurationSection config;
 
     private final String selected;
@@ -68,7 +73,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
 
     private final Map<Integer, MenuEntry> shownEntries = new LinkedHashMap<>();
 
-    private final Map<Integer, ConfigurationSection> shownStaticItems = new LinkedHashMap<>();
+    private final Map<Integer, ObjectButton> shownStaticItems = new LinkedHashMap<>();
 
     private int page;
 
@@ -106,7 +111,8 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         this.menuId = parts[0];
         this.selected = parts.length >= 2 ? parts[1] : null;
         this.challenges = parts.length == 3 && parts[2].equals("challenges");
-        this.config = ConfigManager.configManager.getMenu(this.menuId);
+        this.menu = ConfigManager.configManager.getMenuObject(this.menuId);
+        this.config = menu.getConfig();
     }
 
     @Override
@@ -222,8 +228,11 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             constructGUI();
             return true;
         }
-        ConfigurationSection button = entry == null ? shownStaticItems.get(slot) : entry.content();
-        GUIActionManager.INSTANCE.executeButtonActions(button, player,
+        ObjectButton button = entry == null ? shownStaticItems.get(slot) : menu.getContentButton(entry.content());
+        if (button == null) {
+            return true;
+        }
+        button.clickEvent(player,
                 new GUIActionContext(this, inventory, type, slot, menuId,
                         entry == null ? null : entry.definition(), entry == null ? null : entry.instance(),
                         entry == null ? null : entry.kind(), entry == null ? null : entry.stage(),
@@ -258,13 +267,10 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     private List<MenuContent> loadContents(Map<String, List<Integer>> layoutSlots) {
-        ConfigurationSection contents = config.getConfigurationSection("contents");
-        if (contents == null) {
-            return List.of();
-        }
         List<MenuContent> result = new ArrayList<>();
-        for (String id : contents.getKeys(false)) {
-            ConfigurationSection section = contents.getConfigurationSection(id);
+        for (ObjectMenuContent content : menu.getContents().values()) {
+            String id = content.getId();
+            ConfigurationSection section = content.getConfig();
             if (section == null || !displayedInCurrentMode(section)) {
                 continue;
             }
@@ -278,9 +284,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     private List<String> taskLayout() {
-        List<String> layout = challenges ? config.getStringList("challenge-layout") : selected == null
-                ? config.getStringList("catalog-layout") : config.getStringList("detail-layout");
-        return layout.isEmpty() ? config.getStringList("layout") : layout;
+        return menu.getLayout(selected != null, challenges);
     }
 
     private List<MenuEntry> questEntries(ConfigurationSection content) {
@@ -629,12 +633,9 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     private void renderStaticItems(String[] args, Map<String, List<Integer>> layoutSlots) {
-        ConfigurationSection items = config.getConfigurationSection("items");
-        if (items == null) {
-            return;
-        }
-        for (String id : items.getKeys(false)) {
-            ConfigurationSection definition = items.getConfigurationSection(id);
+        for (ObjectButton button : menu.getButtons().values()) {
+            String id = button.getId();
+            ConfigurationSection definition = button.getConfig();
             if (definition == null || !displayedInCurrentMode(definition)) {
                 continue;
             }
@@ -650,26 +651,8 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                     || usesMenuAction(definition, "cycle_scroll_group", "set_scroll_group")) && !scrollFilterEnabled()) {
                 continue;
             }
-            boolean hidden = definition.getBoolean("hide-on-first-page", false) && page == 0
-                    || definition.getBoolean("hide-on-last-page", false) && page == maximumPage;
-            ConfigurationSection displayed;
-            if (hidden) {
-                displayed = definition.getConfigurationSection("hidden-item");
-            } else {
-                displayed = definition.getConfigurationSection("period-items." + periodGroup);
-                if (displayed == null) {
-                    displayed = definition.getConfigurationSection("scroll-items." + scrollGroup);
-                }
-                if (displayed == null) {
-                    displayed = definition.getConfigurationSection("view-items." + view);
-                }
-                if (displayed == null) {
-                    displayed = definition.getConfigurationSection("item");
-                }
-                if (displayed == null) {
-                    displayed = definition;
-                }
-            }
+            boolean hidden = button.isHidden(page, maximumPage);
+            ConfigurationSection displayed = button.getDisplayConfig(hidden, periodGroup, scrollGroup, view);
             if (displayed == null) {
                 continue;
             }
@@ -680,7 +663,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 }
                 setItem(slot, item.clone());
                 if (!hidden) {
-                    shownStaticItems.put(slot, definition);
+                    shownStaticItems.put(slot, button);
                 }
             }
         }
@@ -756,11 +739,11 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 CommonUtil.parseLang(player, definition.settings().getString("season-name", definition.season())),
                 "rewards", String.join("\\n", RewardManager.rewardManager.preview(player, rewards)),
                 "rarity", definition.rarity(), "difficulty", definition.difficulty(),
-                "points", String.valueOf(definition.settings().getLong("challenge.points", 0L)),
+                "points", String.valueOf(definition.getPoints()),
                 "categories", String.join(", ", entryCategories(entry).stream().map(this::categoryName).toList()),
                 "group", CommonUtil.parseLang(player, definition.settings().getString("group-name",
                         definition.settings().getString("group", "season"))),
-                "unlock-week", String.valueOf(definition.settings().getInt("challenge.week", 1)),
+                "unlock-week", String.valueOf(definition.getUnlockWeek()),
                 "source", CommonUtil.parseLang(player, definition.settings().getString("source-name",
                         quest == null ? "" : quest.sourceId())), "expires", expires, "expires-in", expires }, baseArgs());
         boolean catalog = definition.growth() && entry.stage() == null;
@@ -1216,22 +1199,11 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     private Map<String, List<Integer>> layoutSlots(List<String> layout) {
-        Map<String, List<Integer>> result = new LinkedHashMap<>();
-        for (int row = 0; row < layout.size(); row++) {
-            for (int column = 0; column < 9; column++) {
-                String symbol = String.valueOf(layout.get(row).charAt(column));
-                result.computeIfAbsent(symbol, ignored -> new ArrayList<>()).add(row * 9 + column);
-            }
-        }
-        return result;
+        return menu.layoutSlots(layout);
     }
 
     private List<Integer> symbolSlots(String id, Map<String, List<Integer>> layoutSlots) {
-        if (id.length() != 1) {
-            throw new IllegalArgumentException("Menu '" + menuId
-                    + "' layout entry '" + id + "' must be one character");
-        }
-        return layoutSlots.getOrDefault(id, List.of());
+        return menu.symbolSlots(id, layoutSlots);
     }
 
     private List<String> normalizedList(ConfigurationSection section, String path) {

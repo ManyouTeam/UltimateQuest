@@ -18,36 +18,12 @@ public final class QuestPoolManager extends AbstractManager {
 
     public static QuestPoolManager questPoolManager;
 
-    private Map<String, YamlConfiguration> pools = Map.of();
-
-    private Map<String, YamlConfiguration> objectives = Map.of();
-
     public QuestPoolManager() {
         questPoolManager = this;
     }
 
-    public Map<String, YamlConfiguration> load(Map<String, YamlConfiguration> definitions) throws Exception {
-        Map<String, YamlConfiguration> loaded = ConfigurationFileUtil.readFolder("pools");
-        for (Map.Entry<String, YamlConfiguration> entry : loaded.entrySet()) {
-            ConfigurationSection quests = entry.getValue().getConfigurationSection("quests");
-            validateWeights(quests);
-            for (String id : quests.getKeys(false)) {
-                if (!definitions.containsKey(id)) {
-                    throw new IllegalArgumentException("Unknown objective in pool " + entry.getKey() + ": " + id);
-                }
-            }
-        }
-        return loaded;
-    }
-
-    public synchronized void install(Map<String, YamlConfiguration> loaded,
-            Map<String, YamlConfiguration> loadedObjectives) {
-        pools = Map.copyOf(loaded);
-        objectives = Map.copyOf(loadedObjectives);
-    }
-
     public synchronized Map<String, YamlConfiguration> objectives() {
-        return objectives;
+        return ConfigManager.configManager.getQuestConfigurations();
     }
 
     public static void validateWeights(ConfigurationSection weights) {
@@ -82,22 +58,11 @@ public final class QuestPoolManager extends AbstractManager {
     }
 
     public synchronized List<String> draw(String pool, int count, RandomGenerator random) {
-        YamlConfiguration config = pools.get(pool);
-        if (config == null || count < 1 || count > 45) {
-            throw new IllegalArgumentException("Unknown pool or invalid draw count: " + pool);
-        }
-        ConfigurationSection weights = config.getConfigurationSection("quests");
-        List<String> candidates = new ArrayList<>();
-        for (String id : weights.getKeys(false)) {
-            if (objectives.containsKey(id)) {
-                candidates.add(id);
-            }
-        }
-        return drawCandidates(pool, weights, candidates, count, random);
+        return ConfigManager.configManager.getQuestPool(pool).draw(count, random);
     }
 
     public synchronized List<String> draw(ConfigurationSection source, RandomGenerator random) {
-        return draw(source, pools, objectives, random);
+        return draw(source, ConfigManager.configManager.getPoolConfigurations(), objectives(), random);
     }
 
     public static List<String> draw(ConfigurationSection source, Map<String, YamlConfiguration> pools,
@@ -170,7 +135,7 @@ public final class QuestPoolManager extends AbstractManager {
         return false;
     }
 
-    private static List<String> drawCandidates(String pool, ConfigurationSection weights,
+    public static List<String> drawCandidates(String pool, ConfigurationSection weights,
             List<String> candidates, int count, RandomGenerator random) {
         if (candidates.size() < count) {
             throw new IllegalArgumentException("Not enough eligible quests in pool: " + pool);
