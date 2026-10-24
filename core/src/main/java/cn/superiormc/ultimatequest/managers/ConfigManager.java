@@ -69,10 +69,6 @@ public class ConfigManager extends AbstractManager {
         loadMenus();
     }
 
-    private ConfigManager(FileConfiguration config) {
-        this.config = config;
-    }
-
     private void loadMenus() {
         try {
             reloadMenus();
@@ -111,32 +107,32 @@ public class ConfigManager extends AbstractManager {
     }
 
     public synchronized void reloadQuestConfigs(SeasonManager seasons) throws Exception {
-        ConfigManager loaded = new ConfigManager(config);
         seasons.beginReload();
-        loaded.initCategoryConfigs();
-        loaded.initQuestConfigs();
-        loaded.loadQuestConfigs();
-        loaded.initQuestPoolConfigs();
-        loaded.initRewardPoolConfigs();
-        loaded.loadRewardPoolConfigs();
-        loaded.initTaskConfigs();
-        loaded.initBattlePassConfigs(seasons);
-        loaded.initMilestoneConfigs(seasons);
-        loaded.initPeriodConfigs();
-        loaded.initScrollConfigs();
-        loaded.loadTaskConfigs();
-        loaded.initTaskLimits();
+        initCategoryConfigs();
+        initQuestConfigs();
+        loadQuestConfigs();
+        initQuestPoolConfigs();
+        initRewardPoolConfigs();
+        loadRewardPoolConfigs();
+        initTaskConfigs();
+        initBattlePassConfigs(seasons);
+        initMilestoneConfigs(seasons);
+        initPeriodConfigs();
+        initScrollConfigs();
+        loadTaskConfigs();
+        initTaskLimits();
         seasons.commitReload();
-        installQuestConfigs(loaded);
     }
 
     private void initCategoryConfigs() throws Exception {
+        categoryConfigs.clear();
         for (var entry : ConfigurationFileUtil.readFolder("categories", true).entrySet()) {
             categoryConfigs.put(entry.getKey(), new ObjectCategory(entry.getKey(), entry.getValue()));
         }
     }
 
     private void initQuestConfigs() throws Exception {
+        questConfigs.clear();
         for (var entry : ConfigurationFileUtil.readFolder("quests").entrySet()) {
             questConfigs.put(entry.getKey(), new ObjectQuest(entry.getKey(), entry.getValue()));
         }
@@ -151,6 +147,7 @@ public class ConfigManager extends AbstractManager {
     }
 
     private void initQuestPoolConfigs() throws Exception {
+        questPoolConfigs.clear();
         Map<String, YamlConfiguration> library = getQuestConfigurations();
         for (var entry : ConfigurationFileUtil.readFolder("pools").entrySet()) {
             questPoolConfigs.put(entry.getKey(), new ObjectQuestPool(entry.getKey(), entry.getValue(), library));
@@ -158,6 +155,7 @@ public class ConfigManager extends AbstractManager {
     }
 
     private void initRewardPoolConfigs() throws Exception {
+        rewardPoolConfigs.clear();
         for (var entry : ConfigurationFileUtil.readFolder("reward-pools").entrySet()) {
             rewardPoolConfigs.put(entry.getKey(), new ObjectRewardPool(entry.getKey(), entry.getValue()));
         }
@@ -171,6 +169,7 @@ public class ConfigManager extends AbstractManager {
     }
 
     private void initTaskConfigs() throws Exception {
+        taskConfigs.clear();
         Map<String, YamlConfiguration> library = getQuestConfigurations();
         Map<String, YamlConfiguration> rewards = getRewardPoolConfigurations();
         for (var entry : ConfigurationFileUtil.readFolder("tasks").entrySet()) {
@@ -179,6 +178,7 @@ public class ConfigManager extends AbstractManager {
     }
 
     private void initBattlePassConfigs(SeasonManager seasons) throws Exception {
+        battlePassConfigs.clear();
         Map<String, YamlConfiguration> library = getQuestConfigurations();
         Map<String, YamlConfiguration> rewards = getRewardPoolConfigurations();
         for (var entry : ConfigurationFileUtil.readFolder("battlepasses").entrySet()) {
@@ -187,6 +187,7 @@ public class ConfigManager extends AbstractManager {
     }
 
     private void initMilestoneConfigs(SeasonManager seasons) throws Exception {
+        milestoneConfigs.clear();
         Map<String, YamlConfiguration> library = getQuestConfigurations();
         Map<String, YamlConfiguration> rewards = getRewardPoolConfigurations();
         for (var entry : ConfigurationFileUtil.readFolder("milestones").entrySet()) {
@@ -195,6 +196,7 @@ public class ConfigManager extends AbstractManager {
     }
 
     private void initPeriodConfigs() throws Exception {
+        periodConfigs.clear();
         Map<String, YamlConfiguration> pools = getPoolConfigurations();
         Map<String, YamlConfiguration> library = getQuestConfigurations();
         Map<String, YamlConfiguration> rewards = getRewardPoolConfigurations();
@@ -204,6 +206,7 @@ public class ConfigManager extends AbstractManager {
     }
 
     private void initScrollConfigs() throws Exception {
+        scrollConfigs.clear();
         Map<String, YamlConfiguration> pools = getPoolConfigurations();
         Map<String, YamlConfiguration> library = getQuestConfigurations();
         Map<String, YamlConfiguration> rewards = getRewardPoolConfigurations();
@@ -449,19 +452,6 @@ public class ConfigManager extends AbstractManager {
         if (definitions.putIfAbsent(definition.catalogKey(), definition) != null) {
             throw new IllegalArgumentException("Duplicate definition: " + definition.catalogKey());
         }
-    }
-
-    private void installQuestConfigs(ConfigManager loaded) {
-        taskLimits = loaded.taskLimits;
-        categoryConfigs = loaded.categoryConfigs;
-        questConfigs = loaded.questConfigs;
-        questPoolConfigs = loaded.questPoolConfigs;
-        rewardPoolConfigs = loaded.rewardPoolConfigs;
-        taskConfigs = loaded.taskConfigs;
-        battlePassConfigs = loaded.battlePassConfigs;
-        milestoneConfigs = loaded.milestoneConfigs;
-        periodConfigs = loaded.periodConfigs;
-        scrollConfigs = loaded.scrollConfigs;
     }
 
 }
