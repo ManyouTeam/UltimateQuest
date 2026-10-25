@@ -1,4 +1,7 @@
 enabled: true
+progress-feedback:
+  bossbar:
+    color: GREEN
 name: '{lang:defaults.categories.gathering.name}'
 description:
 - '{lang:defaults.categories.gathering.description}'

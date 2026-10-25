@@ -4,6 +4,8 @@
 
 ## 配置与发放示例
 
+卷轴文件顶层支持 `progress-feedback: false`，用于关闭此卷轴的进度提示，默认开启，重载后对已有卷轴生效。显示方式和变量见[任务进度提示](tasks.md#任务进度提示)。
+
 新建 `plugins/UltimateQuest/scrolls/tutorial_scroll.yml`：
 
 ```yaml

@@ -1,4 +1,7 @@
 enabled: true
+progress-feedback:
+  bossbar:
+    color: YELLOW
 name: '{lang:defaults.categories.craftsmanship.name}'
 description:
 - '{lang:defaults.categories.craftsmanship.description}'

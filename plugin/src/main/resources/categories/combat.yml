@@ -1,4 +1,7 @@
 enabled: true
+progress-feedback:
+  bossbar:
+    color: RED
 name: '{lang:defaults.categories.combat.name}'
 description:
 - '{lang:defaults.categories.combat.description}'

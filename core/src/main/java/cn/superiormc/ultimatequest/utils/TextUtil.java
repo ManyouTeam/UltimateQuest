@@ -337,6 +337,10 @@ public class TextUtil {
     }
 
     public static void sendMessage(Player player, String rawText) {
+        sendMessage(player, rawText, null);
+    }
+
+    public static void sendMessage(Player player, String rawText, String bossBarKey) {
         if (rawText == null || rawText.isEmpty()) {
             return;
         }
@@ -372,7 +376,11 @@ public class TextUtil {
         // bossbar
         for (TagResult tag : parseArgTag(rawText, "bossbar")) {
             BossBarData data = parseBossBar(tag);
-            UltimateQuest.methodUtil.sendBossBar(player, data.title, data.progress, data.color, data.style);
+            if (bossBarKey == null) {
+                UltimateQuest.methodUtil.sendBossBar(player, data.title, data.progress, data.color, data.style);
+            } else {
+                UltimateQuest.methodUtil.sendBossBar(player, data.title, data.progress, data.color, data.style, bossBarKey);
+            }
             sentAny = true;
         }
         // sound

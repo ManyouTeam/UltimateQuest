@@ -1,4 +1,7 @@
 enabled: true
+progress-feedback:
+  bossbar:
+    color: BLUE
 name: '{lang:defaults.categories.fishing.name}'
 description:
 - '{lang:defaults.categories.fishing.description}'

@@ -31,6 +31,20 @@ order: 10
 
 未知分类 ID、错误类型会使定义重载失败，并保留原定义。同一分类重复填写会去重。分类设置 `enabled: false` 后不显示入口，相关任务仍能在“全部”中出现。
 
+## 分类的进度提示颜色
+
+分类文件顶层可以设置进度 BossBar 的默认颜色：
+
+```yaml
+progress-feedback:
+  bossbar:
+    color: RED
+```
+
+颜色优先级为：任务自己的 `progress-feedback.bossbar.color` → 任务分类的颜色 → `config.yml` 的 `task-progress.bossbar.color`。多分类任务按照 `categories` 顺序，使用第一个配置了颜色的分类。分类中的这个字段只决定颜色，其余提示设置继续使用任务覆写或全局默认值。
+
+内置分类已配置对应颜色，普通任务、周期任务、卷轴、战令、里程碑和挑战均按自己的分类继承。支持 `PINK`、`BLUE`、`RED`、`GREEN`、`YELLOW`、`PURPLE`、`WHITE` 七种颜色，超过七个分类时需要复用颜色。修改后执行 `/uq reload` 生效。
+
 ## 分类菜单
 
 菜单需要启用 `category-filter.enabled`，按钮使用 `open_categories` 动作。公共外观在 `config.yml` 的 `category-menu` 中，各菜单可用自己的 `category-filter` 覆盖标题、布局、物品和按钮。

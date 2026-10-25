@@ -60,6 +60,30 @@ public final class QuestInstance {
 
     private final long expiresAt;
 
+    public QuestInstance(QuestInstance original) {
+        instanceId = original.instanceId;
+        definition = original.definition;
+        season = original.season;
+        seasonWindow = original.seasonWindow;
+        acceptedAt = original.acceptedAt;
+        progress.putAll(original.progress);
+        progressRemainders.putAll(original.progressRemainders);
+        totalRemainder = original.totalRemainder;
+        stageStates.putAll(original.stageStates);
+        original.stageRewardKeys.forEach((key, value) -> stageRewardKeys.put(key, List.copyOf(value)));
+        stageRequirements.putAll(original.stageRequirements);
+        rewardKeys = original.rewardKeys == null ? null : List.copyOf(original.rewardKeys);
+        total = original.total;
+        premium = original.premium;
+        booster = original.booster;
+        boosterUntil = original.boosterUntil;
+        state = original.state;
+        source = original.source;
+        sourceId = original.sourceId;
+        cycle = original.cycle;
+        expiresAt = original.expiresAt;
+    }
+
     public QuestInstance(QuestDefinition definition) {
         this(definition, "normal", "", "", 0L);
     }

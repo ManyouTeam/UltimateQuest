@@ -1,4 +1,7 @@
 enabled: true
+progress-feedback:
+  bossbar:
+    color: WHITE
 name: '{lang:defaults.categories.building.name}'
 description:
 - '{lang:defaults.categories.building.description}'

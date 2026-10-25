@@ -28,8 +28,8 @@ quests:
   requirements: '&#98FB98[UltimateQuest] &c尚未满足这个任务的接取条件。'
   accepted: '&#98FB98[UltimateQuest] &a已接取任务：{quest}'
   abandoned: '&#98FB98[UltimateQuest] &e已放弃任务：{quest}'
-  completed: '&#98FB98[UltimateQuest] &a有任务已完成，打开 /uq 领取奖励。'
-  claimed: '&#98FB98[UltimateQuest] &a任务奖励已领取。'
+  completed: '&#98FB98[UltimateQuest] &a任务 {quest} &a已完成，打开 /uq 领取奖励。'
+  claimed: '&#98FB98[UltimateQuest] &a已领取 {quest} &a的奖励。'
   cannot-claim: '&#98FB98[UltimateQuest] &c这个任务当前没有可领取的奖励。'
   cannot-abandon: '&#98FB98[UltimateQuest] &c这个任务当前不能放弃。'
   objective: '&7{name}：&f{current}/{required}'
@@ -114,7 +114,7 @@ menu-time:
   hours: '{hours} 小时 {minutes} 分钟'
   minutes: '{minutes} 分钟'
 battlepass:
-  task-completed: '&#98FB98[UltimateQuest] &a战令任务已完成，积分已自动结算。'
+  task-completed: '&#98FB98[UltimateQuest] &a{battlepass} &7的任务 &a{quest} &a已完成，积分已自动结算。'
   group:
     all: 全部
     daily: 每日
@@ -166,6 +166,7 @@ battlepass:
     globalboost: '&#98FB98[UltimateQuest] &e/uq {type} season globalboost <ID或类型:ID> <倍率，至少1> <持续秒数>'
 
 override-lang:
+  quest-progress: '&b{quest} &8| &a+{gained} &7({progress}/{required}) &e{percent}%'
   auto-save:
     message: '&#98FB98[UltimateQuest] 正在自动保存玩家任务数据……'
   task-admin-only: '&c仅管理员可以派发'

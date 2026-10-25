@@ -1,4 +1,7 @@
 enabled: true
+progress-feedback:
+  bossbar:
+    color: PURPLE
 name: '{lang:defaults.categories.nether.name}'
 description:
 - '{lang:defaults.categories.nether.description}'

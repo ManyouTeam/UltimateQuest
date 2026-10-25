@@ -6,6 +6,7 @@ import cn.superiormc.ultimatequest.managers.ConfigManager;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.QuestManager;
 import cn.superiormc.ultimatequest.managers.SeasonManager;
+import cn.superiormc.ultimatequest.objects.caches.ObjectCache;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
@@ -320,6 +321,7 @@ public final class SubBattlePass extends AbstractCommand {
             LanguageManager.languageManager.sendStringText(player, "quests.loading");
             return;
         }
+        ObjectCache snapshot = CacheManager.cacheManager.snapshot(player.getUniqueId());
         if (Set.of("claimall", "history", "challenges", "stats").contains(operation)) {
             if (args.length != 3) {
                 LanguageManager.languageManager.sendStringText(player, "battlepass.usage", "type", type,
@@ -341,7 +343,7 @@ public final class SubBattlePass extends AbstractCommand {
                     if (seasons.isEmpty()) {
                         LanguageManager.languageManager.sendStringText(player, "battlepass.history-empty", "name", definition.name(player));
                     } else if (SeasonManager.seasonManager.season(definition).isEmpty() && seasons.stream().noneMatch(season -> season.contains("@"))) {
-                        var quest = manager.growthInstance(player.getUniqueId(), type, pass);
+                        var quest = manager.growthInstance(snapshot, type, pass);
                         LanguageManager.languageManager.sendStringText(player, "battlepass.history-permanent",
                                 "name", definition.name(player), "level", String.valueOf(quest.level()),
                                 "total", quest.totalAmount().stripTrailingZeros().toPlainString());
@@ -349,7 +351,7 @@ public final class SubBattlePass extends AbstractCommand {
                         LanguageManager.languageManager.sendStringText(player, "battlepass.history-title",
                                 "name", definition.name(player), "count", String.valueOf(seasons.size()));
                         for (String season : seasons) {
-                            var quest = manager.growthInstance(player.getUniqueId(), type, season);
+                            var quest = manager.growthInstance(snapshot, type, season);
                             if (quest == null) {
                                 continue;
                             }
@@ -374,7 +376,7 @@ public final class SubBattlePass extends AbstractCommand {
                     }
                 }
                 case "stats" -> {
-                    var quest = manager.growthInstance(player.getUniqueId(), type, pass);
+                    var quest = manager.growthInstance(snapshot, type, pass);
                     if (quest != null) {
                         String season = quest.season().isEmpty()
                                 ? LanguageManager.languageManager.getStringText(player, "battlepass.permanent")
@@ -396,7 +398,7 @@ public final class SubBattlePass extends AbstractCommand {
         }
         if (args.length <= 2) {
             if (args.length == 2 && ConfigManager.configManager.getGrowthDefinition(type, args[1]) == null
-                    && manager.growthInstance(player.getUniqueId(), type, args[1]) == null) {
+                    && manager.growthInstance(snapshot, type, args[1]) == null) {
                 LanguageManager.languageManager.sendStringText(player, "quests.not-found");
                 return;
             }

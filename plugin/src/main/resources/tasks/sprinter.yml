@@ -1,4 +1,5 @@
 enabled: true
+progress-feedback: false
 name: '{lang:defaults.tasks.sprinter.name}'
 description:
 - '{lang:defaults.tasks.sprinter.description}'

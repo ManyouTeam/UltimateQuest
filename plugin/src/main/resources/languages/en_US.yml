@@ -28,8 +28,8 @@ quests:
   requirements: '&#98FB98[UltimateQuest] &cYou do not meet this quest’s requirements.'
   accepted: '&#98FB98[UltimateQuest] &aQuest accepted: {quest}'
   abandoned: '&#98FB98[UltimateQuest] &eQuest abandoned: {quest}'
-  completed: '&#98FB98[UltimateQuest] &aA quest is complete. Open /uq to claim its rewards.'
-  claimed: '&#98FB98[UltimateQuest] &aQuest rewards claimed.'
+  completed: '&#98FB98[UltimateQuest] &aQuest {quest} &ais complete. Open /uq to claim its rewards.'
+  claimed: '&#98FB98[UltimateQuest] &aRewards claimed: {quest}'
   cannot-claim: '&#98FB98[UltimateQuest] &cThis quest has no reward available to claim.'
   cannot-abandon: '&#98FB98[UltimateQuest] &cThis quest cannot be abandoned.'
   objective: '&7{name}: &f{current}/{required}'
@@ -114,7 +114,7 @@ menu-time:
   hours: '{hours}h {minutes}m'
   minutes: '{minutes}m'
 battlepass:
-  task-completed: '&#98FB98[UltimateQuest] &aBattle pass task complete. Its points were added automatically.'
+  task-completed: '&#98FB98[UltimateQuest] &a{battlepass} &7task &a{quest} &ais complete. Its points were added automatically.'
   group:
     all: All
     daily: Daily
@@ -167,6 +167,7 @@ battlepass:
     globalboost: '&#98FB98[UltimateQuest] &e/uq {type} season globalboost <ID or type:ID> <multiplier, at least 1> <duration in seconds>'
 
 override-lang:
+  quest-progress: '&b{quest} &8| &a+{gained} &7({progress}/{required}) &e{percent}%'
   auto-save:
     message: '&#98FB98[UltimateQuest] Automatically saving player quest data...'
   task-admin-only: '&cAssigned by administrators only'

@@ -39,6 +39,7 @@ source:
 | --- | --- | --- |
 | `trigger` | 必须能解析到已注册触发器 | 如 `block_break`，也可写 `ultimatequest:block_break`。 |
 | `amount` | 普通目标要求正整数 | 达到这个数量才算完成。 |
+| `progress-feedback` | 默认 `true` | 设为 `false` 后，该目标推进时不触发进度提示；计数与完成提示仍正常。 |
 | `count` | `events` | 计数单位，默认每次符合条件的事件加 1。可选值取决于触发器，见[计数方式](counting.md)。 |
 | `conditions` | 可省略 | 不符合条件的事件不增加进度。 |
 | `anti-abuse` | 使用默认防刷设置 | 见[防刷](anti-abuse.md)。 |
@@ -50,6 +51,8 @@ source:
 模板必须存在并启用。`source.quest` 不能引用 `tasks/` 中的普通任务。模板的分类也不会自动变成使用它的任务分类。
 
 ## 进度计数方式
+
+内置移动目标模板默认使用 `progress-feedback: false`。普通任务、周期任务、卷轴和挑战引用这些模板时会继承该开关；混合任务的其他目标仍可显示进度。在引用处设置 `source.progress-feedback: true` 可覆写模板，但整个任务的提示开关仍需开启。目标配置随接取或生成时的快照保存，已有任务需要重新接取或生成后才会使用新的目标设置。
 
 `count: events` 按事件次数计数；改为受支持的数量模式后，`amount` 就表示对应单位的完成要求。例如 `attack` 配合 `count: damage`、`amount: 100` 表示累计 100 点最终伤害。
 

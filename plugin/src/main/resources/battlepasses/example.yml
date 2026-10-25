@@ -124,6 +124,7 @@ tasks:
       quest: wheat
       amount: 16
   daily_explorer:
+    progress-feedback: false
     name: '{lang:defaults.battlepasses.tasks.daily_explorer.name}'
     categories:
     - adventure

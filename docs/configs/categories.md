@@ -31,6 +31,20 @@ Template categories are not automatically inherited. Missing or empty lists use 
 
 Unknown IDs or incorrect types reject the definition reload and preserve the previous definitions. Repeated category IDs are deduplicated. Disabling a category hides its selector entry, while its tasks can still appear under “All”.
 
+## Category progress feedback colors
+
+Set a default progress BossBar color at the category file root:
+
+```yaml
+progress-feedback:
+  bossbar:
+    color: RED
+```
+
+Color precedence is the task's own `progress-feedback.bossbar.color`, then its category color, then global `task-progress.bossbar.color` in `config.yml`. For multiple categories, the first category with a configured color wins, following `categories` order. Categories supply only the color; other feedback fields still use task overrides or global defaults.
+
+Bundled categories now specify colors. Normal tasks, periodic assignments, scrolls, battle passes, milestones, and challenges inherit colors from their own categories. Supported colors are `PINK`, `BLUE`, `RED`, `GREEN`, `YELLOW`, `PURPLE`, and `WHITE`; categories beyond seven must reuse colors. Apply changes with `/uq reload`.
+
 ## Category menu
 
 Enable `category-filter.enabled` in the menu and give a button the `open_categories` action. Shared appearance comes from `config.yml` → `category-menu`. Each menu can override the title, layout, item templates, and buttons through its own `category-filter`.

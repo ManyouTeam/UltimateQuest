@@ -15,6 +15,7 @@ import cn.superiormc.ultimatequest.managers.RewardManager;
 import cn.superiormc.ultimatequest.managers.SeasonManager;
 import cn.superiormc.ultimatequest.methods.BuildItem;
 import cn.superiormc.ultimatequest.objects.buttons.ObjectButton;
+import cn.superiormc.ultimatequest.objects.caches.ObjectCache;
 import cn.superiormc.ultimatequest.objects.menus.ObjectMenu;
 import cn.superiormc.ultimatequest.objects.menus.ObjectMenuContent;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
@@ -45,6 +46,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController {
+
+    private ObjectCache questSnapshot;
 
     private record MenuEntry(QuestDefinition definition, QuestInstance instance,
                              String kind, String stage, ConfigurationSection content) {
@@ -114,8 +117,16 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         this.config = menu.getConfig();
     }
 
+    private Collection<QuestInstance> normalSnapshots() {
+        return questSnapshot == null ? List.of() : questSnapshot.quests().values().stream()
+                .filter(quest -> !quest.definition().growth() && quest.source().equals("normal")).toList();
+    }
+
     @Override
     protected void constructGUI() {
+        QuestManager.questManager.refreshGrowth(player);
+        QuestManager.questManager.refreshPeriods(player);
+        questSnapshot = CacheManager.cacheManager.snapshot(player.getUniqueId());
         categoryScopeEntries = null;
         List<String> views = viewOrder();
         if (!views.contains(view)) {
@@ -157,7 +168,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         }
         page = Math.max(0, Math.min(page, maximumPage));
         if (initialPage && selected != null && menuId.equals("battlepass") && !challenges) {
-            QuestInstance growth = QuestManager.questManager.growthInstance(player.getUniqueId(), menuId, selected);
+            QuestInstance growth = QuestManager.questManager.growthInstance(questSnapshot, menuId, selected);
             if (growth != null) {
                 int targetLevel = growth.stageStates().entrySet().stream()
                         .filter(entry -> entry.getValue().equals("AVAILABLE")
@@ -292,35 +303,33 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
 
     private List<MenuEntry> questEntries(ConfigurationSection content, boolean applyFilters) {
         QuestManager manager = QuestManager.questManager;
-        manager.refreshGrowth(player);
         String type = content.getString("type", "quests").toLowerCase(Locale.ROOT);
         List<MenuEntry> result = new ArrayList<>();
         if (type.equals("quests")) {
             Map<String, QuestDefinition> available = new LinkedHashMap<>();
             ConfigManager.configManager.getListedDefinitions().forEach(definition -> available.put(definition.id(), definition));
-            CacheManager.cacheManager.instances(player.getUniqueId()).forEach(quest -> available.put(quest.definition().id(), quest.definition()));
+            normalSnapshots().forEach(quest -> available.put(quest.definition().id(), quest.definition()));
             for (QuestDefinition definition : available.values()) {
-                QuestInstance quest = CacheManager.cacheManager.instance(player.getUniqueId(), definition.id());
+                QuestInstance quest = questSnapshot == null ? null : questSnapshot.quests().get(definition.id());
                 if (visibleInMenu(definition, quest)) {
                     result.add(new MenuEntry(definition, quest, "normal", null, content));
                 }
             }
         } else if (Set.of("period", "scroll", "challenge").contains(type)) {
-            manager.refreshPeriods(player);
-            for (QuestInstance quest : manager.assignedInstances(player.getUniqueId(), type)) {
+            for (QuestInstance quest : manager.assignedInstances(questSnapshot, type)) {
                 result.add(new MenuEntry(quest.definition(), quest, type, null, content));
             }
         } else if (Set.of("battlepass", "milestone").contains(type)) {
             if (selected == null) {
                 for (QuestDefinition definition : ConfigManager.configManager.getGrowthDefinitions(type)) {
                     result.add(new MenuEntry(definition,
-                            manager.growthInstance(player.getUniqueId(), type, definition.id()), type, null, content));
+                            manager.growthInstance(questSnapshot, type, definition.id()), type, null, content));
                 }
             } else {
-                QuestInstance saved = manager.growthInstance(player.getUniqueId(), type, selected);
+                QuestInstance saved = manager.growthInstance(questSnapshot, type, selected);
                 QuestDefinition definition = saved == null ? ConfigManager.configManager.getGrowthDefinition(type, selected) : saved.definition();
                 if (definition != null) {
-                    QuestInstance quest = manager.growthInstance(player.getUniqueId(), type, selected);
+                    QuestInstance quest = manager.growthInstance(questSnapshot, type, selected);
                     Set<String> stages = new LinkedHashSet<>();
                     for (int level : definition.thresholds().keySet()) {
                         for (String track : definition.tracks()) {
@@ -347,7 +356,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             result.removeIf(entry -> entry.stage() == null || !entry.stage().startsWith(track + "/"));
         }
         if (type.equals("challenge") && selected != null) {
-            QuestInstance pass = manager.growthInstance(player.getUniqueId(), "battlepass", selected);
+            QuestInstance pass = manager.growthInstance(questSnapshot, "battlepass", selected);
             result.removeIf(entry -> pass == null || !entry.instance().sourceId().equals(pass.definition().id())
                     || !(entry.instance().cycle().equals(pass.season())
                     || entry.instance().cycle().startsWith(pass.season() + "--")));
@@ -419,7 +428,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 }
             }
             definitions.keySet().stream().sorted().forEach(groups::add);
-            QuestManager.questManager.assignedInstances(player.getUniqueId(), "period").stream()
+            QuestManager.questManager.assignedInstances(questSnapshot, "period").stream()
                     .map(QuestInstance::sourceId).sorted().forEach(groups::add);
         }
         return List.copyOf(groups);
@@ -433,7 +442,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         if (definition != null) {
             return CommonUtil.parseLang(player, definition.getString("name", periodGroup));
         }
-        return QuestManager.questManager.assignedInstances(player.getUniqueId(), "period").stream()
+        return QuestManager.questManager.assignedInstances(questSnapshot, "period").stream()
                 .filter(quest -> quest.sourceId().equals(periodGroup)).findFirst()
                 .map(quest -> CommonUtil.parseLang(player, quest.definition().settings().getString("source-name", periodGroup)))
                 .orElse(periodGroup);
@@ -457,7 +466,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
                 }
             }
             definitions.keySet().stream().sorted().forEach(groups::add);
-            QuestManager.questManager.assignedInstances(player.getUniqueId(), "scroll").stream()
+            QuestManager.questManager.assignedInstances(questSnapshot, "scroll").stream()
                     .map(quest -> quest.definition().id()).sorted().forEach(groups::add);
         }
         return List.copyOf(groups);
@@ -471,7 +480,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         if (definition != null) {
             return CommonUtil.parseLang(player, definition.getString("name", scrollGroup));
         }
-        return QuestManager.questManager.assignedInstances(player.getUniqueId(), "scroll").stream()
+        return QuestManager.questManager.assignedInstances(questSnapshot, "scroll").stream()
                 .filter(quest -> quest.definition().id().equals(scrollGroup)).findFirst()
                 .map(quest -> quest.definition().name(player)).orElse(scrollGroup);
     }
@@ -710,7 +719,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         List<String> prerequisites = new ArrayList<>();
         for (String prerequisite : definition.prerequisites()) {
             QuestDefinition previous = ConfigManager.configManager.getDefinition(prerequisite);
-            QuestInstance completed = CacheManager.cacheManager.instance(player.getUniqueId(), prerequisite);
+            QuestInstance completed = questSnapshot == null ? null : questSnapshot.quests().get(prerequisite);
             String template = ConfigManager.configManager.getString("task-display."
                     + (completed != null && completed.state().equals("CLAIMED") ? "prerequisite-complete" : "prerequisite-pending"), "{name}");
             prerequisites.add(CommonUtil.modifyString(player, template,
@@ -963,7 +972,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         QuestManager manager = QuestManager.questManager;
         QuestDefinition definition = selectedDefinition();
         QuestInstance growth = definition == null ? null
-                : manager.growthInstance(player.getUniqueId(), menuId, selected);
+                : manager.growthInstance(questSnapshot, menuId, selected);
         long total = growth == null ? 0L : growth.total();
         int level = growth == null ? 0 : growth.level();
         long nextRequired = 0L;
@@ -981,10 +990,10 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         if (menuId.equals("main")) {
             Map<String, QuestDefinition> definitions = new LinkedHashMap<>();
             ConfigManager.configManager.getListedDefinitions().forEach(current -> definitions.put(current.id(), current));
-            Collection<QuestInstance> instances = CacheManager.cacheManager.instances(player.getUniqueId());
+            Collection<QuestInstance> instances = normalSnapshots();
             instances.forEach(current -> definitions.putIfAbsent(current.definition().id(), current.definition()));
             for (QuestDefinition current : definitions.values()) {
-                QuestInstance instance = CacheManager.cacheManager.instance(player.getUniqueId(), current.id());
+                QuestInstance instance = questSnapshot == null ? null : questSnapshot.quests().get(current.id());
                 if (instance == null) {
                     if (manager.meetsRequirements(player, current)) {
                         available++;
@@ -1001,7 +1010,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             }
             count = definitions.size();
         } else if (Set.of("period", "scroll").contains(menuId)) {
-            List<QuestInstance> instances = manager.assignedInstances(player.getUniqueId(), menuId);
+            List<QuestInstance> instances = manager.assignedInstances(questSnapshot, menuId);
             active = instances.stream().filter(current -> current.state().equals("ACTIVE")).count();
             claimable = instances.stream().filter(current -> current.state().equals("COMPLETED")).count();
             claimed = instances.stream().filter(current -> current.state().equals("CLAIMED")).count();
@@ -1060,7 +1069,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         if (selected == null || !Set.of("battlepass", "milestone").contains(menuId)) {
             return null;
         }
-        QuestInstance growth = QuestManager.questManager.growthInstance(player.getUniqueId(), menuId, selected);
+        QuestInstance growth = QuestManager.questManager.growthInstance(questSnapshot, menuId, selected);
         return growth == null ? ConfigManager.configManager.getGrowthDefinition(menuId, selected) : growth.definition();
     }
 

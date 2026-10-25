@@ -3,12 +3,13 @@ package cn.superiormc.ultimatequest.managers;
 import cn.superiormc.ultimatequest.api.progression.ProgressionEvent;
 import cn.superiormc.ultimatequest.api.progression.ProgressionService;
 import cn.superiormc.ultimatequest.api.progression.ProgressionView;
+import cn.superiormc.ultimatequest.objects.caches.ObjectCache;
 import cn.superiormc.ultimatequest.objects.counting.CountMode;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
 import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
+import cn.superiormc.ultimatequest.utils.SchedulerUtil;
 import cn.superiormc.ultimatequest.utils.TextUtil;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -17,7 +18,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -144,15 +144,23 @@ public final class ProgressionManager implements ProgressionService {
     }
 
     public void levelFeedback(Player player, QuestInstance quest) {
-        publish("level-up", player.getUniqueId(), quest, "");
-        LanguageManager.languageManager.sendStringText(player, "battlepass.level-up",
-                "name", quest.definition().name(player), "level", String.valueOf(quest.level()));
-        ConfigurationSection feedback = quest.definition().settings().getConfigurationSection("level-up");
-        if (feedback != null) {
-            TextUtil.sendMessage(player, CommonUtil.modifyString(player,
-                    feedback.getString("message", ""), "level", String.valueOf(quest.level()),
-                    "player", player.getName(), "name", quest.definition().name(player)));
+        QuestInstance snapshot = new QuestInstance(quest);
+        ObjectCache cache = CacheManager.cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            return;
         }
+        SchedulerUtil.runSync(player, () -> {
+            if (!CacheManager.cacheManager.isSession(cache, player)) {
+                return;
+            }
+            publish("level-up", player.getUniqueId(), snapshot, "");
+            coordinator.sendQuestMessage(player, snapshot, "battlepass.level-up");
+            ConfigurationSection feedback = snapshot.definition().settings().getConfigurationSection("level-up");
+            if (feedback != null) {
+                TextUtil.sendMessage(player, CommonUtil.modifyString(player,
+                        feedback.getString("message", ""), coordinator.questPlaceholders(player, snapshot)));
+            }
+        });
     }
 
 }

@@ -4,6 +4,8 @@ A scroll is a physical quest item. Carry it, finish its objectives, and redeem i
 
 ## Configuration and issue example
 
+Scroll files support root `progress-feedback: false` to disable progress feedback, or a `progress-feedback` section to override global settings. Reloading applies these settings to existing scrolls. See [progress feedback](tasks.md#progress-feedback).
+
 Create `plugins/UltimateQuest/scrolls/tutorial_scroll.yml`:
 
 ```yaml

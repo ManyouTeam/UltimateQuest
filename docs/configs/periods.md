@@ -38,6 +38,8 @@ Root `source` selects the objectives. Write a trigger directly, reference an [ob
 
 `task` supplies each generated assignment's description, categories, rewards, and automatic claiming settings. Put rewards in `task.rewards` and categories in `task.categories`, rather than at the file root.
 
+Use `task.progress-feedback: false` to disable progress feedback for this schedule, or supply a `task.progress-feedback` section to override global feedback settings. Reloading applies these settings to existing assignments. See [progress feedback](tasks.md#progress-feedback).
+
 For several random assignments, create the candidates as described in the pool tutorial, then replace `source` with `pool` and `count`. Each drawn objective becomes a separate assignment with its own `task.rewards`. Drawing three objectives with an 8-bread reward allows a total of 24 bread if all three are completed.
 
 ## Draw by category

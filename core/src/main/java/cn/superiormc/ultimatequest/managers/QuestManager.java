@@ -8,8 +8,11 @@ import cn.superiormc.ultimatequest.objects.caches.ObjectCache;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
 import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
 import cn.superiormc.ultimatequest.objects.quests.QuestObjective;
+import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
+import cn.superiormc.ultimatequest.utils.TextUtil;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -20,13 +23,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,25 +42,58 @@ public final class QuestManager extends AbstractManager {
 
     private final ProgressionManager progression = new ProgressionManager(this);
 
+    private final Map<UUID, Long> progressFeedbackTimes = new ConcurrentHashMap<>();
+
     public QuestManager() {
         questManager = this;
         TriggerManager.triggerManager.subscribe(this::handleTrigger);
     }
 
     public QuestInstance growthInstance(UUID playerId, String type, String id) {
-        synchronized (cacheManager) {
+        return growthInstance(cacheManager.snapshot(playerId), type, id);
+    }
+
+    public QuestInstance growthInstance(ObjectCache snapshot, String type, String id) {
+        if (snapshot == null) {
+            return null;
+        }
+        if (id.contains("@") && Set.of("battlepass", "milestone").contains(type)) {
+            String[] parts = id.split("@", 2);
+            return snapshot.quests().get(type + "/" + parts[0] + "/" + parts[1]);
+        }
+        QuestDefinition definition = ConfigManager.configManager.getGrowthDefinition(type, id);
+        return definition == null ? null : snapshot.quests().get(SeasonManager.seasonManager.storageKey(definition));
+    }
+
+    private QuestInstance liveGrowthInstance(UUID playerId, String type, String id) {
+        ObjectCache cache = cacheManager.getObjectCache(playerId);
+        if (cache == null) {
+            return null;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache)) {
+                return null;
+            }
             ensureGrowth(playerId);
             if (id.contains("@") && Set.of("battlepass", "milestone").contains(type)) {
                 String[] parts = id.split("@", 2);
-                return cacheManager.instance(playerId, type + "/" + parts[0] + "/" + parts[1]);
+                return cacheManager.liveInstance(playerId, type + "/" + parts[0] + "/" + parts[1]);
             }
             QuestDefinition definition = ConfigManager.configManager.getGrowthDefinition(type, id);
-            return definition == null ? null : cacheManager.instance(playerId, SeasonManager.seasonManager.storageKey(definition));
+            return definition == null ? null : cacheManager.liveInstance(playerId, SeasonManager.seasonManager.storageKey(definition));
         }
     }
 
     public void playerLoaded(Player player) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            cacheManager.available(player);
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isSession(cache, player)) {
+                return;
+            }
             UUID id = player.getUniqueId();
             ensureGrowth(id);
             rebuildIndex(id);
@@ -78,7 +115,15 @@ public final class QuestManager extends AbstractManager {
     }
 
     public void accept(Player player, String rawId, boolean administrative, boolean bypass) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            cacheManager.available(player);
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache)) {
+                return;
+            }
             UUID id = player.getUniqueId();
             if (!cacheManager.available(player)) {
                 return;
@@ -107,38 +152,45 @@ public final class QuestManager extends AbstractManager {
                 LanguageManager.languageManager.sendStringText(player, "quests.requirements");
                 return;
             }
-            quests.put(definition.id(), new QuestInstance(definition));
+            QuestInstance quest = new QuestInstance(definition);
+            quests.put(definition.id(), quest);
             cacheManager.changed(id);
             cacheManager.persist(id, () -> {
                 rebuildIndex(id);
-                notifyPlayer(player, "quests.accepted", "quest", definition.name(player));
+                notifyPlayer(player, "quests.accepted", quest);
             }, () -> {
                 quests.remove(definition.id());
                 cacheManager.changed(id);
-                notifyPlayer(player, "quests.save-failed");
+                notifyPlayer(player, "quests.save-failed", quest);
             });
         }
     }
 
     public boolean canAbandon(QuestInstance quest) {
-        synchronized (cacheManager) {
-            if (quest == null || quest.definition().growth() || !quest.source().equals("normal")
-                    || !Set.of("ACTIVE", "COMPLETED").contains(quest.state())) {
-                return false;
-            }
-            QuestDefinition definition = ConfigManager.configManager.getDefinitions().getOrDefault(quest.definition().catalogKey(), quest.definition());
-            return definition.settings().getBoolean("allow-abandon", true);
+        if (quest == null || quest.definition().growth() || !quest.source().equals("normal")
+                || !Set.of("ACTIVE", "COMPLETED").contains(quest.state())) {
+            return false;
         }
+        QuestDefinition definition = ConfigManager.configManager.getDefinitions().getOrDefault(quest.definition().catalogKey(), quest.definition());
+        return definition.settings().getBoolean("allow-abandon", true);
     }
 
     public void abandon(Player player, String rawId) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            cacheManager.available(player);
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache)) {
+                return;
+            }
             UUID id = player.getUniqueId();
             if (!cacheManager.available(player)) {
                 return;
             }
             ensureGrowth(player.getUniqueId());
-            QuestInstance quest = cacheManager.instance(id, rawId);
+            QuestInstance quest = cacheManager.liveInstance(id, rawId);
             if (!canAbandon(quest)) {
                 LanguageManager.languageManager.sendStringText(player, "quests.cannot-abandon");
                 return;
@@ -148,24 +200,32 @@ public final class QuestManager extends AbstractManager {
             cacheManager.changed(id);
             cacheManager.persist(id, () -> {
                 rebuildIndex(id);
-                notifyPlayer(player, "quests.abandoned", "quest", quest.definition().name(player));
+                notifyPlayer(player, "quests.abandoned", quest);
             }, () -> {
                 cacheManager.quests(id).put(questId, quest);
                 cacheManager.changed(id);
-                notifyPlayer(player, "quests.save-failed");
+                notifyPlayer(player, "quests.save-failed", quest);
             });
         }
     }
 
     public void claim(Player player, String rawId) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            cacheManager.available(player);
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache)) {
+                return;
+            }
             UUID id = player.getUniqueId();
             if (!cacheManager.available(player)) {
                 return;
             }
             ensureGrowth(player.getUniqueId());
-            QuestInstance quest = cacheManager.instance(id, rawId);
-            if (quest == null || quest.definition().growth() || !assignmentActive(quest, Instant.now()) || !quest.state().equals("COMPLETED")) {
+            QuestInstance quest = cacheManager.liveInstance(id, rawId);
+            if (quest == null || quest.definition().growth() || !assignmentActive(id, quest, Instant.now()) || !quest.state().equals("COMPLETED")) {
                 LanguageManager.languageManager.sendStringText(player, "quests.cannot-claim");
                 return;
             }
@@ -179,12 +239,20 @@ public final class QuestManager extends AbstractManager {
     }
 
     public void claimStage(Player player, String type, String rawId, int level, String track) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            cacheManager.available(player);
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache)) {
+                return;
+            }
             if (!cacheManager.available(player)) {
                 return;
             }
             ensureGrowth(player.getUniqueId());
-            QuestInstance quest = growthInstance(player.getUniqueId(), type, rawId);
+            QuestInstance quest = liveGrowthInstance(player.getUniqueId(), type, rawId);
             String key = track + "/" + level;
             if (quest == null || !claimableGrowth(quest) || !quest.definition().tracks().contains(track)
                     || !quest.stageState(key).equals("AVAILABLE")) {
@@ -209,99 +277,130 @@ public final class QuestManager extends AbstractManager {
 
     private void reserveClaim(Player player, QuestInstance quest, String key) {
         UUID id = player.getUniqueId();
+        ObjectCache cache = cacheManager.getObjectCache(id);
+        if (cache == null || !Thread.holdsLock(cache)) {
+            return;
+        }
         claimState(quest, key, "CLAIMING");
-        cacheManager.changed(id);
-        cacheManager.pending(id, true);
+        cache.changed();
+        cache.pending(true);
+        UUID operation = cache.operationToken();
         cacheManager.saveCritical(id).whenComplete((ignored, failure) -> {
-            synchronized (cacheManager) {
-                if (failure != null) {
-                    reviewClaim(player, quest, key);
-                    ErrorManager.errorManager.sendErrorMessage("§cError: Quest claim reservation failed for " + id
-                            + ": " + failure.getMessage());
-                    notifyPlayer(player, "quests.review-needed");
-                    return;
-                }
-                if (cacheManager.isStopping()) {
-                    return;
-                }
-                try {
-                    SchedulerUtil.runSync(player, () -> grant(player, quest, key),
-                            () -> reviewClaim(player, quest, key));
-                } catch (RuntimeException exception) {
-                    reviewClaim(player, quest, key);
-                    ErrorManager.errorManager.sendErrorMessage("§cError: Quest reward could not be scheduled for " + id
-                            + ": " + exception.getMessage());
-                }
+            if (failure != null) {
+                reviewClaim(cache, operation, player, quest, key);
+                ErrorManager.errorManager.sendErrorMessage("§cError: Quest claim reservation failed for " + id
+                        + ": " + failure.getMessage());
+                notifyPlayer(player, "quests.review-needed", quest);
+                return;
+            }
+            if (cacheManager.isStopping()) {
+                return;
+            }
+            try {
+                SchedulerUtil.runSync(player, () -> grant(cache, operation, player, quest, key),
+                        () -> reviewClaim(cache, operation, player, quest, key));
+            } catch (RuntimeException exception) {
+                reviewClaim(cache, operation, player, quest, key);
+                ErrorManager.errorManager.sendErrorMessage("§cError: Quest reward could not be scheduled for " + id
+                        + ": " + exception.getMessage());
             }
         });
     }
 
-    private void reviewClaim(Player player, QuestInstance quest, String key) {
-        synchronized (cacheManager) {
-            UUID id = player.getUniqueId();
+    private void reviewClaim(ObjectCache cache, UUID operation, Player player, QuestInstance quest, String key) {
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache) || !cache.operation(operation)
+                    || cache.quests().get(quest.key()) != quest) {
+                return;
+            }
             claimState(quest, key, "REVIEW");
-            cacheManager.pending(id, false);
-            cacheManager.bulkClaim(id, null);
-            cacheManager.changed(id);
-            cacheManager.save(id);
+            cache.finishOperation(operation);
+            cache.bulkClaim(null);
+            cache.changed();
+            cacheManager.save(cache.playerId());
+            if (quest.source().equals("scroll")) {
+                cacheManager.endScroll(UUID.fromString(quest.sourceId()), operation);
+            }
         }
     }
 
-    private void grant(Player player, QuestInstance quest, String key) {
-        synchronized (cacheManager) {
-            UUID id = player.getUniqueId();
-            ensureGrowth(id);
-            if (!player.isOnline() || !cacheManager.isOnline(id) || !assignmentActive(quest, Instant.now()) || (key != null && (!claimableGrowth(quest)
-                    || (key.startsWith("premium/") && !quest.premium(player))))) {
-                reviewClaim(player, quest, key);
+    private void grant(ObjectCache cache, UUID operation, Player player, QuestInstance quest, String key) {
+        UUID id = cache.playerId();
+        ConfigurationSection rewards;
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache) || !cache.operation(operation)
+                    || cache.quests().get(quest.key()) != quest) {
                 return;
             }
-            CompletableFuture<Void> delivery;
-            try {
-                delivery = RewardManager.rewardManager.grant(player,
-                        key == null ? quest.rewards() : quest.stageReward(key), quest.definition().id());
-            } catch (RuntimeException exception) {
-                delivery = CompletableFuture.failedFuture(exception);
+            ensureGrowth(id);
+            if (!cacheManager.isSession(cache, player) || !assignmentActive(id, quest, Instant.now())
+                    || key != null && (!claimableGrowth(quest) || key.startsWith("premium/") && !quest.premium(player))) {
+                reviewClaim(cache, operation, player, quest, key);
+                return;
             }
-            delivery.whenComplete((ignored, failure) -> {
-                synchronized (cacheManager) {
-                    claimState(quest, key, failure == null ? "CLAIMED" : "REVIEW");
-                    cacheManager.changed(id);
-                    if (failure != null) {
-                        ErrorManager.errorManager.sendErrorMessage("§cError: Quest reward delivery failed for " + id
-                                + ": " + failure.getMessage());
-                    }
-                    cacheManager.saveCritical(id).whenComplete((saved, saveFailure) -> {
-                        synchronized (cacheManager) {
-                            cacheManager.pending(id, false);
-                            if (saveFailure != null) {
-                                claimState(quest, key, "REVIEW");
-                                cacheManager.changed(id);
-                                ErrorManager.errorManager.sendErrorMessage("§cError: Quest claim result failed for " + id
-                                        + ": " + saveFailure.getMessage());
-                                cacheManager.markDirty(id);
-                            }
-                            rebuildIndex(id);
-                            if (saveFailure != null || failure != null) {
-                                cacheManager.bulkClaim(id, null);
-                            }
-                            if (saveFailure == null) {
-                                if (!cacheManager.isStopping() && failure == null && key == null && quest.source().equals("scroll")) {
-                                    SchedulerUtil.runSync(player,
-                                            () -> QuestScrollManager.questScrollManager.complete(player, quest));
-                                }
-                                cacheManager.discardOffline(id);
-                            }
-                        }
-                        notifyPlayer(player, failure == null && saveFailure == null ? "quests.claimed" : "quests.review-needed");
-                    });
-                }
-            });
+            rewards = key == null ? quest.rewards() : quest.stageReward(key);
         }
+        CompletableFuture<Void> delivery;
+        try {
+            delivery = RewardManager.rewardManager.grant(player, rewards, quest.definition().id());
+        } catch (RuntimeException exception) {
+            delivery = CompletableFuture.failedFuture(exception);
+        }
+        delivery.whenComplete((ignored, failure) -> {
+            synchronized (cache) {
+                if (!cacheManager.isCurrent(cache) || !cache.operation(operation)
+                        || cache.quests().get(quest.key()) != quest) {
+                    return;
+                }
+                claimState(quest, key, failure == null ? "CLAIMED" : "REVIEW");
+                cache.changed();
+            }
+            if (failure != null) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Quest reward delivery failed for " + id
+                        + ": " + failure.getMessage());
+            }
+            cacheManager.saveCritical(id).whenComplete((saved, saveFailure) -> {
+                QuestInstance notification;
+                synchronized (cache) {
+                    if (!cacheManager.isCurrent(cache) || !cache.operation(operation)) {
+                        return;
+                    }
+                    if (saveFailure != null) {
+                        claimState(quest, key, "REVIEW");
+                        cache.changed();
+                        cache.dirty(true);
+                        ErrorManager.errorManager.sendErrorMessage("§cError: Quest claim result failed for " + id
+                                + ": " + saveFailure.getMessage());
+                    }
+                    rebuildIndex(id);
+                    if (saveFailure != null || failure != null) {
+                        cache.bulkClaim(null);
+                    }
+                    notification = new QuestInstance(quest);
+                    cache.finishOperation(operation);
+                }
+                if (key == null && quest.source().equals("scroll")) {
+                    if (saveFailure == null && failure == null) {
+                        QuestScrollManager.questScrollManager.complete(player, notification, operation);
+                    } else {
+                        cacheManager.endScroll(UUID.fromString(quest.sourceId()), operation);
+                    }
+                }
+                cacheManager.discardOffline(id);
+                notifyPlayer(player, failure == null && saveFailure == null ? "quests.claimed" : "quests.review-needed", notification);
+            });
+        });
     }
 
     private void handleTrigger(QuestContext context) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(context.player().getUniqueId());
+        if (cache == null) {
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isSession(cache, context.player())) {
+                return;
+            }
             UUID id = context.player().getUniqueId();
             if (!cacheManager.isReady(id)) {
                 return;
@@ -310,8 +409,8 @@ public final class QuestManager extends AbstractManager {
             refreshPeriods(context.player());
             List<String> candidates = List.copyOf(cacheManager.index(id).getOrDefault(context.trigger().key().toString(), List.of()));
             for (String questId : candidates) {
-                QuestInstance quest = cacheManager.instance(id, questId);
-                if (quest == null || !quest.state().equals("ACTIVE") || !assignmentActive(quest, Instant.now())) {
+                QuestInstance quest = cacheManager.liveInstance(id, questId);
+                if (quest == null || !quest.state().equals("ACTIVE") || !assignmentActive(id, quest, Instant.now())) {
                     continue;
                 }
                 if (!challengeUnlocked(context.player(), quest.definition())) {
@@ -336,7 +435,7 @@ public final class QuestManager extends AbstractManager {
                     continue;
                 }
                 if (quest.source().equals("challenge")) {
-                    QuestInstance pass = growthInstance(id, "battlepass", quest.sourceId());
+                    QuestInstance pass = liveGrowthInstance(id, "battlepass", quest.sourceId());
                     if (pass == null || !pass.season().equals(challengeSeason(quest.cycle()))) {
                         continue;
                     }
@@ -346,18 +445,27 @@ public final class QuestManager extends AbstractManager {
                         continue;
                     }
                     int previous = quest.level();
+                    BigDecimal previousProgress = quest.totalAmount();
+                    boolean feedbackChanged = false;
                     for (QuestObjective objective : quest.definition().objectives()) {
                         if (quest.addTotal(progression.boostedAmount(context.player(), quest,
                                 objective.contribution(context, quest.key() + "/" + objective.getId())))) {
                             cacheManager.changed(id);
+                            feedbackChanged |= objective.getBoolean("progress-feedback", true)
+                                    && objective.getBoolean("progress-feedback.enabled", true);
                         }
                     }
                     if (quest.level() > previous) {
                         progression.levelFeedback(context.player(), quest);
                     }
+                    if (feedbackChanged) {
+                        sendProgressFeedback(context.player(), quest, previousProgress);
+                    }
                     claimAutomatically(context.player());
                     continue;
                 }
+                BigDecimal previousProgress = taskProgress(quest);
+                boolean feedbackChanged = false;
                 for (QuestObjective objective : quest.definition().objectives()) {
                     if (quest.progress(objective) >= objective.required()) {
                         continue;
@@ -365,10 +473,15 @@ public final class QuestManager extends AbstractManager {
                     BigDecimal amount = objective.contribution(context, quest.instanceId() + "/" + objective.getId());
                     if (quest.advance(objective, amount)) {
                         cacheManager.changed(id);
+                        feedbackChanged |= objective.getBoolean("progress-feedback", true)
+                                && objective.getBoolean("progress-feedback.enabled", true);
                         if (quest.source().equals("scroll")) {
                             QuestScrollManager.questScrollManager.saveProgress(context.player(), quest);
                         }
                     }
+                }
+                if (feedbackChanged) {
+                    sendProgressFeedback(context.player(), quest, previousProgress);
                 }
                 if (quest.state().equals("COMPLETED")) {
                     if (quest.source().equals("challenge")) {
@@ -376,16 +489,201 @@ public final class QuestManager extends AbstractManager {
                         addExperience(context.player(), quest.sourceId(), points);
                         quest.state("CLAIMED");
                         cacheManager.changed(id);
-                        LanguageManager.languageManager.sendStringText(context.player(), "battlepass.task-completed");
+                        sendQuestMessage(context.player(), quest, "battlepass.task-completed");
                         continue;
                     }
-                    LanguageManager.languageManager.sendStringText(context.player(), "quests.completed");
+                    sendQuestMessage(context.player(), quest, "quests.completed");
                     if (quest.definition().automaticClaim() && !cacheManager.isPending(id)) {
                         claim(context.player(), questId);
                     }
                 }
             }
         }
+    }
+
+    private BigDecimal taskProgress(QuestInstance quest) {
+        if (quest.definition().growth()) {
+            return quest.totalAmount();
+        }
+        BigDecimal progress = BigDecimal.ZERO;
+        for (QuestObjective objective : quest.definition().objectives()) {
+            progress = progress.add(quest.progressAmount(objective));
+        }
+        return progress;
+    }
+
+    private ConfigurationSection feedbackSettings(QuestInstance quest) {
+        ConfigurationSection settings = quest.definition().settings();
+        if (quest.source().equals("period")) {
+            ConfigurationSection period = ConfigManager.configManager.getPeriodConfigurations().get(quest.sourceId());
+            if (period != null && period.isConfigurationSection("task")) {
+                return period.getConfigurationSection("task");
+            }
+        } else if (quest.source().equals("scroll")) {
+            ConfigurationSection scroll = ConfigManager.configManager.getScrollConfigurations().get(quest.definition().id());
+            if (scroll != null) {
+                return scroll;
+            }
+        } else {
+            QuestDefinition current = ConfigManager.configManager.getDefinitions().get(quest.definition().catalogKey());
+            if (current != null) {
+                settings = current.settings();
+            }
+        }
+        return settings;
+    }
+
+    public String[] questPlaceholders(Player player, QuestInstance quest) {
+        QuestDefinition definition = quest.definition();
+        String name = definition.name(player);
+        String passId = definition.type().equals("battlepass") ? definition.id() : definition.getBattlePass();
+        QuestDefinition pass = passId.isEmpty() ? null : ConfigManager.configManager.getGrowthDefinition("battlepass", passId);
+        String passName = definition.type().equals("battlepass") ? name : pass == null ? "" : pass.name(player);
+        ConfigurationSection period = quest.source().equals("period")
+                ? ConfigManager.configManager.getPeriodConfigurations().get(quest.sourceId()) : null;
+        return new String[] {
+                "quest", name, "task", name, "name", name, "id", definition.id(),
+                "player", player.getName(), "type", definition.type(), "source", quest.source(),
+                "battlepass", passName, "battlepass-id", passId,
+                "milestone", definition.type().equals("milestone") ? name : "",
+                "scroll", quest.source().equals("scroll") ? name : "",
+                "period", period == null ? "" : CommonUtil.parseLang(player, period.getString("name", quest.sourceId())),
+                "level", String.valueOf(quest.level()),
+                "total", taskProgress(quest).stripTrailingZeros().toPlainString(), "season", quest.season()
+        };
+    }
+
+    public void sendQuestMessage(Player player, QuestInstance quest, String key, String... extra) {
+        ObjectCache owner = cacheManager.getObjectCache(player.getUniqueId());
+        if (owner != null && Thread.holdsLock(owner)) {
+            QuestInstance snapshot = new QuestInstance(quest);
+            SchedulerUtil.runSync(player, () -> {
+                if (cacheManager.isSession(owner, player)) {
+                    sendQuestMessage(player, snapshot, key, extra);
+                }
+            });
+            return;
+        }
+
+        String[] names = questPlaceholders(player, quest);
+        String[] placeholders = new String[extra.length + names.length];
+        System.arraycopy(extra, 0, placeholders, 0, extra.length);
+        System.arraycopy(names, 0, placeholders, extra.length, names.length);
+        sendConfiguredMessage(player, feedbackSettings(quest), key, placeholders);
+    }
+
+    public void sendConfiguredMessage(Player player, ConfigurationSection settings, String key, String... placeholders) {
+        String messageKey = key.substring(key.lastIndexOf('.') + 1);
+        String message = settings.getString("messages." + messageKey);
+        if (message == null) {
+            message = LanguageManager.languageManager.getStringText(player, key);
+        }
+        TextUtil.sendMessage(player, CommonUtil.modifyString(player, message, placeholders));
+    }
+
+    private String progressFeedbackString(ConfigurationSection settings, String path, String fallback) {
+        return settings.getString("progress-feedback." + path,
+                ConfigManager.configManager.getString("task-progress." + path, fallback));
+    }
+
+    private String progressFeedbackColor(QuestInstance quest, ConfigurationSection settings) {
+        String color = ConfigManager.configManager.getString("task-progress.bossbar.color", "BLUE");
+        Map<String, YamlConfiguration> categories = ConfigManager.configManager.getCategoryConfigurations();
+        for (String id : ConfigManager.configManager.getDisplayCategories(quest.definition(), quest)) {
+            ConfigurationSection category = categories.get(id);
+            if (category != null && category.isString("progress-feedback.bossbar.color")) {
+                color = category.getString("progress-feedback.bossbar.color");
+                break;
+            }
+        }
+        return settings.getString("progress-feedback.bossbar.color", color);
+    }
+
+    private void sendProgressFeedback(Player player, QuestInstance quest, BigDecimal previousProgress) {
+        ObjectCache owner = cacheManager.getObjectCache(player.getUniqueId());
+        if (owner != null && Thread.holdsLock(owner)) {
+            QuestInstance snapshot = new QuestInstance(quest);
+            SchedulerUtil.runSync(player, () -> {
+                if (cacheManager.isSession(owner, player)) {
+                    sendProgressFeedback(player, snapshot, previousProgress);
+                }
+            });
+            return;
+        }
+
+        ConfigurationSection settings = feedbackSettings(quest);
+        if (!ConfigManager.configManager.getBoolean("task-progress.enabled", true)
+                || !settings.getBoolean("progress-feedback", true)
+                || !settings.getBoolean("progress-feedback.enabled", true)) {
+            return;
+        }
+        BigDecimal progress = taskProgress(quest);
+        BigDecimal gained = progress.subtract(previousProgress);
+        if (gained.signum() <= 0) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        long cooldown = Math.max(0L, settings.getInt("progress-feedback.cooldown-ticks",
+                ConfigManager.configManager.getInt("task-progress.cooldown-ticks", 5))) * 50L;
+        Long previous = progressFeedbackTimes.get(player.getUniqueId());
+        if (previous != null && now - previous < cooldown) {
+            return;
+        }
+        progressFeedbackTimes.put(player.getUniqueId(), now);
+        BigDecimal required = BigDecimal.ZERO;
+        for (QuestObjective objective : quest.definition().objectives()) {
+            required = required.add(BigDecimal.valueOf(objective.required()));
+        }
+        if (quest.definition().growth()) {
+            long previousThreshold = quest.definition().thresholds().getOrDefault(quest.level(), 0L);
+            Long nextThreshold = quest.definition().thresholds().get(quest.level() + 1);
+            if (nextThreshold == null) {
+                required = BigDecimal.valueOf(quest.definition().maximumTotal());
+            } else {
+                progress = progress.subtract(BigDecimal.valueOf(previousThreshold));
+                required = BigDecimal.valueOf(nextThreshold).subtract(BigDecimal.valueOf(previousThreshold));
+            }
+        }
+        BigDecimal ratio = required.signum() <= 0 ? BigDecimal.ZERO
+                : progress.divide(required, 8, RoundingMode.DOWN).max(BigDecimal.ZERO).min(BigDecimal.ONE);
+        String current = progress.stripTrailingZeros().toPlainString();
+        List<String> values = new ArrayList<>(List.of(questPlaceholders(player, quest)));
+        values.addAll(List.of(
+                "progress", current, "current", current, "required", required.toPlainString(),
+                "gained", gained.stripTrailingZeros().toPlainString(),
+                "percent", ratio.movePointRight(2).setScale(0, RoundingMode.DOWN).toPlainString()
+        ));
+        String[] placeholders = values.toArray(String[]::new);
+        String display = progressFeedbackString(settings, "display", "BOSS_BAR")
+                .trim().toUpperCase(Locale.ROOT).replace('-', '_');
+        if (Set.of("BOSS_BAR", "BOSSBAR", "BOTH").contains(display)) {
+            String title = progressFeedbackString(settings, "bossbar.title", "{lang:quest-progress}");
+            if (!title.isBlank()) {
+                String message = "[bossbar=" + progressFeedbackColor(quest, settings)
+                        + "," + progressFeedbackString(settings, "bossbar.style", "SOLID")
+                        + "," + ratio.toPlainString() + "]" + CommonUtil.modifyString(player, title, placeholders) + "[/bossbar]";
+                TextUtil.sendMessage(player, message, "quest-progress");
+            }
+        }
+        if (Set.of("ACTION_BAR", "ACTIONBAR", "BOTH").contains(display)) {
+            String message = progressFeedbackString(settings, "actionbar",
+                    "[actionbar]{lang:quest-progress}[/actionbar]");
+            if (!message.isBlank()) {
+                TextUtil.sendMessage(player, CommonUtil.modifyString(player, message, placeholders));
+            }
+        }
+        String sound = progressFeedbackString(settings, "sound.name", "");
+        if (!sound.isBlank()) {
+            player.playSound(player.getLocation(), sound,
+                    (float) Math.max(0D, settings.getDouble("progress-feedback.sound.volume",
+                            ConfigManager.configManager.getDouble("task-progress.sound.volume", 0.25D))),
+                    (float) Math.max(0D, settings.getDouble("progress-feedback.sound.pitch",
+                            ConfigManager.configManager.getDouble("task-progress.sound.pitch", 1.35D))));
+        }
+    }
+
+    public void clearProgressFeedback(UUID playerId) {
+        progressFeedbackTimes.remove(playerId);
     }
 
     private void ensureGrowth(UUID id) {
@@ -425,86 +723,106 @@ public final class QuestManager extends AbstractManager {
     }
 
     public void refreshGrowth(Player player) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            cacheManager.available(player);
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isSession(cache, player)) {
+                return;
+            }
             ensureGrowth(player.getUniqueId());
             refreshChallenges(player);
         }
     }
 
     public boolean claimableGrowth(QuestInstance quest) {
-        synchronized (cacheManager) {
-            QuestDefinition current = ConfigManager.configManager.getDefinitions().get(quest.definition().catalogKey());
-            return quest.claimable(Instant.now())
-                    && current != null && !SeasonManager.seasonManager.paused(current);
-        }
+        QuestDefinition current = ConfigManager.configManager.getDefinitions().get(quest.definition().catalogKey());
+        return quest.claimable(Instant.now())
+                && current != null && !SeasonManager.seasonManager.paused(current);
     }
 
     public void manageProgression(CommandSender sender, UUID id, String type, String pass, String operation, List<String> values) {
-        synchronized (cacheManager) {
-            if (cacheManager.isPending(id) || cacheManager.isLoading(id)) {
-                LanguageManager.languageManager.sendStringText(sender, "quests.busy");
-                return;
-            }
-            QuestDefinition definition = ConfigManager.configManager.getGrowthDefinition(type, pass.split("@", 2)[0]);
-            if (definition == null) {
-                LanguageManager.languageManager.sendStringText(sender, "quests.not-found");
-                return;
-            }
-            if (cacheManager.isReady(id)) {
-                QuestInstance quest = growthInstance(id, type, pass);
-                if (quest == null) {
-                    LanguageManager.languageManager.sendStringText(sender, "quests.not-found");
+        QuestDefinition definition = ConfigManager.configManager.getGrowthDefinition(type, pass.split("@", 2)[0]);
+        if (definition == null) {
+            LanguageManager.languageManager.sendStringText(sender, "quests.not-found");
+            return;
+        }
+        ObjectCache cache = cacheManager.getObjectCache(id);
+        if (cache != null) {
+            synchronized (cache) {
+                if (!cacheManager.isCurrent(cache) || cache.pending() || cache.loadingToken() != null) {
+                    LanguageManager.languageManager.sendStringText(sender, "quests.busy");
                     return;
                 }
-                try {
-                    progression.applyChange(quest, operation, values);
-                    cacheManager.changed(id);
-                    cacheManager.persist(id, () -> LanguageManager.languageManager.sendStringText(sender, "battlepass.admin-saved"),
-                            () -> LanguageManager.languageManager.sendStringText(sender, "quests.save-failed"));
-                } catch (RuntimeException exception) {
-                    LanguageManager.languageManager.sendStringText(sender, "battlepass.admin-failed");
-                }
-                return;
-            }
-            cacheManager.editOffline(id, data -> {
-                try {
-                    String key = pass.contains("@") ? type + "/" + pass.replace('@', '/') : SeasonManager.seasonManager.storageKey(definition);
-                    ConfigurationSection section = data.getConfigurationSection("quests." + key);
-                    QuestInstance quest = section == null ? new QuestInstance(definition) : new QuestInstance(key, section);
-                    if (!quest.key().equals(key)) {
-                        throw new IllegalArgumentException("Archived season not found");
+                if (cache.ready()) {
+                    QuestInstance quest = liveGrowthInstance(id, type, pass);
+                    if (quest == null) {
+                        LanguageManager.languageManager.sendStringText(sender, "quests.not-found");
+                        return;
                     }
-                    progression.applyChange(quest, operation, values);
-                    data.set("quests." + key, null);
-                    quest.write(data.createSection("quests." + key));
-                } catch (Exception exception) {
-                    throw new IllegalArgumentException("Could not edit progression data", exception);
+                    try {
+                        progression.applyChange(quest, operation, values);
+                        cache.changed();
+                        cacheManager.persist(id, () -> finishAdmin(sender, id, null),
+                                () -> finishAdmin(sender, id, new IllegalStateException("Quest save failed")));
+                    } catch (RuntimeException exception) {
+                        LanguageManager.languageManager.sendStringText(sender, "battlepass.admin-failed");
+                    }
+                    return;
                 }
-            }).whenComplete((ignored, failure) -> finishAdmin(sender, id, failure));
+            }
         }
+        cacheManager.editOffline(id, data -> {
+            try {
+                String key = pass.contains("@") ? type + "/" + pass.replace('@', '/') : SeasonManager.seasonManager.storageKey(definition);
+                ConfigurationSection section = data.getConfigurationSection("quests." + key);
+                QuestInstance quest = section == null ? new QuestInstance(definition) : new QuestInstance(key, section);
+                if (!quest.key().equals(key)) {
+                    throw new IllegalArgumentException("Archived season not found");
+                }
+                progression.applyChange(quest, operation, values);
+                data.set("quests." + key, null);
+                quest.write(data.createSection("quests." + key));
+            } catch (Exception exception) {
+                throw new IllegalArgumentException("Could not edit progression data", exception);
+            }
+        }).whenComplete((ignored, failure) -> finishAdmin(sender, id, failure));
     }
 
     private void finishAdmin(CommandSender sender, UUID id, Throwable failure) {
-        synchronized (cacheManager) {
-            if (failure != null) {
-                ErrorManager.errorManager.sendErrorMessage("§cError: Quest admin edit failed for " + id
-                        + ": " + failure.getMessage());
-            }
-            if (cacheManager.isStopping()) {
-                return;
-            }
-            SchedulerUtil.runSync(() -> LanguageManager.languageManager.sendStringText(sender,
-                    failure == null ? "battlepass.admin-saved" : "battlepass.admin-failed"));
+        if (failure != null) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Quest admin edit failed for " + id
+                    + ": " + failure.getMessage());
+        }
+        if (cacheManager.isStopping()) {
+            return;
+        }
+        Runnable feedback = () -> LanguageManager.languageManager.sendStringText(sender,
+                failure == null ? "battlepass.admin-saved" : "battlepass.admin-failed");
+        if (sender instanceof Player player) {
+            SchedulerUtil.runSync(player, feedback);
+        } else {
+            SchedulerUtil.runSync(feedback);
         }
     }
 
     public void claimAll(Player player, String type, String pass) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            cacheManager.available(player);
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache)) {
+                return;
+            }
             if (!cacheManager.available(player)) {
                 return;
             }
             ensureGrowth(player.getUniqueId());
-            QuestInstance quest = growthInstance(player.getUniqueId(), type, pass);
+            QuestInstance quest = liveGrowthInstance(player.getUniqueId(), type, pass);
             if (quest == null) {
                 LanguageManager.languageManager.sendStringText(player, "quests.not-found");
                 return;
@@ -537,7 +855,7 @@ public final class QuestManager extends AbstractManager {
         if (pass.isEmpty()) {
             return true;
         }
-        QuestInstance growth = growthInstance(player.getUniqueId(), "battlepass", pass);
+        QuestInstance growth = liveGrowthInstance(player.getUniqueId(), "battlepass", pass);
         if (growth == null || !currentGrowth(growth)
                 || (definition.isPremiumTask() && !growth.premium(player))) {
             return false;
@@ -559,7 +877,7 @@ public final class QuestManager extends AbstractManager {
             if (pass.isEmpty() || definition.growth() || !eligible(player, definition)) {
                 continue;
             }
-            QuestInstance growth = growthInstance(player.getUniqueId(), "battlepass", pass);
+            QuestInstance growth = liveGrowthInstance(player.getUniqueId(), "battlepass", pass);
             if (growth == null) {
                 continue;
             }
@@ -616,20 +934,35 @@ public final class QuestManager extends AbstractManager {
     }
 
     public boolean canAddExperience(Player player, String id) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            return false;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isSession(cache, player)) {
+                return false;
+            }
             ensureGrowth(player.getUniqueId());
-            QuestInstance quest = growthInstance(player.getUniqueId(), "battlepass", id);
+            QuestInstance quest = liveGrowthInstance(player.getUniqueId(), "battlepass", id);
             return quest != null && currentGrowth(quest);
         }
     }
 
     public boolean addExperience(Player player, String id, long amount) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            return false;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isSession(cache, player)) {
+                return false;
+            }
             if (amount <= 0L || !canAddExperience(player, id)) {
                 return false;
             }
-            QuestInstance quest = growthInstance(player.getUniqueId(), "battlepass", id);
+            QuestInstance quest = liveGrowthInstance(player.getUniqueId(), "battlepass", id);
             int previous = quest.level();
+            BigDecimal previousProgress = quest.totalAmount();
             if (!quest.addTotal(progression.boostedAmount(player, quest, amount))) {
                 return false;
             }
@@ -637,12 +970,21 @@ public final class QuestManager extends AbstractManager {
             if (quest.level() > previous) {
                 progression.levelFeedback(player, quest);
             }
+            sendProgressFeedback(player, quest, previousProgress);
             return true;
         }
     }
 
     public void addExperienceAndSave(Player player, String id, long amount) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            cacheManager.available(player);
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache)) {
+                return;
+            }
             if (!cacheManager.available(player)) {
                 return;
             }
@@ -651,13 +993,21 @@ public final class QuestManager extends AbstractManager {
                 LanguageManager.languageManager.sendStringText(player, "progression.unavailable");
                 return;
             }
-            cacheManager.persist(player.getUniqueId(), () -> notifyPlayer(player, "progression.xp-added"),
-                    () -> notifyPlayer(player, "progression.xp-save-failed"));
+            QuestInstance quest = liveGrowthInstance(player.getUniqueId(), "battlepass", id);
+            cacheManager.persist(player.getUniqueId(), () -> notifyPlayer(player, "progression.xp-added", quest),
+                    () -> notifyPlayer(player, "progression.xp-save-failed", quest));
         }
     }
 
     public boolean meetsRequirements(Player player, QuestDefinition definition) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            return false;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isSession(cache, player)) {
+                return false;
+            }
             return definition.playerAcceptable() && eligible(player, definition);
         }
     }
@@ -669,7 +1019,12 @@ public final class QuestManager extends AbstractManager {
                 quests.containsKey(id) && quests.get(id).state().equals("CLAIMED"));
     }
 
-    private boolean assignmentActive(QuestInstance quest, Instant now) {
+    private boolean assignmentActive(UUID id, QuestInstance quest, Instant now) {
+        ObjectCache cache = cacheManager.getObjectCache(id);
+        return cache != null && Thread.holdsLock(cache) && assignmentActive(quest, now, cache.carriedScrolls());
+    }
+
+    private boolean assignmentActive(QuestInstance quest, Instant now, Set<UUID> carriedScrolls) {
         QuestDefinition live = ConfigManager.configManager.getDefinitions().get(quest.definition().catalogKey());
         if (quest.expired(now) || !quest.claimable(now)
                 || live != null && (SeasonManager.seasonManager.paused(live)
@@ -677,7 +1032,7 @@ public final class QuestManager extends AbstractManager {
             return false;
         }
         if (quest.source().equals("scroll")) {
-            return scrollCarried(quest);
+            return carriedScrolls.contains(UUID.fromString(quest.sourceId()));
         }
         if (!quest.source().equals("period")) {
             return true;
@@ -688,14 +1043,39 @@ public final class QuestManager extends AbstractManager {
     }
 
     public List<QuestInstance> assignedInstances(UUID id, String source) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(id);
+        if (cache == null) {
+            return List.of();
+        }
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache)) {
+                return List.of();
+            }
             return cacheManager.questsOrEmpty(id).values().stream()
-                    .filter(quest -> quest.source().equals(source) && assignmentActive(quest, Instant.now())).toList();
+                    .filter(quest -> quest.source().equals(source) && assignmentActive(id, quest, Instant.now()))
+                    .map(QuestInstance::new).toList();
         }
     }
 
+    public List<QuestInstance> assignedInstances(ObjectCache snapshot, String source) {
+        if (snapshot == null) {
+            return List.of();
+        }
+        Instant now = Instant.now();
+        return snapshot.quests().values().stream()
+                .filter(quest -> quest.source().equals(source) && assignmentActive(quest, now, snapshot.carriedScrolls()))
+                .toList();
+    }
+
     public void detachScroll(UUID playerId, UUID token) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(playerId);
+        if (cache == null) {
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache)) {
+                return;
+            }
             Map<String, QuestInstance> quests = cacheManager.quests(playerId);
             if (quests == null || cacheManager.isPending(playerId)) {
                 return;
@@ -711,24 +1091,20 @@ public final class QuestManager extends AbstractManager {
         }
     }
 
-    private boolean scrollCarried(QuestInstance quest) {
-        for (ObjectCache cache : cacheManager.loadedCaches()) {
-            if (!cache.quests().containsValue(quest)) {
-                continue;
-            }
-            Player player = Bukkit.getPlayer(cache.playerId());
-            return player != null && QuestScrollManager.questScrollManager.hasToken(
-                    player, UUID.fromString(quest.sourceId()));
-        }
-        return false;
-    }
-
     public void refreshPeriods(Player player) {
         refreshPeriods(player, Instant.now());
     }
 
     public void refreshPeriods(Player player, Instant now) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            cacheManager.available(player);
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache)) {
+                return;
+            }
             UUID id = player.getUniqueId();
             if (!cacheManager.isReady(id) || cacheManager.isPending(id) || !cacheManager.isOnline(id)) {
                 return;
@@ -793,10 +1169,17 @@ public final class QuestManager extends AbstractManager {
             if (added.isEmpty()) {
                 return;
             }
+            String taskNames = added.stream().map(quests::get).map(quest -> quest.definition().name(player))
+                    .collect(Collectors.joining(", "));
+            String periodNames = added.stream().map(quests::get).map(QuestInstance::sourceId).distinct()
+                    .map(group -> CommonUtil.parseLang(player, ConfigManager.configManager.getPeriodConfigurations()
+                            .get(group).getString("name", group)))
+                    .collect(Collectors.joining(", "));
             cacheManager.changed(id);
             cacheManager.persist(id, () -> {
                 rebuildIndex(id);
-                notifyPlayer(player, "period.ready");
+                notifyPlayer(player, "period.ready", "quest", taskNames, "task", taskNames,
+                        "name", taskNames, "period", periodNames);
             }, () -> {
                 added.forEach(quests::remove);
                 quests.putAll(removed);
@@ -810,9 +1193,13 @@ public final class QuestManager extends AbstractManager {
     }
 
     public boolean canInstallScroll(Player player, List<QuestDefinition> drawn) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            return false;
+        }
+        synchronized (cache) {
             UUID id = player.getUniqueId();
-            return !drawn.isEmpty() && drawn.size() <= 45 && cacheManager.isReady(id) && cacheManager.isOnline(id) && cacheManager.isPending(id)
+            return cacheManager.isSession(cache, player) && !drawn.isEmpty() && drawn.size() <= 45 && cacheManager.isReady(id) && cacheManager.isOnline(id) && cacheManager.isPending(id)
                     && withinLimits(id, "scroll", drawn, Set.of())
                     && drawn.stream().allMatch(definition -> !definition.growth() && eligible(player, definition));
         }
@@ -822,22 +1209,27 @@ public final class QuestManager extends AbstractManager {
         Instant now = Instant.now();
         List<QuestInstance> active = cacheManager.questsOrEmpty(id).values().stream()
                 .filter(quest -> !quest.definition().growth() && !quest.state().equals("CLAIMED")
-                        && !replacing.contains(quest.key()) && assignmentActive(quest, now)).toList();
+                        && !replacing.contains(quest.key()) && assignmentActive(id, quest, now)).toList();
         return ConfigManager.configManager.getTaskLimits().allows(active, source, incoming);
     }
 
     public CompletableFuture<Boolean> installScroll(Player player, UUID token,
             List<QuestDefinition> drawn, QuestInstance restored, long expiresAt) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            return CompletableFuture.completedFuture(false);
+        }
+        synchronized (cache) {
+            if (!cacheManager.isCurrent(cache)) {
+                return CompletableFuture.completedFuture(false);
+            }
             if (!canInstallScroll(player, drawn)) {
-                cacheManager.endPlayerOperation(player.getUniqueId());
                 return CompletableFuture.completedFuture(false);
             }
             UUID id = player.getUniqueId();
             QuestInstance quest = restored == null
                     ? new QuestInstance(drawn.get(0), "scroll", token.toString(), "", expiresAt) : restored;
             if (!quest.source().equals("scroll") || !quest.sourceId().equals(token.toString())) {
-                cacheManager.endPlayerOperation(id);
                 return CompletableFuture.completedFuture(false);
             }
             QuestInstance previous = cacheManager.scroll(id, token);
@@ -845,25 +1237,24 @@ public final class QuestManager extends AbstractManager {
                 cacheManager.quests(id).remove(previous.key());
             }
             cacheManager.quests(id).put(quest.key(), quest);
+            cache.carriedScrolls().add(token);
             cacheManager.changed(id);
-            CompletableFuture<Boolean> result = new CompletableFuture<>();
-            cacheManager.saveCritical(id).whenComplete((ignored, failure) -> {
-                synchronized (cacheManager) {
+            UUID operation = cache.operationToken();
+            return cacheManager.saveCritical(id).handleAsync((ignored, failure) -> {
+                synchronized (cache) {
+                    if (!cacheManager.isCurrent(cache) || !cache.operation(operation)) {
+                        return false;
+                    }
                     if (failure != null) {
                         quest.state("REVIEW");
-                        cacheManager.changed(id);
+                        cache.changed();
                         ErrorManager.errorManager.sendErrorMessage("§cError: Quest scroll activation failed for " + id
                                 + ": " + failure.getMessage());
                     }
-                    cacheManager.pending(id, false);
                     rebuildIndex(id);
-                    result.complete(failure == null);
-                    if (failure == null) {
-                        cacheManager.discardOffline(id);
-                    }
                 }
+                return failure == null;
             });
-            return result;
         }
     }
 
@@ -881,15 +1272,31 @@ public final class QuestManager extends AbstractManager {
     }
 
     private void notifyPlayer(Player player, String key, String... args) {
+        notifyPlayer(player, key, null, args);
+    }
+
+    private void notifyPlayer(Player player, String key, QuestInstance quest, String... args) {
         if (cacheManager.isStopping()) {
             return;
         }
         String[] messageArgs = new String[args.length + 1];
         messageArgs[0] = key;
         System.arraycopy(args, 0, messageArgs, 1, args.length);
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            return;
+        }
+        QuestInstance notification;
+        synchronized (cache) {
+            notification = quest == null ? null : new QuestInstance(quest);
+        }
         SchedulerUtil.runSync(player, () -> {
-            if (player.isOnline()) {
-                LanguageManager.languageManager.sendStringText(player, messageArgs);
+            if (cacheManager.isSession(cache, player)) {
+                if (notification == null) {
+                    LanguageManager.languageManager.sendStringText(player, messageArgs);
+                } else {
+                    sendQuestMessage(player, notification, key, args);
+                }
                 if (player.getOpenInventory().getTopInventory().getHolder() instanceof ConfiguredMenuGUI gui) {
                     gui.refresh();
                 }
@@ -899,7 +1306,14 @@ public final class QuestManager extends AbstractManager {
     }
 
     private void claimAutomatically(Player player) {
-        synchronized (cacheManager) {
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isSession(cache, player)) {
+                return;
+            }
             UUID id = player.getUniqueId();
             if (!cacheManager.isOnline(id) || cacheManager.isPending(id)) {
                 return;
@@ -919,7 +1333,7 @@ public final class QuestManager extends AbstractManager {
                         }
                     }
                 }
-                if (quest.state().equals("COMPLETED") && assignmentActive(quest, Instant.now()) && quest.definition().automaticClaim()) {
+                if (quest.state().equals("COMPLETED") && assignmentActive(id, quest, Instant.now()) && quest.definition().automaticClaim()) {
                     claim(player, quest.key());
                     return;
                 }
@@ -930,6 +1344,7 @@ public final class QuestManager extends AbstractManager {
 
     @Override
     public void onPluginDisable() {
+        progressFeedbackTimes.clear();
         progression.close();
     }
 }

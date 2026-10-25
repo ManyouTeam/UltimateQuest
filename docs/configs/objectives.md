@@ -39,6 +39,7 @@ source:
 | --- | --- | --- |
 | `trigger` | Must resolve to a registered trigger | For example, `block_break` or `ultimatequest:block_break`. |
 | `amount` | Positive integer for a normal objective | Progress required for completion. |
+| `progress-feedback` | `true` | Set to `false` to suppress progress feedback when this objective advances; counting and completion messages are unaffected. |
 | `count` | `events` | Counting unit; defaults to one per matching event. Supported values depend on the trigger; see [counting modes](counting.md). |
 | `conditions` | Optional | Events that fail the conditions do not count. |
 | `anti-abuse` | Default protections | See [anti-abuse](anti-abuse.md). |
@@ -50,6 +51,8 @@ Resolution copies the `source.quest` template, applies fields in `source`, then 
 The template must exist and be enabled. `source.quest` cannot reference a normal task in `tasks/`. Template categories are not inherited as task categories.
 
 ## Progress counting
+
+Bundled movement templates default to `progress-feedback: false`. Normal tasks, periodic assignments, scrolls, and challenges inherit this switch when referencing these templates. Other objectives in mixed tasks can still display feedback. Override a template with `source.progress-feedback: true`; the whole task's feedback switch must also be enabled. Objective settings are saved in the acceptance or generation snapshot, so existing tasks need to be accepted or generated again to use new objective settings.
 
 `count: events` counts occurrences. With a supported quantity mode, `amount` uses that unit instead. For example, `attack` with `count: damage` and `amount: 100` requires 100 points of final event damage.
 

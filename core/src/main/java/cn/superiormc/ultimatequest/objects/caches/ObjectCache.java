@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 public final class ObjectCache {
 
@@ -36,9 +38,11 @@ public final class ObjectCache {
 
     private boolean ready;
 
-    private boolean online;
+    private UUID operationToken;
 
-    private boolean pending;
+    private Player session;
+
+    private CompletableFuture<Void> saveTail = CompletableFuture.completedFuture(null);
 
     private boolean dirty;
 
@@ -46,6 +50,48 @@ public final class ObjectCache {
 
     public ObjectCache(UUID playerId) {
         this.playerId = playerId;
+    }
+
+    public ObjectCache copy() {
+        ObjectCache copy = new ObjectCache(playerId);
+        copy.playerName = playerName;
+        quests.forEach((key, quest) -> copy.quests.put(key, new QuestInstance(quest)));
+        index.forEach((key, value) -> copy.index.put(key, List.copyOf(value)));
+        copy.periodRolls.putAll(periodRolls);
+        copy.carriedScrolls.addAll(carriedScrolls);
+        copy.revision = revision;
+        copy.ready = ready;
+        return copy;
+    }
+
+    public Player session() {
+        return session;
+    }
+
+    public void session(Player player) {
+        session = player;
+    }
+
+    public UUID operationToken() {
+        return operationToken;
+    }
+
+    public boolean operation(UUID token) {
+        return token != null && token.equals(operationToken);
+    }
+
+    public void finishOperation(UUID token) {
+        if (operation(token)) {
+            operationToken = null;
+        }
+    }
+
+    public CompletableFuture<Void> saveTail() {
+        return saveTail;
+    }
+
+    public void saveTail(CompletableFuture<Void> future) {
+        saveTail = future;
     }
 
     public void load(QuestPlayerData snapshot) throws Exception {
@@ -151,19 +197,21 @@ public final class ObjectCache {
     }
 
     public boolean online() {
-        return online;
-    }
-
-    public void online(boolean online) {
-        this.online = online;
+        return session != null;
     }
 
     public boolean pending() {
-        return pending;
+        return operationToken != null;
     }
 
     public void pending(boolean pending) {
-        this.pending = pending;
+        if (pending) {
+            if (operationToken == null) {
+                operationToken = UUID.randomUUID();
+            }
+        } else {
+            operationToken = null;
+        }
     }
 
     public boolean dirty() {

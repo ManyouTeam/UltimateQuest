@@ -1,4 +1,5 @@
 enabled: true
+progress-feedback: false
 name: '{lang:defaults.tasks.swimmer.name}'
 description:
 - '{lang:defaults.tasks.swimmer.description}'

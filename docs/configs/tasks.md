@@ -47,6 +47,7 @@ Mining before acceptance is not counted. This example only matches `STONE`; deep
 | `source` | Use this or `objectives` | Shorthand for one objective, including its trigger, amount, and conditions. |
 | `rewards` | Optional | Rewards issued on claim; see [rewards](rewards/README.md). |
 | `auto-claim` | `false` | Automatically attempt a claim when complete. |
+| `progress-feedback` | Enabled | Set to `false` to disable progress feedback, or use a section to override global settings. |
 | `allow-abandon` | `true` | Normal tasks only. Set to `false` to prevent abandonment through commands and menus. |
 | `hide-in-menu` | `false` | Normal tasks only. Set to `true` to hide every state from menus. Commands can still accept, inspect, and claim the task. |
 | `auto-hide` | `false` | Normal tasks only. Hide unaccepted tasks while acceptance requirements are unmet; show them when eligible. Accepted tasks remain visible. |
@@ -66,6 +67,72 @@ For example, add these root fields to prevent abandonment and automatically hide
 allow-abandon: false
 hide-in-menu: false
 auto-hide: true
+```
+
+## Progress feedback
+
+Bundled milestones, movement-based normal tasks, and the daily exploration challenge disable progress feedback by default. Movement objective templates also disable it, so their contributions remain silent in periodic assignments, scrolls, and mixed challenges. Completion, level, and reward-claim messages remain enabled.
+
+Set `progress-feedback: false` to disable feedback for one definition, or use a section to override global settings. Normal tasks, battle passes, milestones, and scrolls use this field at the file root. Battle pass challenges use `tasks.<challenge-id>.progress-feedback`; periodic tasks use `task.progress-feedback`. These settings apply to existing objects after `/uq reload`.
+
+Global settings live in `config.yml`. The default uses a BossBar; ActionBar and combined display are also supported:
+
+```yaml
+task-progress:
+  enabled: true
+  cooldown-ticks: 5
+  display: BOSS_BAR
+  actionbar: '[actionbar]{lang:quest-progress}[/actionbar]'
+  bossbar:
+    title: '{lang:quest-progress}'
+    color: BLUE
+    style: SOLID
+  sound:
+    name: 'minecraft:entity.experience_orb.pickup'
+    volume: 0.25
+    pitch: 1.35
+```
+
+`display` accepts `BOSS_BAR`, `ACTION_BAR`, or `BOTH`. Set `enabled: false` to disable all progress feedback, or leave the sound name empty to mute it. Cooldown is shared per player, measured in ticks (20 ticks per second); `0` disables it. Progress still counts during cooldown. When one event advances several tasks, shared cooldown allows only one to display feedback.
+
+Each definition can override selected fields and inherit the rest from `task-progress`:
+
+```yaml
+progress-feedback:
+  enabled: true
+  cooldown-ticks: 10
+  display: ACTION_BAR
+  actionbar: '[actionbar]&e{quest} &7progress: &a{progress}/{required}[/actionbar]'
+  sound:
+    name: ''
+messages:
+  completed: '&a{quest} is complete!'
+  claimed: '&aRewards claimed: {quest}'
+```
+
+Global `task-progress.enabled: false` always disables all progress feedback. Local `progress-feedback.enabled: false` disables only that definition. `messages` is independent of progress feedback; an empty string suppresses the corresponding message.
+
+Language key `override-lang.quest-progress` controls the default text. Progress, completion, claiming, and level messages, plus the existing `level-up.message`, support these name placeholders:
+
+| Placeholder | Meaning |
+| --- | --- |
+| `{quest}`, `{task}`, `{name}` | Current object name, including the battle pass or milestone name for growth feedback. |
+| `{battlepass}`, `{battlepass-id}` | Current or parent pass name and ID; challenge messages can also use `{quest}` for the challenge name. |
+| `{milestone}` | Current milestone name. |
+| `{scroll}` | Current scroll name. |
+| `{period}` | Current schedule name. |
+| `{id}`, `{type}`, `{source}`, `{player}` | Definition ID, type, source, and player name. |
+| `{level}`, `{total}`, `{season}` | Current level, total progress, and season ID. |
+
+Inapplicable names are empty. Progress feedback also supports `{progress}` or `{current}` (current progress), `{required}` (required progress), `{gained}` (the amount actually added by this event), and `{percent}` (integer percentage). Multiple objectives sum their current and required amounts. Battle passes and milestones display progress within the current level interval, switching to totals at maximum level. Fractions are preserved and excess contributions display only the amount actually counted. `{gained}` does not accumulate skipped feedback during cooldown.
+
+`messages` overrides use the last part of the language key, such as `accepted`, `abandoned`, `completed`, `task-completed`, `claimed`, `level-up`, or `xp-added`. Scrolls also support `given` and `activated`. Use `task.messages` for periodic assignments and the individual challenge node for battle pass tasks.
+
+Completion messages `quests.completed` and `battlepass.task-completed` support `{quest}`. For example:
+
+```yaml
+quests:
+  completed: '&#98FB98[UltimateQuest] &aQuest {quest} &ais complete. Open /uq to claim its rewards.'
 ```
 
 ## Multiple objectives

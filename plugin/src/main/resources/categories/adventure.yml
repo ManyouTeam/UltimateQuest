@@ -1,4 +1,7 @@
 enabled: true
+progress-feedback:
+  bossbar:
+    color: PINK
 name: '{lang:defaults.categories.adventure.name}'
 description:
 - '{lang:defaults.categories.adventure.description}'

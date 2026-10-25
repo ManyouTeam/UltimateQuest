@@ -13,6 +13,24 @@ math:
 
 debug: false
 
+# Progress feedback for tasks, scrolls, battle passes and milestones.
+# Each definition can override these fields under progress-feedback, or set it to false.
+# BossBar color falls back to the first category with a configured color, then this global value.
+task-progress:
+  enabled: true
+  cooldown-ticks: 5
+  # Supported modes: BOSS_BAR, ACTION_BAR, BOTH.
+  display: BOSS_BAR
+  actionbar: '[actionbar]{lang:quest-progress}[/actionbar]'
+  bossbar:
+    title: '{lang:quest-progress}'
+    color: BLUE
+    style: SOLID
+  sound:
+    name: 'minecraft:entity.experience_orb.pickup'
+    volume: 0.25
+    pitch: 1.35
+
 hook-item-method: DEFAULT
 
 # Automatic saving, using the same option names as UltimateShop.

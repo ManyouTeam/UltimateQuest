@@ -4,6 +4,7 @@ import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.managers.CacheManager;
 import cn.superiormc.ultimatequest.managers.EventConditionsManager;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
+import cn.superiormc.ultimatequest.managers.QuestManager;
 import cn.superiormc.ultimatequest.managers.QuestScrollManager;
 import cn.superiormc.ultimatequest.managers.TriggerManager;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
@@ -113,6 +114,7 @@ public class QuestListener implements Listener, AutoCloseable {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         triggerManager.runtime().playerQuit(event.getPlayer());
+        QuestManager.questManager.clearProgressFeedback(event.getPlayer().getUniqueId());
         if (EventConditionsManager.eventConditions != null) {
             EventConditionsManager.eventConditions.onEntityUnload(event.getPlayer().getUniqueId());
         }

@@ -5,10 +5,12 @@ import cn.superiormc.ultimatequest.managers.CacheManager;
 import cn.superiormc.ultimatequest.managers.ConfigManager;
 import cn.superiormc.ultimatequest.managers.QuestManager;
 import cn.superiormc.ultimatequest.managers.SeasonManager;
+import cn.superiormc.ultimatequest.objects.caches.ObjectCache;
 import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +51,8 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
         if (player == null || params == null || QuestManager.questManager == null) {
             return null;
         }
-        if (!CacheManager.cacheManager.isReady(player.getUniqueId())) {
+        ObjectCache snapshot = CacheManager.cacheManager.snapshot(player.getUniqueId());
+        if (snapshot == null) {
             return "LOADING";
         }
         for (String type : List.of("battlepass", "milestone")) {
@@ -57,7 +60,7 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
                 String prefix = type + "_" + field + "_";
                 if (params.startsWith(prefix)) {
                     String id = params.substring(prefix.length());
-                    QuestInstance growth = QuestManager.questManager.growthInstance(player.getUniqueId(), type, id);
+                    QuestInstance growth = QuestManager.questManager.growthInstance(snapshot, type, id);
                     if (field.equals("season")) {
                         var definition = ConfigManager.configManager.getGrowthDefinition(type, id);
                         return growth != null ? growth.season() : definition == null ? "" : SeasonManager.seasonManager.season(definition);
@@ -103,7 +106,7 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
         if (!params.startsWith("state_")) {
             return null;
         }
-        QuestInstance instance = CacheManager.cacheManager.instance(player.getUniqueId(), params.substring(6));
+        QuestInstance instance = snapshot.quests().get(params.substring(6).toLowerCase(Locale.ROOT));
         return instance == null ? "AVAILABLE" : instance.state();
     }
 }
