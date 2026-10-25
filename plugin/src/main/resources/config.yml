@@ -72,6 +72,23 @@ task-limits:
     gathering: -1
     uncategorized: -1
 
+  # Optional permission-based increases. Each cap uses the highest matching value,
+  # including the default above; -1 wins. Omitted caps keep their default.
+  permission-limits: {}
+  # permission-limits:
+  #   vip:
+  #     permission: ultimatequest.limits.vip
+  #     normal:
+  #       total: 30
+  #       categories:
+  #         combat: 10
+  #   svip:
+  #     permission: ultimatequest.limits.svip
+  #     normal:
+  #       total: 50
+  #     scroll:
+  #       total: 16
+
 # Fallback objective text. Explicit objective names take precedence.
 objective-display:
   formats:

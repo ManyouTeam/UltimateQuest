@@ -144,7 +144,7 @@ public final class QuestManager extends AbstractManager {
                 LanguageManager.languageManager.sendStringText(player, "quests.already-accepted");
                 return;
             }
-            if (!withinLimits(id, "normal", List.of(definition), Set.of())) {
+            if (!withinLimits(player, "normal", List.of(definition), Set.of())) {
                 LanguageManager.languageManager.sendStringText(player, "quests.limit");
                 return;
             }
@@ -894,7 +894,7 @@ public final class QuestManager extends AbstractManager {
             QuestInstance challenge = new QuestInstance(definition, "challenge", pass,
                     cycle, expires);
             boolean added = !quests.containsKey(challenge.key())
-                    && withinLimits(player.getUniqueId(), "challenge", List.of(definition), Set.of());
+                    && withinLimits(player, "challenge", List.of(definition), Set.of());
             if (added) {
                 quests.put(challenge.key(), challenge);
             }
@@ -1151,7 +1151,7 @@ public final class QuestManager extends AbstractManager {
                             && !Set.of("CLAIMING", "REVIEW").contains(quest.state())
                             && !(quest.state().equals("COMPLETED") && !quest.expired(now))).toList();
                 Set<String> replacing = replaceable.stream().map(QuestInstance::key).collect(Collectors.toSet());
-                if (!withinLimits(id, "period", drawn, replacing)) {
+                if (!withinLimits(player, "period", drawn, replacing)) {
                     continue;
                 }
                 for (QuestInstance quest : replaceable) {
@@ -1201,17 +1201,18 @@ public final class QuestManager extends AbstractManager {
         synchronized (cache) {
             UUID id = player.getUniqueId();
             return cacheManager.isSession(cache, player) && !drawn.isEmpty() && drawn.size() <= 45 && cacheManager.isReady(id) && cacheManager.isOnline(id) && cacheManager.isPending(id)
-                    && withinLimits(id, "scroll", drawn, Set.of())
+                    && withinLimits(player, "scroll", drawn, Set.of())
                     && drawn.stream().allMatch(definition -> !definition.growth() && eligible(player, definition));
         }
     }
 
-    private boolean withinLimits(UUID id, String source, List<QuestDefinition> incoming, Set<String> replacing) {
+    private boolean withinLimits(Player player, String source, List<QuestDefinition> incoming, Set<String> replacing) {
+        UUID id = player.getUniqueId();
         Instant now = Instant.now();
         List<QuestInstance> active = cacheManager.questsOrEmpty(id).values().stream()
                 .filter(quest -> !quest.definition().growth() && !quest.state().equals("CLAIMED")
                         && !replacing.contains(quest.key()) && assignmentActive(id, quest, now)).toList();
-        return ConfigManager.configManager.getTaskLimits().allows(active, source, incoming);
+        return ConfigManager.configManager.getTaskLimits().allows(player, active, source, incoming);
     }
 
     public CompletableFuture<Boolean> installScroll(Player player, UUID token,

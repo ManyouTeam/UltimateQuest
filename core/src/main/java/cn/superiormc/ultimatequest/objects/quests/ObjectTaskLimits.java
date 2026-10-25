@@ -1,6 +1,7 @@
 package cn.superiormc.ultimatequest.objects.quests;
 
 import cn.superiormc.ultimatequest.managers.ConfigManager;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 public final class ObjectTaskLimits {
 
@@ -24,13 +26,41 @@ public final class ObjectTaskLimits {
         return allowsTasks(config, active, source, incoming);
     }
 
+    public boolean allows(Player player, Collection<QuestInstance> active, String source, List<QuestDefinition> incoming) {
+        return allowsTasks(player, config, active, source, incoming);
+    }
+
     public static void validateTaskLimits(ConfigurationSection config, Set<String> categories) {
+        validateLimitSettings(config, categories, false);
+        ConfigurationSection permissions = config.getConfigurationSection("permission-limits");
+        if (permissions == null) {
+            return;
+        }
+        for (String id : permissions.getKeys(false)) {
+            ConfigurationSection limits = permissions.getConfigurationSection(id);
+            if (limits == null) {
+                throw new IllegalArgumentException("task-limits.permission-limits." + id + " must be a section");
+            }
+            Object permission = limits.get("permission");
+            if (!(permission instanceof String node) || node.isBlank()) {
+                throw new IllegalArgumentException(limits.getCurrentPath() + ".permission must be a non-empty string");
+            }
+            validateLimitSettings(limits, categories, true);
+        }
+    }
+
+    private static void validateLimitSettings(ConfigurationSection config, Set<String> categories, boolean permissionProfile) {
+        String path = config.getCurrentPath();
         for (String key : config.getKeys(false)) {
-            if (!TASK_LIMIT_TYPES.contains(key) && !key.equals("categories")) {
-                throw new IllegalArgumentException("Unknown task-limits section: " + key);
+            if (permissionProfile && key.equals("permission")) {
+                continue;
+            }
+            if (!TASK_LIMIT_TYPES.contains(key) && !key.equals("categories")
+                    && !(key.equals("permission-limits") && !permissionProfile)) {
+                throw new IllegalArgumentException("Unknown " + path + " section: " + key);
             }
             if (!config.isConfigurationSection(key)) {
-                throw new IllegalArgumentException("task-limits." + key + " must be a section");
+                throw new IllegalArgumentException(path + "." + key + " must be a section");
             }
         }
         for (String type : TASK_LIMIT_TYPES) {
@@ -38,28 +68,42 @@ public final class ObjectTaskLimits {
             if (scoped != null) {
                 for (String key : scoped.getKeys(false)) {
                     if (!Set.of("total", "categories").contains(key)) {
-                        throw new IllegalArgumentException("Unknown task-limits." + type + " option: " + key);
+                        throw new IllegalArgumentException("Unknown " + path + "." + type + " option: " + key);
                     }
                 }
             }
             if (config.contains(type + ".categories") && !config.isConfigurationSection(type + ".categories")) {
-                throw new IllegalArgumentException("task-limits." + type + ".categories must be a section");
+                throw new IllegalArgumentException(path + "." + type + ".categories must be a section");
             }
             if (config.contains(type + ".total")) {
                 taskLimit(config, type + ".total");
             }
-            validateLimitCategories(config.getConfigurationSection(type + ".categories"), categories, "task-limits." + type + ".categories");
+            validateLimitCategories(config.getConfigurationSection(type + ".categories"), categories, path + "." + type + ".categories");
         }
-        validateLimitCategories(config.getConfigurationSection("categories"), categories, "task-limits.categories");
+        validateLimitCategories(config.getConfigurationSection("categories"), categories, path + ".categories");
     }
 
     public boolean allowsTasks(ConfigurationSection config, Collection<QuestInstance> active, String source, List<QuestDefinition> incoming) {
+        return allowsTasks(null, config, active, source, incoming);
+    }
+
+    private boolean allowsTasks(Player player, ConfigurationSection config, Collection<QuestInstance> active, String source, List<QuestDefinition> incoming) {
         String type = source.equals("challenge") ? "battlepass-task" : source;
         if (!TASK_LIMIT_TYPES.contains(type)) {
             throw new IllegalArgumentException("Unknown task type: " + type);
         }
+        List<ConfigurationSection> permissionLimits = new ArrayList<>();
+        ConfigurationSection permissions = config.getConfigurationSection("permission-limits");
+        if (player != null && permissions != null) {
+            for (String id : permissions.getKeys(false)) {
+                ConfigurationSection limits = permissions.getConfigurationSection(id);
+                if (player.hasPermission(limits.getString("permission").strip())) {
+                    permissionLimits.add(limits);
+                }
+            }
+        }
         long total = active.stream().filter(quest -> quest.source().equals(source)).count() + incoming.size();
-        long maximum = taskLimit(config, type + ".total");
+        long maximum = taskLimit(config, type + ".total", permissionLimits);
         if (maximum >= 0L && total > maximum) {
             return false;
         }
@@ -82,8 +126,8 @@ public final class ObjectTaskLimits {
             }
         }
         for (String id : affected) {
-            long global = taskLimit(config, "categories." + id);
-            long scoped = taskLimit(config, type + ".categories." + id);
+            long global = taskLimit(config, "categories." + id, permissionLimits);
+            long scoped = taskLimit(config, type + ".categories." + id, permissionLimits);
             if (global >= 0L && globalCounts.getOrDefault(id, 0L) > global || scoped >= 0L && typeCounts.getOrDefault(id, 0L) > scoped) {
                 return false;
             }
@@ -109,6 +153,23 @@ public final class ObjectTaskLimits {
             throw new IllegalArgumentException(section.getCurrentPath() + "." + path + " must be an integer >= -1");
         }
         return ((Number) value).longValue();
+    }
+
+    private static long taskLimit(ConfigurationSection section, String path, List<ConfigurationSection> permissionLimits) {
+        long maximum = taskLimit(section, path);
+        for (ConfigurationSection limits : permissionLimits) {
+            if (maximum == -1L) {
+                return -1L;
+            }
+            if (limits.contains(path)) {
+                long permitted = taskLimit(limits, path);
+                if (permitted == -1L) {
+                    return -1L;
+                }
+                maximum = Math.max(maximum, permitted);
+            }
+        }
+        return maximum;
     }
 
     private static Set<String> limitCategories(List<String> categories) {
