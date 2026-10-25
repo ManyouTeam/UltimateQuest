@@ -88,6 +88,7 @@ category-menu:
   - FQQQQQQQF
   - FQQQQQQQF
   - FQQQQQQQF
+  - FFFFFFFFF
   - PFFBCFFFN
 
   all:
@@ -103,25 +104,24 @@ category-menu:
   select-label: '{lang:category.select}'
   selected-label: '{lang:category.selected}'
 
-  item:
-    name: '{lang:defaults.ui.category-name}'
-    lore:
-    - '{lang:defaults.ui.category-description}'
-    - '{lang:category.count}'
-    - '{lang:category.active}'
-    - '{lang:category.claimable}'
-    - '{lang:defaults.ui.blank}'
-    - '{lang:defaults.ui.category-selected}'
-
-  selected-item:
-    name: '{lang:defaults.ui.category-name}'
-    lore:
-    - '{lang:defaults.ui.category-description}'
-    - '{lang:category.count}'
-    - '{lang:category.active}'
-    - '{lang:category.claimable}'
-    - '{lang:defaults.ui.blank}'
-    - '{lang:defaults.ui.category-selected}'
+  contents:
+    Q:
+      type: categories
+      item:
+        name: '{lang:defaults.ui.category-name}'
+        lore:
+        - '{lang:defaults.ui.category-description}'
+        - '{lang:category.count}'
+        - '{lang:category.active}'
+        - '{lang:category.claimable}'
+        - '{lang:defaults.ui.blank}'
+        - '{lang:defaults.ui.category-selected}'
+      state-items:
+        SELECTED:
+          glow: true
+      actions:
+        select:
+          type: select_category
 
   empty-item:
     material: HOPPER
@@ -129,24 +129,56 @@ category-menu:
 
   items:
     F:
-      material: BLACK_STAINED_GLASS_PANE
-      name: '{lang:defaults.ui.blank}'
+      item:
+        material: BLACK_STAINED_GLASS_PANE
+        name: '{lang:defaults.ui.blank}'
+        lore: []
 
     P:
-      material: ARROW
-      name: '{lang:menu-previous}'
+      hide-on-first-page: true
+      item:
+        material: ARROW
+        name: '{lang:menu-previous}'
+        lore:
+        - '{lang:defaults.ui.page-number}'
+      hidden-item:
+        material: BLACK_STAINED_GLASS_PANE
+        name: '{lang:defaults.ui.blank}'
+      actions:
+        previous:
+          type: previous_page
 
     N:
-      material: ARROW
-      name: '{lang:menu-next}'
+      hide-on-last-page: true
+      item:
+        material: ARROW
+        name: '{lang:menu-next}'
+        lore:
+        - '{lang:defaults.ui.page-number}'
+      hidden-item:
+        material: BLACK_STAINED_GLASS_PANE
+        name: '{lang:defaults.ui.blank}'
+      actions:
+        next:
+          type: next_page
 
     B:
-      material: ARROW
-      name: '{lang:menu-back}'
+      item:
+        material: ARROW
+        name: '{lang:menu-back}'
+        lore: []
+      actions:
+        back:
+          type: back
 
     C:
-      material: BARRIER
-      name: '{lang:menu-close}'
+      item:
+        material: BARRIER
+        name: '{lang:menu-close}'
+        lore: []
+      actions:
+        close:
+          type: close
 
 # Uses the same backend selection and JDBC settings as UltimateShop.
 # Database changes require a server restart.

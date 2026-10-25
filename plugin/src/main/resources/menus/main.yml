@@ -12,6 +12,7 @@ view-filter:
   values: [ALL, ACTIVE, AVAILABLE, CLAIMABLE, CLAIMED]
 category-filter:
   enabled: true
+  open-on-start: false
   hide-empty: true
 contents:
   Q:

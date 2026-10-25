@@ -1,5 +1,6 @@
 package cn.superiormc.ultimatequest.gui.action;
 
+import cn.superiormc.ultimatequest.gui.inv.CategoryMenuGUI;
 import cn.superiormc.ultimatequest.objects.AbstractConfiguredSection;
 import cn.superiormc.ultimatequest.objects.ObjectAction;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
@@ -21,6 +22,9 @@ public final class ObjectSingleGUIAction extends AbstractConfiguredSection<GUIAc
         }
         if (context == null) {
             return TextUtil.withPAPI(CommonUtil.modifyString(player, content), player);
+        }
+        if (context.gui() instanceof CategoryMenuGUI categories) {
+            content = CommonUtil.modifyString(player, content, categories.actionArgs(context.stage()));
         }
         return TextUtil.withPAPI(CommonUtil.modifyString(player, content,
                 "page", String.valueOf(context.gui().getCurrentPage() + 1),

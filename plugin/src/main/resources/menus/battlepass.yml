@@ -7,18 +7,21 @@ catalog-layout:
 - FAAAAAAAF
 - FAAAAAAAF
 - FAAAAAAAF
+- FFFFFFFFF
 - PKFHCXFFN
 detail-layout:
 - FFFFDFFFF
 - FQQQQQQQF
 - FLLLLLLLF
 - FRRRRRRRF
+- FFFFFFFFF
 - PIFBCXFGN
 challenge-layout:
 - FFFFDFFFF
 - FJJJJJJJF
 - FJJJJJJJF
 - FJJJJJJJF
+- FFFFFFFFF
 - PKYBCXFVN
 category-filter:
   enabled: true

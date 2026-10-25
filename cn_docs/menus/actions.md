@@ -29,6 +29,7 @@ contents:
 | --- | --- |
 | 翻页、刷新、关闭 | `previous_page`、`next_page`、`refresh`、`close`。 |
 | 打开另一个菜单或分类选择 | `open_menu`、`open_categories`。 |
+| 分类页选择分类或返回任务列表 | `select_category`、`back`，详见[分类菜单](../configs/categories.md)。 |
 | 切换状态或配置分组 | `cycle_view`、`cycle_period_group`、`set_period_group`、`cycle_scroll_group`、`set_scroll_group`、`cycle_challenge_group`。 |
 | 操作被点击任务 | `quest`、`quest_info`、`abandon_quest`。 |
 | 操作已选战令或里程碑 | `claim_all`、`open_challenges`（战令）。 |

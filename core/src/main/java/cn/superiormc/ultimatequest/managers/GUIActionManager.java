@@ -27,7 +27,7 @@ public final class GUIActionManager {
         actionManager.registerNewAction("previous_page", new ActionGUIPage("previous_page", -1));
         actionManager.registerNewAction("next_page", new ActionGUIPage("next_page", 1));
         actionManager.registerNewAction("refresh", new ActionGUIPage("refresh", 0));
-        for (String type : List.of("open_menu", "command", "open_categories", "cycle_view",
+        for (String type : List.of("open_menu", "command", "open_categories", "select_category", "back", "cycle_view",
                 "cycle_challenge_group", "cycle_period_group", "set_period_group", "cycle_scroll_group", "set_scroll_group",
                 "quest", "claim_all", "open_challenges", "quest_info", "abandon_quest")) {
             actionManager.registerNewAction(type, new ActionGUIPage(type, 0));

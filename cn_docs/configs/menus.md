@@ -13,6 +13,9 @@ title: '&8任务 {page}/{pages}'
 layout:
   - FFFFFFFFF
   - FQQQQQQQF
+  - FQQQQQQQF
+  - FQQQQQQQF
+  - FFFFFFFFF
   - PFFFKRFCN
 category-filter:
   enabled: true
@@ -61,6 +64,8 @@ items:
 ## 布局符号
 
 每一行代表背包的一行，必须有 9 个符号，总共 1–6 行。同一个符号可以重复：示例的 7 个 `Q` 是列表的 7 个位置，不是同一任务复制 7 次。
+
+所有内置任务菜单（包括分类页、目录、详情和挑战页）统一使用 6 行，导航按钮位于最后一行。自定义菜单仍可使用 1–6 行。
 
 `contents.Q` 决定 Q 区域列出什么，`items.F` 决定边框物品，其他字母对应按钮。此布局不使用单个条目的 `slot` / `slots` 设置。不要让同一符号同时代表固定按钮和内容区。
 

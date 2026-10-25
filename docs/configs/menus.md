@@ -13,6 +13,9 @@ title: '&8Quests {page}/{pages}'
 layout:
   - FFFFFFFFF
   - FQQQQQQQF
+  - FQQQQQQQF
+  - FQQQQQQQF
+  - FFFFFFFFF
   - PFFFKRFCN
 category-filter:
   enabled: true
@@ -61,6 +64,8 @@ Run `/uq reload`, then `/uq menu tutorial_menu`. Q slots list normal tasks. Left
 ## Layout symbols
 
 Each string represents an inventory row of exactly nine symbols. Use one to six rows. Repeated symbols supply multiple positions: the seven Q slots are seven list positions, not seven copies of one task.
+
+All bundled task menus, including category selectors, catalogs, details, and challenges, use six rows with navigation buttons on the last row. Custom menus still support one to six rows.
 
 `contents.Q` defines the list, `items.F` defines border items, and other letters define buttons. This layout does not use per-entry `slot` or `slots` fields. Avoid assigning the same symbol to both a fixed button and a content section.
 

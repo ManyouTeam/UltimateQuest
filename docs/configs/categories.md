@@ -49,7 +49,65 @@ Bundled categories now specify colors. Normal tasks, periodic assignments, scrol
 
 Enable `category-filter.enabled` in the menu and give a button the `open_categories` action. Shared appearance comes from `config.yml` → `category-menu`. Each menu can override the title, layout, item templates, and buttons through its own `category-filter`.
 
-The selector layout uses `Q` for category slots, `P` and `N` for pages, `B` to return, and `C` to close. Cards support `{category-id}`, `{category-name}`, `{category-description}`, `{category-count}`, `{category-active}`, `{category-claimable}`, and `{category-selected}`. Task cards can show `{categories}`.
+The category selector has its own interface. Its bundled layout uses six rows (54 slots), as do the other bundled task menus. `Q` holds the dynamic category list configured by `contents.Q`. The default `P`, `N`, `B`, and `C` buttons have page, back, and close actions. Fixed-button symbols can be changed; `actions` determine their behavior.
+
+Fixed buttons use `items.<symbol>.item`, `actions`, and `click-actions`, just like ordinary menus. Page buttons use `hide-on-first-page` and `hide-on-last-page`. Hidden buttons display `hidden-item`, or leave an empty slot if it is omitted. Both default page buttons are hidden when there is only one page.
+
+Merge this fragment into `config.yml` → `category-menu`, or into a menu's `category-filter` to override the shared settings:
+
+```yaml
+contents:
+  Q:
+    type: categories
+    item:
+      name: '{lang:defaults.ui.category-name}'
+      lore:
+        - '{lang:category.count}'
+    state-items:
+      SELECTED:
+        glow: true
+    actions:
+      select:
+        type: select_category
+items:
+  P:
+    hide-on-first-page: true
+    item:
+      material: ARROW
+      name: '{lang:menu-previous}'
+      lore:
+        - '{lang:defaults.ui.page-number}'
+    hidden-item:
+      material: BLACK_STAINED_GLASS_PANE
+      name: '{lang:defaults.ui.blank}'
+    actions:
+      previous:
+        type: previous_page
+  B:
+    item:
+      material: ARROW
+      name: '{lang:menu-back}'
+    actions:
+      back:
+        type: back
+```
+
+On category cards, `select_category` selects the clicked category by default. A fixed button can specify a valid ID with `category: all`, for example. `back` returns to the original task list, retaining its category, state, period/scroll filters, and task page. Selecting a different category starts at task page one. `state-items.SELECTED` inherits `item`, so only changed fields are needed.
+
+Cards and their actions support `{category-id}`, `{category-name}`, `{category-description}`, `{category-count}`, `{category-active}`, `{category-claimable}`, and `{category-selected}`. `{page}` and `{pages}` refer to the selector's pages. Task cards can show `{categories}`.
+
+Legacy flat `items.<symbol>.material/name/lore` and root `item`/`selected-item` settings are converted when read without rewriting the file. Use the structure above for new configurations. A menu's `actions` override replaces the inherited actions at that node; `actions: {}` disables them.
+
+To show categories first and display tasks after a category is selected, set the following in the menu file, for example `menus/main.yml`:
+
+```yaml
+category-filter:
+  enabled: true
+  open-on-start: true
+  hide-empty: true
+```
+
+`open-on-start` defaults to `false`. When enabled, each opening of this menu starts with the category selector. Selecting a category opens its task list, and the category button in that list can reopen the selector. This option applies only when category filtering is available for the menu; battle pass and milestone level detail pages are unaffected. Apply changes with `/uq reload`.
 
 `category-filter.hide-empty: true` hides categories with zero entries in the current filter scope. Bundled main and scroll menus enable it; the code default is `false`. “All” remains available. Categories combine with state and period/scroll-profile filters. Switching categories returns to page one.
 

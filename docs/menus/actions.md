@@ -29,6 +29,7 @@ Each `click-actions` entry replaces generic `actions` for that click. Named chil
 | --- | --- |
 | Page, refresh, close | `previous_page`, `next_page`, `refresh`, `close`. |
 | Open a menu or category selector | `open_menu`, `open_categories`. |
+| Select a category or return to the task list | `select_category`, `back`; see [category menus](../configs/categories.md). |
 | Change state or profile filters | `cycle_view`, `cycle_period_group`, `set_period_group`, `cycle_scroll_group`, `set_scroll_group`, `cycle_challenge_group`. |
 | Operate on the clicked task | `quest`, `quest_info`, `abandon_quest`. |
 | Operate on selected progression | `claim_all`, `open_challenges` (passes). |

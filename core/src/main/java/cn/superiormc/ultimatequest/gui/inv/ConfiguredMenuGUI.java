@@ -13,7 +13,6 @@ import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.QuestManager;
 import cn.superiormc.ultimatequest.managers.RewardManager;
 import cn.superiormc.ultimatequest.managers.SeasonManager;
-import cn.superiormc.ultimatequest.methods.BuildItem;
 import cn.superiormc.ultimatequest.objects.buttons.ObjectButton;
 import cn.superiormc.ultimatequest.objects.caches.ObjectCache;
 import cn.superiormc.ultimatequest.objects.menus.ObjectMenu;
@@ -41,9 +40,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController {
 
@@ -93,14 +90,6 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
 
     private String category = "all";
 
-    private boolean choosingCategory;
-
-    private int taskPage;
-
-    private final Map<Integer, String> shownCategories = new LinkedHashMap<>();
-
-    private Map<String, List<Integer>> categorySlots = Map.of();
-
     private List<MenuEntry> categoryScopeEntries;
 
     private String pendingAbandonKey;
@@ -123,7 +112,31 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     }
 
     @Override
-    protected void constructGUI() {
+    public void openGUI() {
+        if (initialPage && categoryFilterEnabled() && config.getBoolean("category-filter.open-on-start", false)) {
+            initialPage = false;
+            openCategories();
+            return;
+        }
+        super.openGUI();
+    }
+
+    private void openCategories() {
+        if (categoryFilterEnabled()) {
+            new CategoryMenuGUI(this, menuId).openGUI(bypassPermission);
+        }
+    }
+
+    void openTaskMenu(String category) {
+        if (category != null) {
+            this.category = category;
+            page = 0;
+        }
+        initialPage = false;
+        openGUI();
+    }
+
+    void refreshMenuData() {
         QuestManager.questManager.refreshGrowth(player);
         QuestManager.questManager.refreshPeriods(player);
         questSnapshot = CacheManager.cacheManager.snapshot(player.getUniqueId());
@@ -147,10 +160,11 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
             category = "all";
             page = 0;
         }
-        if (choosingCategory) {
-            constructCategoryGUI();
-            return;
-        }
+    }
+
+    @Override
+    protected void constructGUI() {
+        refreshMenuData();
         List<String> layout = taskLayout();
         if (layout.isEmpty() || layout.size() > 6
                 || layout.stream().anyMatch(row -> row.length() != 9)) {
@@ -209,28 +223,6 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
 
     @Override
     public boolean clickEventHandle(Inventory inventory, ClickType type, int slot) {
-        if (choosingCategory) {
-            String choice = shownCategories.get(slot);
-            if (choice != null) {
-                category = choice;
-                choosingCategory = false;
-                page = 0;
-                inv = null;
-                openGUI();
-            } else if (categorySlots.getOrDefault("B", List.of()).contains(slot)) {
-                choosingCategory = false;
-                page = taskPage;
-                inv = null;
-                openGUI();
-            } else if (categorySlots.getOrDefault("P", List.of()).contains(slot) && page > 0) {
-                openPage(page - 1);
-            } else if (categorySlots.getOrDefault("N", List.of()).contains(slot) && page < maximumPage) {
-                openPage(page + 1);
-            } else if (categorySlots.getOrDefault("C", List.of()).contains(slot)) {
-                player.closeInventory();
-            }
-            return true;
-        }
         MenuEntry entry = shownEntries.get(slot);
         if (entry != null && type.isLeftClick() && awaitingAbandonConfirmation(entry)) {
             pendingAbandonKey = null;
@@ -253,12 +245,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
     @Override
     public void openPage(int page) {
         this.page = Math.max(0, Math.min(page, maximumPage));
-        if (choosingCategory) {
-            inv = null;
-            openGUI();
-        } else {
-            constructGUI();
-        }
+        constructGUI();
     }
 
     @Override
@@ -545,7 +532,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         return categoryScopeEntries;
     }
 
-    private List<String> categoryChoices() {
+    List<String> categoryChoices() {
         Map<String, YamlConfiguration> definitions = ConfigManager.configManager.getCategoryConfigurations();
         List<String> choices = new ArrayList<>();
         choices.add("all");
@@ -560,63 +547,24 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         return choices;
     }
 
-    private void constructCategoryGUI() {
-        List<String> layout = config.getStringList("category-filter.layout");
-        if (layout.isEmpty()) {
-            layout = ConfigManager.configManager.config.getStringList("category-menu.layout");
+    String[] categoryArgs(String id) {
+        ConfigurationSection definition = ConfigManager.configManager.getCategoryConfigurations().get(id);
+        if (definition == null) {
+            definition = categorySection(id);
         }
-        if (layout.isEmpty() || layout.size() > 6 || layout.stream().anyMatch(row -> row.length() != 9)) {
-            throw new IllegalArgumentException("Invalid category-filter.layout in menu " + menuId);
-        }
-        categorySlots = layoutSlots(layout);
-        List<Integer> slots = categorySlots.getOrDefault("Q", List.of());
-        if (slots.isEmpty()) {
-            throw new IllegalArgumentException("category-filter.layout requires Q slots in menu " + menuId);
-        }
-        Map<String, YamlConfiguration> definitions = ConfigManager.configManager.getCategoryConfigurations();
-        List<String> choices = categoryChoices();
-        List<MenuEntry> entries = categoryEntries();
-        maximumPage = (choices.size() - 1) / slots.size();
-        page = Math.max(0, Math.min(page, maximumPage));
-        title = CommonUtil.modifyString(player, categoryText("title"), baseArgs());
-        inv = UltimateQuest.methodUtil.createNewInv(player, layout.size() * 9, title, this);
-        shownCategories.clear();
-        for (Map.Entry<String, List<Integer>> symbol : categorySlots.entrySet()) {
-            if (symbol.getKey().equals("Q")) {
-                continue;
-            }
-            ConfigurationSection configured = categorySection("items." + symbol.getKey());
-            if (configured.getKeys(false).isEmpty()) {
-                configured = categorySection("items.F");
-            }
-            ItemStack item = buildItem(configured, baseArgs());
-            for (int slot : symbol.getValue()) {
-                setItem(slot, item.clone());
-            }
-        }
-        for (int index = 0; index < slots.size() && page * slots.size() + index < choices.size(); index++) {
-            String id = choices.get(page * slots.size() + index);
-            ConfigurationSection definition = definitions.containsKey(id) ? definitions.get(id) : categorySection(id);
-            List<MenuEntry> matches = entries.stream().filter(entry -> matchesCategory(entry, id)).toList();
-            String[] args = merge(new String[] { "category-id", id, "category-name", categoryName(id),
-                    "category-description", String.join("\\n", CommonUtil.modifyList(player, definition.getStringList("description"))),
-                    "category-count", String.valueOf(matches.size()),
-                    "category-active", String.valueOf(matches.stream().filter(entry -> entryState(entry).equals("ACTIVE")).count()),
-                    "category-claimable", String.valueOf(matches.stream().filter(entry -> Set.of("COMPLETED", "AVAILABLE").contains(entryState(entry))
-                            && entry.instance() != null).count()),
-                    "category-selected", categoryText(id.equals(category) ? "selected-label" : "select-label") }, baseArgs());
-            ConfigurationSection template = categorySection(id.equals(category) ? "selected-item" : "item");
-            int slot = slots.get(index);
-            ItemStack item = buildTemplatedItem(definition.getConfigurationSection("icon"),
-                    template, id.equals("all") ? Material.BOOK : Material.CHEST, args);
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null) {
-                meta.setEnchantmentGlintOverride(id.equals(category));
-                item.setItemMeta(meta);
-            }
-            setItem(slot, item);
-            shownCategories.put(slot, id);
-        }
+        List<MenuEntry> matches = categoryEntries().stream().filter(entry -> matchesCategory(entry, id)).toList();
+        return merge(new String[] {
+                "category-id", id, "category-name", categoryName(id),
+                "category-description", String.join("\\n", CommonUtil.modifyList(player, definition.getStringList("description"))),
+                "category-count", String.valueOf(matches.size()),
+                "category-active", String.valueOf(matches.stream().filter(entry -> entryState(entry).equals("ACTIVE")).count()),
+                "category-claimable", String.valueOf(matches.stream().filter(entry -> Set.of("COMPLETED", "AVAILABLE").contains(entryState(entry))
+                        && entry.instance() != null).count()),
+                "category-selected", categoryText(id.equals(category) ? "selected-label" : "select-label") }, baseArgs());
+    }
+
+    boolean isSelectedCategory(String id) {
+        return category.equals(id);
     }
 
     private void renderContent(MenuContent content) {
@@ -776,41 +724,6 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         return buildTemplatedItem(icon, template, entry.stage() == null ? Material.PAPER : Material.CHEST, args);
     }
 
-    private ItemStack buildTemplatedItem(ConfigurationSection base, ConfigurationSection template,
-                                         Material fallback, String[] args) {
-        ItemStack item = base == null ? new ItemStack(fallback) : BuildItem.buildItemStack(player, base, args);
-        if (template == null) {
-            return item;
-        }
-        if (template.contains("material")) {
-            item = BuildItem.buildItemStack(player, template, args);
-        }
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            UltimateQuest.methodUtil.setItemName(meta, CommonUtil.modifyString(player,
-                    template.getString("name", "&f{name}"), args), player);
-            UltimateQuest.methodUtil.setItemLore(meta,
-                    wrapLore(CommonUtil.modifyList(player, template.getStringList("lore"), args)), player);
-            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS,
-                    ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-            item.setItemMeta(UltimateQuest.methodUtil.finalizeItemText(meta));
-        }
-        return item;
-    }
-
-    private ItemStack buildItem(ConfigurationSection section, String[] args) {
-        ItemStack item = BuildItem.buildItemStack(player, section, args);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null && !section.getStringList("lore").isEmpty()) {
-            UltimateQuest.methodUtil.setItemLore(meta,
-                    wrapLore(CommonUtil.modifyList(player, section.getStringList("lore"), args)), player);
-            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS,
-                    ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-            item.setItemMeta(UltimateQuest.methodUtil.finalizeItemText(meta));
-        }
-        return item;
-    }
-
     public void executeMenuAction(ObjectSingleGUIAction singleAction, GUIActionContext context) {
         ConfigurationSection action = singleAction.getSection();
         MenuEntry entry = context.definition() == null ? null
@@ -818,13 +731,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         String type = action.getString("type", "").toLowerCase(Locale.ROOT).replace('-', '_');
         switch (type) {
             case "open_categories" -> {
-                if (categoryFilterEnabled()) {
-                    taskPage = page;
-                    page = 0;
-                    choosingCategory = true;
-                    inv = null;
-                    openGUI();
-                }
+                openCategories();
             }
             case "cycle_view" -> {
                 List<String> views = viewOrder();
@@ -968,7 +875,7 @@ public final class ConfiguredMenuGUI extends InvGUI implements GUIPageController
         constructGUI();
     }
 
-    private String[] baseArgs() {
+    String[] baseArgs() {
         QuestManager manager = QuestManager.questManager;
         QuestDefinition definition = selectedDefinition();
         QuestInstance growth = definition == null ? null

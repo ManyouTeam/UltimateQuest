@@ -2,6 +2,7 @@ package cn.superiormc.ultimatequest.gui.action;
 
 import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.commands.SubMenu;
+import cn.superiormc.ultimatequest.gui.inv.CategoryMenuGUI;
 import cn.superiormc.ultimatequest.gui.inv.ConfiguredMenuGUI;
 import cn.superiormc.ultimatequest.objects.actions.AbstractRunAction;
 import org.bukkit.entity.Player;
@@ -47,6 +48,8 @@ public final class ActionGUIPage extends AbstractRunAction<ObjectSingleGUIAction
             default -> {
                 if (context.gui() instanceof ConfiguredMenuGUI menu) {
                     menu.executeMenuAction(singleAction, context);
+                } else if (context.gui() instanceof CategoryMenuGUI categories) {
+                    categories.executeMenuAction(singleAction, context);
                 }
             }
         }

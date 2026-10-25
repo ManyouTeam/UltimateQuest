@@ -7,14 +7,18 @@ catalog-layout:
 - FAAAAAAAF
 - FAAAAAAAF
 - FAAAAAAAF
+- FFFFFFFFF
 - PKFHCRFFN
 detail-layout:
 - FFFFDFFFF
 - FLLLLLLLF
 - FLLLLLLLF
+- FFFFFFFFF
+- FFFFFFFFF
 - PFFBCRFFN
 category-filter:
   enabled: true
+  open-on-start: true
   hide-empty: true
 contents:
   A:

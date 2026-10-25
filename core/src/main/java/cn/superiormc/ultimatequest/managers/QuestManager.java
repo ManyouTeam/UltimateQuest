@@ -2,6 +2,7 @@ package cn.superiormc.ultimatequest.managers;
 
 import static cn.superiormc.ultimatequest.managers.CacheManager.cacheManager;
 
+import cn.superiormc.ultimatequest.gui.inv.CategoryMenuGUI;
 import cn.superiormc.ultimatequest.gui.inv.ConfiguredMenuGUI;
 import cn.superiormc.ultimatequest.objects.QuestContext;
 import cn.superiormc.ultimatequest.objects.caches.ObjectCache;
@@ -1298,6 +1299,8 @@ public final class QuestManager extends AbstractManager {
                     sendQuestMessage(player, notification, key, args);
                 }
                 if (player.getOpenInventory().getTopInventory().getHolder() instanceof ConfiguredMenuGUI gui) {
+                    gui.refresh();
+                } else if (player.getOpenInventory().getTopInventory().getHolder() instanceof CategoryMenuGUI gui) {
                     gui.refresh();
                 }
                 claimAutomatically(player);
