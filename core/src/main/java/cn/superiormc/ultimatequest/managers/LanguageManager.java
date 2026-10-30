@@ -6,9 +6,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -21,6 +23,8 @@ public class LanguageManager extends AbstractManager {
     private String serverLanguage = null;
 
     private final Map<String, YamlConfiguration> languageFiles = new HashMap<>();
+
+    private final Map<String, YamlConfiguration> bundledFiles = new HashMap<>();
 
     private YamlConfiguration tempMessageFile;
 
@@ -82,8 +86,9 @@ public class LanguageManager extends AbstractManager {
         YamlConfiguration config = languageFiles.getOrDefault(lang, languageFiles.getOrDefault(serverLanguage.toLowerCase(), tempMessageFile));
         String text = config.getString(key);
         if (text == null) {
-            if (tempMessageFile.getString(key) != null) {
-                text = tempMessageFile.getString(key);
+            String bundled = bundledLanguage(lang).getString(key);
+            if (bundled != null || tempMessageFile.getString(key) != null) {
+                text = bundled != null ? bundled : tempMessageFile.getString(key);
                 config.set(key, text);
                 saveLanguageFile(lang, config);
                 TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §cAdded new language key: " + key + " for " + lang);
@@ -172,7 +177,10 @@ public class LanguageManager extends AbstractManager {
         YamlConfiguration config = languageFiles.getOrDefault(lang, tempMessageFile);
         List<String> list = config.getStringList(path);
         if (list.isEmpty()) {
-            List<String> temp = tempMessageFile.getStringList(path);
+            List<String> temp = bundledLanguage(lang).getStringList(path);
+            if (temp.isEmpty()) {
+                temp = tempMessageFile.getStringList(path);
+            }
             if (!temp.isEmpty()) {
                 config.set(path, temp);
                 saveLanguageFile(lang, config);
@@ -183,6 +191,15 @@ public class LanguageManager extends AbstractManager {
             }
         }
         return list;
+    }
+
+    private YamlConfiguration bundledLanguage(String language) {
+        return bundledFiles.computeIfAbsent(language, key -> {
+            String[] parts = key.replace('-', '_').split("_", 2);
+            String resource = parts.length == 2 ? parts[0] + "_" + parts[1].toUpperCase(Locale.ROOT) : key;
+            YamlConfiguration loaded = loadInternalLanguage(resource);
+            return loaded == null ? new YamlConfiguration() : loaded;
+        });
     }
 
     private YamlConfiguration loadInternalLanguage(String language) {
@@ -196,10 +213,10 @@ public class LanguageManager extends AbstractManager {
             return null;
         }
 
-        try (InputStreamReader reader = new InputStreamReader(inputStream)) {
+        try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
             return YamlConfiguration.loadConfiguration(reader);
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not load internal language " + language + ": " + e.getMessage());
             return null;
         }
     }

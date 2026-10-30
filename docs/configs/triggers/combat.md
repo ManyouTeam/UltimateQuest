@@ -44,7 +44,7 @@ This requires ten matching events. Some types fire frequently; combine the expla
 | TARGET | Damaged/attempted target |
 | LOCATION | Target/entity location |
 | TRIGGER_ITEM / slot | Main hand / HAND |
-| Extra context | `original_damage`, `attack_cooldown`, `damage_cause` |
+| Extra context | `original_damage`, `damage_cause` |
 
 ## `damage`
 

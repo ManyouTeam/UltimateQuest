@@ -39,8 +39,6 @@ public final class BuiltinContextKeys {
 
     public static final ContextKey<Double> EXHAUSTION_AMOUNT = key("exhaustion_amount", Double.class);
 
-    public static final ContextKey<Double> ATTACK_COOLDOWN = key("attack_cooldown", Double.class);
-
     public static final ContextKey<Double> ORIGINAL_AMOUNT = key("original_amount", Double.class);
 
     public static final ContextKey<Float> ORIGINAL_DURATION = key("original_duration", Float.class);

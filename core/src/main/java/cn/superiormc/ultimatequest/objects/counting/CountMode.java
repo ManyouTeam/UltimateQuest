@@ -52,7 +52,8 @@ public enum CountMode {
     }
 
     public static CountMode read(String trigger, String value) {
-        return Arrays.stream(values()).filter(mode -> mode.id.equals(value) && mode.supports(trigger)).findFirst().orElseThrow(() -> new IllegalArgumentException("Trigger " + trigger + " does not support count: " + value + "; supported: " + supported(trigger)));
+        return Arrays.stream(values()).filter(mode -> mode.id.equals(value) && mode.supports(trigger))
+                .findFirst().orElse(EVENTS);
     }
 
     public BigDecimal quantity(QuestContext context) {

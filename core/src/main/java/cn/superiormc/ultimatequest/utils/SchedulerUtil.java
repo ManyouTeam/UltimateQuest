@@ -124,6 +124,18 @@ public class SchedulerUtil {
         return runTaskTimer(task, delayTicks, periodTicks);
     }
 
+    public static SchedulerUtil runTaskTimer(Entity entity, Runnable task, Runnable retired,
+                                             long delayTicks, long periodTicks) {
+        if (UltimateQuest.isFolia) {
+            delayTicks = validTicks(delayTicks);
+            periodTicks = validTicks(periodTicks);
+            var scheduledTask = entity.getScheduler().runAtFixedRate(
+                    UltimateQuest.instance, ignored -> task.run(), retired, delayTicks, periodTicks);
+            return scheduledTask == null ? null : new SchedulerUtil(scheduledTask);
+        }
+        return runTaskTimer(task, delayTicks, periodTicks);
+    }
+
     public static SchedulerUtil runTaskTimer(Location location, Runnable task, long delayTicks, long periodTicks) {
         if (UltimateQuest.isFolia) {
             delayTicks = validTicks(delayTicks);

@@ -31,7 +31,7 @@ Build quest objectives from the plugin's shared event components:
 - **Matching formats** reuse item and entity rules across objectives and equipment checks.
 - **Anti-abuse rules** filter recorded player-placed blocks and spawner-tagged mobs, and limit repeated progress through cooldowns and usage caps.
 
-The source includes **62 built-in trigger IDs**. Optional event availability depends on the server platform and version. Objectives count matching events or supported quantities such as items, damage, experience, and movement distance. Use `move` with `count: distance` and the `sprinting` or `swimming` event condition for activity-specific distance goals. There are 87 built-in event-condition keys, including aliases.
+The source includes **62 built-in trigger IDs**. Optional event availability depends on the server platform and version. Objectives count matching events or supported quantities such as items, damage, experience, and movement distance. Use `move` with `count: distance` and the `sprinting` or `swimming` event condition for activity-specific distance goals. There are 86 built-in event-condition keys, including aliases.
 
 ---
 

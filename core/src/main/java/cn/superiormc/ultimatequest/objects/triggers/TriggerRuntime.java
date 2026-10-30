@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -18,6 +19,8 @@ import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EvokerFangs;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
@@ -42,8 +45,6 @@ public final class TriggerRuntime {
     private final Map<UUID, TrackedProjectile> projectiles = new ConcurrentHashMap<>();
 
     private final Map<UUID, SchedulerUtil> playerTasks = new ConcurrentHashMap<>();
-
-    private final Map<UUID, Double> attackCooldowns = new ConcurrentHashMap<>();
 
     private final Map<UUID, Runnable> pendingSpawns = new ConcurrentHashMap<>();
 
@@ -122,10 +123,75 @@ public final class TriggerRuntime {
     }
 
     public int countTargets(UUID player) {
-        return (int) mobTargets.values().stream()
-                .filter(TargetRecord::monster)
-                .filter(target -> player.equals(target.playerId()))
-                .count();
+        return countTargets(player, null);
+    }
+
+    public int countTargets(UUID player, Entity pendingTarget) {
+        if (player == null) {
+            return 0;
+        }
+        Player targetPlayer = Bukkit.getPlayer(player);
+        if (targetPlayer == null || !targetPlayer.isOnline() || targetPlayer.isDead()) {
+            clearPlayerTargets(player);
+            return 0;
+        }
+        UUID pendingId = pendingTarget == null ? null : pendingTarget.getUniqueId();
+        int count = pendingTarget instanceof Monster ? 1 : 0;
+        for (Map.Entry<UUID, TargetRecord> entry : mobTargets.entrySet()) {
+            UUID mobId = entry.getKey();
+            TargetRecord record = entry.getValue();
+            if (!record.monster() || !player.equals(record.playerId()) || mobId.equals(pendingId)) {
+                continue;
+            }
+            Entity entity = Bukkit.getEntity(mobId);
+            if (!(entity instanceof Monster monster) || !monster.isValid() || monster.isDead()
+                    || !monster.getWorld().equals(targetPlayer.getWorld())) {
+                mobTargets.remove(mobId, record);
+                continue;
+            }
+            if (UltimateQuest.isFolia && !Bukkit.isOwnedByCurrentRegion(monster)) {
+                SchedulerUtil.runSync(monster, () -> {
+                    if (!isCurrentTarget(monster, targetPlayer)) {
+                        mobTargets.remove(mobId, record);
+                    }
+                });
+            } else if (!isCurrentTarget(monster, targetPlayer)) {
+                mobTargets.remove(mobId, record);
+                continue;
+            }
+            count++;
+        }
+        return count;
+    }
+
+    private boolean isCurrentTarget(Monster monster, Player player) {
+        if (!monster.isValid() || monster.isDead() || !player.isOnline() || player.isDead()
+                || !monster.getWorld().equals(player.getWorld())) {
+            return false;
+        }
+        LivingEntity target = monster.getTarget();
+        return target != null && player.getUniqueId().equals(target.getUniqueId());
+    }
+
+    public void refreshTarget(Entity entity) {
+        if (closed || !(entity instanceof Monster monster)) {
+            return;
+        }
+        UUID mobId = monster.getUniqueId();
+        TargetRecord record = mobTargets.get(mobId);
+        if (record != null && !record.monster()) {
+            return;
+        }
+        if (monster.isValid() && !monster.isDead()
+                && monster.getTarget() instanceof Player player && isCurrentTarget(monster, player)) {
+            rememberTarget(mobId, player.getUniqueId(), true);
+        } else if (record != null) {
+            mobTargets.remove(mobId, record);
+        }
+    }
+
+    public void clearPlayerTargets(UUID playerId) {
+        mobTargets.values().removeIf(target -> playerId.equals(target.playerId()));
     }
 
     public void rememberBarter(UUID piglin, UUID player) {
@@ -135,15 +201,6 @@ public final class TriggerRuntime {
     public Player takeBarterPlayer(UUID piglin) {
         UUID player = barterPlayers.remove(piglin);
         return player == null ? null : Bukkit.getPlayer(player);
-    }
-
-    public void recordAttackCooldown(Player player, double strength) {
-        attackCooldowns.put(player.getUniqueId(), strength);
-    }
-
-    public double consumeAttackCooldown(Player player) {
-        Double strength = attackCooldowns.remove(player.getUniqueId());
-        return strength == null ? player.getAttackCooldown() : strength;
     }
 
     public void trackProjectile(Player player, Projectile projectile, ItemStack item, EquipmentSlot slot) {
@@ -156,7 +213,14 @@ public final class TriggerRuntime {
         ItemStack snapshot = item == null ? null : item.clone();
         UUID id = projectile.getUniqueId();
         UUID shooter = projectile.getShooter() instanceof Entity entity ? entity.getUniqueId() : player.getUniqueId();
-        SchedulerUtil task = SchedulerUtil.runTaskTimer(projectile, () -> {
+        AtomicBoolean retired = new AtomicBoolean();
+        SchedulerUtil[] task = new SchedulerUtil[1];
+        task[0] = SchedulerUtil.runTaskTimer(projectile, () -> {
+            TrackedProjectile tracked = projectiles.get(id);
+            if (tracked == null || tracked.task() != task[0]) {
+                task[0].cancel();
+                return;
+            }
             if (closed || !player.isOnline() || !projectile.isValid() || projectile.isDead()
                     || projectile.isOnGround()) {
                 stopTrackingProjectile(projectile);
@@ -165,8 +229,21 @@ public final class TriggerRuntime {
             Entity source = projectile.getShooter() instanceof Entity entity ? entity : player;
             manager.dispatch(ProjectileTick.class, new ProjectileTick(player, source, projectile,
                     snapshot, hand, projectile.getTicksLived()));
+        }, () -> {
+            retired.set(true);
+            TrackedProjectile tracked = projectiles.get(id);
+            if (tracked != null && tracked.task() == task[0]) {
+                projectiles.remove(id, tracked);
+            }
         }, 1L, 1L);
-        projectiles.put(id, new TrackedProjectile(player.getUniqueId(), shooter, snapshot, hand, task));
+        if (task[0] == null) {
+            return;
+        }
+        TrackedProjectile tracked = new TrackedProjectile(player.getUniqueId(), shooter, snapshot, hand, task[0]);
+        projectiles.put(id, tracked);
+        if ((closed || retired.get()) && projectiles.remove(id, tracked)) {
+            task[0].cancel();
+        }
     }
 
     public TrackedProjectile trackedProjectile(Projectile projectile) {
@@ -237,6 +314,7 @@ public final class TriggerRuntime {
 
     public void clearEntity(UUID entityId) {
         mobTargets.remove(entityId);
+        clearPlayerTargets(entityId);
         barterPlayers.remove(entityId);
         TrackedProjectile tracked = projectiles.remove(entityId);
         if (tracked != null) {
@@ -250,9 +328,8 @@ public final class TriggerRuntime {
         if (task != null) {
             task.cancel();
         }
-        attackCooldowns.remove(id);
         pendingSpawns.remove(id);
-        mobTargets.values().removeIf(target -> id.equals(target.playerId()));
+        clearPlayerTargets(id);
         barterPlayers.values().removeIf(id::equals);
         for (Map.Entry<UUID, TrackedProjectile> entry : projectiles.entrySet()) {
             if (id.equals(entry.getValue().ownerId()) && projectiles.remove(entry.getKey(), entry.getValue())) {
@@ -273,7 +350,6 @@ public final class TriggerRuntime {
         projectiles.clear();
         mobTargets.clear();
         barterPlayers.clear();
-        attackCooldowns.clear();
         pendingSpawns.clear();
     }
 

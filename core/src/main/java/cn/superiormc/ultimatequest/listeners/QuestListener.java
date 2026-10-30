@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Piglin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -22,7 +23,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.EntityRemoveEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -47,7 +51,8 @@ public class QuestListener implements Listener, AutoCloseable {
     }
 
     private <E extends Event> void registerEvent(Class<E> eventClass) {
-        Bukkit.getPluginManager().registerEvent(eventClass, this, EventPriority.MONITOR, (listener, event) -> route(eventClass, event), UltimateQuest.instance, true);
+        Bukkit.getPluginManager().registerEvent(eventClass, this,
+                EventPriority.MONITOR, (listener, event) -> route(eventClass, event), UltimateQuest.instance, true);
     }
 
     @SuppressWarnings("deprecation")
@@ -98,6 +103,27 @@ public class QuestListener implements Listener, AutoCloseable {
         Item item = event.getItem();
         if (item.getItemStack().getType() == Material.GOLD_INGOT && item.getThrower() != null) {
             triggerManager.runtime().rememberBarter(piglin.getUniqueId(), item.getThrower());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onTargetMonitor(EntityTargetEvent event) {
+        if (!(event.getEntity() instanceof Monster monster)) {
+            return;
+        }
+        SchedulerUtil.runSync(monster, () -> triggerManager.runtime().refreshTarget(monster));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onChangedWorld(PlayerChangedWorldEvent event) {
+        triggerManager.runtime().clearPlayerTargets(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onRemove(EntityRemoveEvent event) {
+        triggerManager.runtime().clearEntity(event.getEntity().getUniqueId());
+        if (EventConditionsManager.eventConditions != null) {
+            EventConditionsManager.eventConditions.onEntityUnload(event.getEntity().getUniqueId());
         }
     }
 

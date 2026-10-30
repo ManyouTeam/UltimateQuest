@@ -16,14 +16,17 @@ public final class TargetTrigger extends EventTrigger<EntityTargetEvent> {
         if (!(event.getTarget() instanceof Player player)) {
             return;
         }
-        runtime.rememberTarget(
-                event.getEntity().getUniqueId(),
-                player.getUniqueId(),
-                event.getEntity() instanceof Monster);
         runtime.fire(this, runtime.base(player, event)
                 .source(event.getEntity()).target(player)
                 .location(player.getLocation())
                 .extra(BuiltinContextKeys.TARGET_REASON, event.getReason())
-                .extra(BuiltinContextKeys.TARGET_COUNT, runtime.countTargets(player.getUniqueId())));
+                .extra(BuiltinContextKeys.TARGET_COUNT,
+                        runtime.countTargets(player.getUniqueId(), event.getEntity())));
+        if (!event.isCancelled()) {
+            runtime.rememberTarget(
+                    event.getEntity().getUniqueId(),
+                    player.getUniqueId(),
+                    event.getEntity() instanceof Monster);
+        }
     }
 }

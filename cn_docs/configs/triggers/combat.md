@@ -44,7 +44,7 @@ source:
 | `TARGET`：目标实体 | 受伤/尝试攻击目标 |
 | LOCATION | 目标/实体位置 |
 | TRIGGER_ITEM / slot | 主手 / HAND |
-| 附加数据 | `original_damage`, `attack_cooldown`, `damage_cause` |
+| 附加数据 | `original_damage`, `damage_cause` |
 
 ## `damage`
 

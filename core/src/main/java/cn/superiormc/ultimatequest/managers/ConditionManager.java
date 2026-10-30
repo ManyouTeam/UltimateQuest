@@ -41,7 +41,10 @@ public class ConditionManager<S extends AbstractConfiguredSection<C>, C> {
             return false;
         }
         AbstractCheckCondition<S, C> checkCondition = conditions.get(normalize(condition.getString("type")));
-        return checkCondition != null && checkCondition.checkCondition(condition, player, context);
+        if (checkCondition == null) {
+            return true;
+        }
+        return checkCondition.checkCondition(condition, player, context);
     }
 
     public boolean checkBoolean(S condition, Player player) {
@@ -58,7 +61,7 @@ public class ConditionManager<S extends AbstractConfiguredSection<C>, C> {
         for (String key : section.getKeys(false)) {
             ConfigurationSection single = section.getConfigurationSection(key);
             if (single == null || !single.contains("type")) {
-                return false;
+                continue;
             }
             @SuppressWarnings("unchecked")
             S condition = (S) new ObjectSingleCondition(single, powerContext(context, player), player);

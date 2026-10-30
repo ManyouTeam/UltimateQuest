@@ -22,15 +22,6 @@ Supports the common numeric comparison fields described above.
 | `min / max` | unbounded | Inclusive numeric range. |
 | `compare / value` | unset | Alternative numeric comparison such as `>=`, `<`, or `=`. |
 
-## `min_attack_cooldown`
-
-Checks a player's current attack cooldown strength.
-
-| Field | Default | Description |
-| --- | --- | --- |
-| `target` | `TARGET` | Player selector. |
-| `value` | `0` | Inclusive minimum cooldown strength. |
-
 ## `blocking`
 
 Checks whether a selected living entity is actively blocking with a shield.

@@ -68,7 +68,6 @@ import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionKnockba
 import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionLightLevel;
 import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionLiquidSurfaceDistance;
 import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionLiquidTransition;
-import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionMinAttackCooldown;
 import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionPerfectGuard;
 import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionPotionEffectAction;
 import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionPotionEffectCause;
@@ -124,7 +123,6 @@ public final class EventConditionsManager extends AbstractManager {
         register(new EventConditionStorm());
         register(new EventConditionWorld());
         register(new EventConditionItemDamage());
-        register(new EventConditionMinAttackCooldown());
         register(new EventConditionBlocking());
         register(new EventConditionPerfectGuard());
         register(new EventConditionFalling());
@@ -239,9 +237,7 @@ public final class EventConditionsManager extends AbstractManager {
             String configuredType = single == null ? null : single.getString("type");
             AbstractEventCondition condition = configuredType == null ? null : conditions.get(configuredType);
             if (condition == null) {
-                throw new IllegalArgumentException("Invalid event condition type '"
-                        + (configuredType == null ? "<missing>" : configuredType) + "' at "
-                        + section.getCurrentPath() + "." + key + ".type");
+                continue;
             }
             String type = condition.getType();
             if (type.equals("any") || type.equals("not")) {
@@ -261,7 +257,10 @@ public final class EventConditionsManager extends AbstractManager {
         }
         for (String key : section.getKeys(false)) {
             ConfigurationSection single = section.getConfigurationSection(key);
-            if (single == null || !matchesSingle(single, playerContext)) {
+            if (single == null) {
+                continue;
+            }
+            if (!matchesSingle(single, playerContext)) {
                 return false;
             }
         }
@@ -286,9 +285,7 @@ public final class EventConditionsManager extends AbstractManager {
         String type = section.getString("type");
         AbstractEventCondition condition = type == null ? null : conditions.get(type);
         if (condition == null) {
-            ErrorManager.errorManager.sendErrorMessage("§cError: Invalid event condition type '"
-                    + (type == null ? "<missing>" : type) + "' at " + section.getCurrentPath() + ".type");
-            return false;
+            return true;
         }
         return condition.matches(new ObjectSingleCondition(section, context));
     }

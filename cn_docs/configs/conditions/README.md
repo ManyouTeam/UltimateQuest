@@ -46,7 +46,7 @@ source:
 缺少所需数据时通常先返回不满足，再执行 `not`。因此“反转一个缺失目标的判断”可能变成满足，不能用反转证明目标存在。目标条件执行后还要通过防刷检查，才增加进度。
 
 
-当前注册 87 个事件条件 ID（含别名）。[扩展事件条件](extended.md)列出了移动状态、事件数值、环境筛选和带运行状态的条件。
+当前注册 86 个事件条件 ID（含别名）。[扩展事件条件](extended.md)列出了移动状态、事件数值、环境筛选和带运行状态的条件。
 
 ## 条件类型索引
 
@@ -71,7 +71,6 @@ source:
 | `storm` | [storm](environment.md#storm) |
 | `player_conditions` | [player_conditions](player-conditions.md#player_conditions) |
 | `item_damage` | [item_damage](extended.md#item_damage) |
-| `min_attack_cooldown` | [min_attack_cooldown](extended.md#min_attack_cooldown) |
 | `blocking` | [blocking](extended.md#blocking) |
 | `perfect_guard` | [perfect_guard](extended.md#perfect_guard) |
 | `falling` | [falling](extended.md#falling) |

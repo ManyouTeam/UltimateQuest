@@ -22,8 +22,6 @@ public final class MeleeAttackTrigger extends EventTrigger<EntityDamageByEntityE
                 .triggerItem(player.getInventory().getItemInMainHand(), EquipmentSlot.HAND)
                 .extra(BuiltinContextKeys.ORIGINAL_DAMAGE, event.getDamage())
                 .extra(BuiltinContextKeys.FINAL_DAMAGE, event.getFinalDamage())
-                .extra(BuiltinContextKeys.ATTACK_COOLDOWN,
-                        runtime.consumeAttackCooldown(player))
                 .extra(BuiltinContextKeys.DAMAGE_CAUSE, event.getCause()));
     }
 }

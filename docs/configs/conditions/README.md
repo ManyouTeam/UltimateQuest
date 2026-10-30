@@ -46,7 +46,7 @@ Unknown direct types reject definition loading. General permission, biome, and p
 Missing required data usually fails before `not` is applied. Inverting a missing-target check may therefore pass; inversion does not establish existence. Events passing objective conditions must also pass anti-abuse before progress is added.
 
 
-There are 87 registered event-condition keys, including aliases. [Additional event conditions](extended.md) document movement states, event quantities, environment filters, and scoped runtime conditions.
+There are 86 registered event-condition keys, including aliases. [Additional event conditions](extended.md) document movement states, event quantities, environment filters, and scoped runtime conditions.
 
 ## Condition type index
 
@@ -71,7 +71,6 @@ There are 87 registered event-condition keys, including aliases. [Additional eve
 | `storm` | [storm](environment.md#storm) |
 | `player_conditions` | [player_conditions](player-conditions.md#player_conditions) |
 | `item_damage` | [item_damage](extended.md#item_damage) |
-| `min_attack_cooldown` | [min_attack_cooldown](extended.md#min_attack_cooldown) |
 | `blocking` | [blocking](extended.md#blocking) |
 | `perfect_guard` | [perfect_guard](extended.md#perfect_guard) |
 | `falling` | [falling](extended.md#falling) |
