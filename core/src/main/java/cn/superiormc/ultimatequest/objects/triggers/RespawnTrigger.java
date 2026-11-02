@@ -1,6 +1,7 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerRespawnEvent;
 

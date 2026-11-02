@@ -21,7 +21,6 @@ Counts blocks actually broken by the player, suitable for mining. Recorded playe
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `BlockBreakEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -29,7 +28,6 @@ Counts blocks actually broken by the player, suitable for mining. Recorded playe
 | LOCATION | Event block center |
 | TRIGGER_ITEM / slot | Main hand / HAND |
 | BLOCK | The broken block |
-| Extra context | `original_experience` |
 
 ## `block_damage`
 
@@ -38,7 +36,6 @@ Counts the start of damaging a block. The block does not have to break, so use a
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `BlockDamageEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -54,7 +51,6 @@ Counts the start of damaging a block. The block does not have to break, so use a
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `items` |
-| Event / payload | `BlockDropItemEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -62,7 +58,6 @@ Counts the start of damaging a block. The block does not have to break, so use a
 | LOCATION | Event block center |
 | TRIGGER_ITEM / slot | Current main hand / HAND |
 | BLOCK | Live reference to the broken block; its original state is in broken_block_state |
-| Extra context | `broken_block_state` |
 
 ## `block_place`
 
@@ -71,7 +66,6 @@ Counts the start of damaging a block. The block does not have to break, so use a
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `blocks` |
-| Event / payload | `BlockPlaceEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -87,7 +81,6 @@ Counts reported mining-progress updates, which do not necessarily mean a block w
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `BlockBreakProgressUpdateEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -95,7 +88,6 @@ Counts reported mining-progress updates, which do not necessarily mean a block w
 | LOCATION | Event block center |
 | TRIGGER_ITEM / slot | Main hand / HAND |
 | BLOCK | The block whose break progress changed |
-| Extra context | `block_break_progress` |
 
 ## `interact`
 
@@ -104,7 +96,6 @@ Counts player interaction events. Air, block, and item interactions supply diffe
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerInteractEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -120,7 +111,6 @@ Counts the server event for a player being inside a block. It needs the correspo
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EntityInsideBlockEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -136,14 +126,11 @@ Counts received game vibrations whose source entity is a player. The context loc
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `BlockReceiveGameEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Quest player |
 | LOCATION | Receiving block location |
 | TRIGGER_ITEM / slot | Absent |
-
-Confirm platform support and test with a new task. Extra-data names in the tables describe event data or extension APIs; they do not imply matching condition types exist.
 
 [Trigger overview](../triggers.md) · [Event conditions](../conditions/README.md)

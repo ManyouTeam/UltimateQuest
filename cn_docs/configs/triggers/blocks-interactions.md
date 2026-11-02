@@ -21,7 +21,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `BlockBreakEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -29,7 +28,6 @@ source:
 | LOCATION | 事件方块中心 |
 | TRIGGER_ITEM / slot | 主手 / HAND |
 | BLOCK | 被破坏的方块 |
-| 附加数据 | `original_experience` |
 
 ## `block_damage`
 
@@ -38,7 +36,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `BlockDamageEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -54,7 +51,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`items` |
-| 底层事件 | `BlockDropItemEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -62,7 +58,6 @@ source:
 | LOCATION | 事件方块中心 |
 | TRIGGER_ITEM / slot | 当前主手 / HAND |
 | BLOCK | 被破坏方块的当前引用；原始状态另存于 broken_block_state |
-| 附加数据 | `broken_block_state` |
 
 ## `block_place`
 
@@ -71,7 +66,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`blocks` |
-| 底层事件 | `BlockPlaceEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -87,7 +81,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `BlockBreakProgressUpdateEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -95,7 +88,6 @@ source:
 | LOCATION | 事件方块中心 |
 | TRIGGER_ITEM / slot | 主手 / HAND |
 | BLOCK | 挖掘进度发生变化的方块 |
-| 附加数据 | `block_break_progress` |
 
 ## `interact`
 
@@ -104,7 +96,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `PlayerInteractEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -120,7 +111,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EntityInsideBlockEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -136,14 +126,11 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `BlockReceiveGameEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 任务玩家 |
 | LOCATION | 接收方块位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-
-先确认当前平台支持该触发器，再用新任务测试。下表列出的附加数据供理解事件或开发扩展，不代表都有同名可用条件。
 
 [触发器概览](../triggers.md) · [事件条件](../conditions/README.md)

@@ -21,14 +21,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EntityAirChangeEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 未提供 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_air`, `previous_air` |
 
 ## `food_level_change`
 
@@ -37,14 +35,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `FoodLevelChangeEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 未提供 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_food_level` |
 
 ## `exp_change`
 
@@ -53,14 +49,40 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`experience` |
-| 底层事件 | `PlayerExpChangeEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 未提供 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_experience` |
+
+## `advancement_done`
+
+玩家完成一项 Minecraft 进度（成就）时加 1，不按单个判据计数，也不会补算接取任务前已完成的进度。统计服务器实际触发的事件，包括配方解锁及数据包自定义进度；撤销后再次完成会再次计数。
+
+| 可检查的数据 | 此事件提供的内容 |
+| --- | --- |
+| 支持的 `count` | `events` |
+| 平台要求 | Paper 和 Spigot |
+| `PLAYER`：任务玩家 | 完成进度的玩家 |
+| `SOURCE`：来源实体 | 任务玩家 |
+| `TARGET`：目标实体 | 未提供 |
+| LOCATION | 玩家位置 |
+| TRIGGER_ITEM / slot | 未提供 |
+
+使用 [`advancement` 事件条件](../conditions/extended.md#advancement)直接筛选本次完成的进度。下面只统计 `minecraft:story/mine_diamond`：
+
+```yaml
+source:
+  trigger: advancement_done
+  amount: 1
+  conditions:
+    advancement:
+      type: advancement
+      advancement: 'minecraft:story/mine_diamond'
+```
+
+不写条件会统计全部进度。使用 `advancements` 列表可匹配多个进度中的任意一个；`not: true` 可以排除指定的进度。
 
 ## `potion_effect`
 
@@ -69,14 +91,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EntityPotionEffectEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 任务玩家 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_duration` |
 
 ## `effect_tick`
 
@@ -85,7 +105,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EntityEffectTickEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -100,7 +119,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`exhaustion` |
-| 底层事件 | `EntityExhaustionEvent` |
 | 平台要求 | 各模式按可选事件类检测 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -115,15 +133,11 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`experience` |
-| 底层事件 | `PlayerPickupExperienceEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 未提供 |
 | LOCATION | 经验球位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_experience` |
-
-先确认当前平台支持该触发器，再用新任务测试。下表列出的附加数据供理解事件或开发扩展，不代表都有同名可用条件。
 
 [触发器概览](../triggers.md) · [事件条件](../conditions/README.md)

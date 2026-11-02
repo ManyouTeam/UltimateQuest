@@ -50,7 +50,7 @@ source:
 
 Use a normal `conditions.match_item` rule with `item: COUNTED_ITEM`. Conditions evaluate each output stack, and only passing quantities contribute. `match` still uses [MatchItemFormat](../shared-formats/match-item-format/README.md). Without an item condition, all outputs contribute. Existing selectors such as `CONTEXT` and `TRIGGER_ITEM` retain their meaning, including the tool in block-drop events. `COUNTED_ITEM` exists only during per-item condition evaluation for `count: items`; it does not match elsewhere.
 
-Item filters now belong to `conditions`. The old `count-items` field is ignored without a separate error. UQ `amount` is the cumulative objective requirement; ER `count-every` defines repeatable batch size. They serve different purposes.
+Put item filters in `conditions` and the cumulative quantity required to complete the objective in `amount`.
 
 ## Fractions and multipliers
 
@@ -70,4 +70,4 @@ Cancelled events and zero or negative quantities add no quantity progress. Empty
 
 Omitted `count` still means event counting. Unsupported modes report the allowed values during loading; correct the configuration and run `/uq reload`.
 
-Saves retain the integer fields and store fractional remainders separately. Existing Java progress methods returning `long` continue to expose the integer part. Use `QuestInstance.progressAmount` or `totalAmount` for fractional values. Remainder fields do not need manual editing.
+Fractional progress is saved automatically; player data does not need manual editing.

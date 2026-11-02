@@ -21,14 +21,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`items` |
-| 底层事件 | `PlayerFishEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 存在时的钓获实体 |
 | LOCATION | 鱼钩位置 |
 | TRIGGER_ITEM / slot | 鱼竿 / 解析后的主或副手 |
-| 附加数据 | `original_experience` |
 
 ## `piglin_barter`
 
@@ -37,7 +35,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`items` |
-| 底层事件 | `PiglinBarterEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 交易猪灵 |
@@ -52,7 +49,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`items` |
-| 底层事件 | `PlayerTradeEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -67,14 +63,11 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`items` |
-| 底层事件 | `PlayerPurchaseEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 仅商人为实体时存在 |
 | LOCATION | 实体商人位置（存在时），否则玩家位置 |
 | TRIGGER_ITEM / slot | 交易结果 / HAND |
-
-先确认当前平台支持该触发器，再用新任务测试。下表列出的附加数据供理解事件或开发扩展，不代表都有同名可用条件。
 
 [触发器概览](../triggers.md) · [事件条件](../conditions/README.md)

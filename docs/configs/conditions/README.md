@@ -46,7 +46,7 @@ Unknown direct types reject definition loading. General permission, biome, and p
 Missing required data usually fails before `not` is applied. Inverting a missing-target check may therefore pass; inversion does not establish existence. Events passing objective conditions must also pass anti-abuse before progress is added.
 
 
-There are 86 registered event-condition keys, including aliases. [Additional event conditions](extended.md) document movement states, event quantities, environment filters, and scoped runtime conditions.
+Use the index below to find each condition’s fields and examples.
 
 ## Condition type index
 
@@ -91,6 +91,7 @@ There are 86 registered event-condition keys, including aliases. [Additional eve
 | `interaction_action` | [interaction_action](extended.md#interaction_action) |
 | `input_type` | [input_type](extended.md#input_type) |
 | `event_state` | [event_state](extended.md#event_state) |
+| `advancement` | [advancement](extended.md#advancement) |
 | `smash_attack_lands` | [smash_attack_lands](extended.md#smash_attack_lands) |
 | `block_type_offset` | [block_type_offset](extended.md#block_type_offset) |
 | `in_structure` | [in_structure](extended.md#in_structure) |

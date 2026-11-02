@@ -4,7 +4,7 @@ Save an item under `plugins/UltimateQuest/items/` when several tasks should reus
 
 ## Save the main-hand item
 
-Hold it in your main hand and run `/uq saveitem tutorial_pickaxe`. The default Bukkit serialization format preserves an existing item.
+Hold it in your main hand and run `/uq saveitem tutorial_pickaxe`. You can then reference the saved item by this ID in rewards and menus.
 
 For editable ItemFormat fields, use `/uq saveitem tutorial_pickaxe itemformat`. Both forms create `items/tutorial_pickaxe.yml`.
 

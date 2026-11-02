@@ -1,8 +1,9 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
-import org.bukkit.inventory.meta.Damageable;
 import cn.superiormc.ultimatequest.api.trigger.BuiltinContextKeys;
+
 import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.inventory.meta.Damageable;
 
 public final class ItemDamageTrigger extends EventTrigger<PlayerItemDamageEvent> {
 
@@ -17,10 +18,13 @@ public final class ItemDamageTrigger extends EventTrigger<PlayerItemDamageEvent>
                 .extra(BuiltinContextKeys.ORIGINAL_ITEM_DAMAGE, event.getDamage())
                 .extra(BuiltinContextKeys.EFFECTIVE_ITEM_DAMAGE, effectiveDamage(event)));
     }
+
     private static int effectiveDamage(PlayerItemDamageEvent event) {
         var item = event.getItem();
         var meta = item.getItemMeta();
-        if (!(meta instanceof Damageable damage) || meta.isUnbreakable()) return 0;
+        if (!(meta instanceof Damageable damage) || meta.isUnbreakable()) {
+            return 0;
+        }
         int maximum = damage.hasMaxDamage() ? damage.getMaxDamage() : item.getType().getMaxDurability();
         return Math.max(0, Math.min(event.getDamage(), Math.max(0, maximum - damage.getDamage())));
     }

@@ -1,7 +1,8 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
-import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.api.trigger.BuiltinContextKeys;
+import cn.superiormc.ultimatequest.utils.CommonUtil;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 

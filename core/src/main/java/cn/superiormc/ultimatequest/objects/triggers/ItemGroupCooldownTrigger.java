@@ -1,6 +1,7 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
 import cn.superiormc.ultimatequest.api.trigger.TriggerData;
+
 import io.papermc.paper.event.player.PlayerItemCooldownEvent;
 import io.papermc.paper.event.player.PlayerItemGroupCooldownEvent;
 import org.bukkit.entity.Player;

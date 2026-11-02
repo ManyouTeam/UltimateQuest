@@ -39,4 +39,4 @@ For example, `cooldown-ms: 1000` permits about one count per second for that obj
 
 The plugin only recognizes recorded placements and tagged mobs; it cannot reconstruct world history from before installation. Farming objectives generally need to allow player-grown crops and separately check maturity. Matching the crop material alone does not require maturity.
 
-Anti-abuse does not replace game-mode or world conditions. Add those conditions separately. Cooldowns and usage windows are runtime state, cleared on player quit or plugin unload; they are not persistent daily caps.
+Anti-abuse does not replace game-mode or world conditions. Add those conditions separately. Cooldowns and usage counts reset when a player leaves or the plugin stops. They cannot enforce daily limits.

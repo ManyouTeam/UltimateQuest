@@ -21,7 +21,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `PlayerItemConsumeEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -31,19 +30,17 @@ source:
 
 ## `enchant_item`
 
-统计附魔台附魔，不统计铁砧合并。附加数据中的 `original_experience` 是显示等级费用，`enchantment_level_cost` 和 `original_lapis` 是选项索引加 1（通常为 1–3）；这些数值不会自动变成进度增量。
+统计附魔台附魔的次数，不统计铁砧合并，也不按消耗的经验或青金石数量计数。
 
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EnchantItemEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 未提供 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 附魔物品 / HAND |
-| 附加数据 | `original_experience`, `enchantment_level_cost`, `original_lapis` |
 
 ## `item_damage`
 
@@ -52,14 +49,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`durability` |
-| 底层事件 | `PlayerItemDamageEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 未提供 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 受损物品 / 解析槽 |
-| 附加数据 | `original_item_damage` |
 
 ## `item_held`
 
@@ -68,7 +63,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `PlayerItemHeldEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -83,7 +77,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `PlayerSwapHandItemsEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -98,7 +91,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `PlayerItemGroupCooldownEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -113,14 +105,11 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `PlayerNameEntityEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 被命名实体 |
 | LOCATION | 目标/实体位置 |
 | TRIGGER_ITEM / slot | 找到时的手持命名牌 |
-
-先确认当前平台支持该触发器，再用新任务测试。下表列出的附加数据供理解事件或开发扩展，不代表都有同名可用条件。
 
 [触发器概览](../triggers.md) · [事件条件](../conditions/README.md)

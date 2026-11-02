@@ -1,6 +1,7 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
 import cn.superiormc.ultimatequest.api.trigger.BuiltinContextKeys;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 
@@ -16,6 +17,10 @@ public final class KillTrigger extends EventTrigger<EntityDeathEvent> {
         if (killer == null) {
             return;
         }
-        runtime.fire(this, runtime.base(killer, event).outputItems(event.getDrops()).source(killer).target(event.getEntity()).location(event.getEntity().getLocation()).extra(BuiltinContextKeys.ORIGINAL_EXPERIENCE, event.getDroppedExp()));
+        runtime.fire(this, runtime.base(killer, event)
+                .outputItems(event.getDrops())
+                .source(killer).target(event.getEntity())
+                .location(event.getEntity().getLocation())
+                .extra(BuiltinContextKeys.ORIGINAL_EXPERIENCE, event.getDroppedExp()));
     }
 }

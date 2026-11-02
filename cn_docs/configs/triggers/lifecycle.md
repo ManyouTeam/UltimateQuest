@@ -21,7 +21,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `TriggerRuntime.PlayerTick` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -37,7 +36,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `Event` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -48,12 +46,11 @@ source:
 
 ## `respawn`
 
-专门统计玩家重生，由玩家对应的调度器在重生后发出。想仅统计重生而非登录时使用它。
+统计玩家重生，不统计登录。
 
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `PlayerRespawnEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -61,7 +58,5 @@ source:
 | LOCATION | 重生位置 |
 | TRIGGER_ITEM / slot | 未提供 |
 | BLOCK | 重生位置所在方块 |
-
-先确认当前平台支持该触发器，再用新任务测试。下表列出的附加数据供理解事件或开发扩展，不代表都有同名可用条件。
 
 [触发器概览](../triggers.md) · [事件条件](../conditions/README.md)

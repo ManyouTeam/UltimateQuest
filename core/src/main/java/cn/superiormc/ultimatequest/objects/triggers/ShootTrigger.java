@@ -2,6 +2,7 @@ package cn.superiormc.ultimatequest.objects.triggers;
 
 import cn.superiormc.ultimatequest.api.trigger.BuiltinContextKeys;
 import cn.superiormc.ultimatequest.api.trigger.TriggerData;
+
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityShootBowEvent;

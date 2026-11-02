@@ -1,6 +1,7 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
 import cn.superiormc.ultimatequest.api.trigger.TriggerData;
+
 import io.papermc.paper.event.player.PlayerNameEntityEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

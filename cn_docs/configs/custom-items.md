@@ -4,7 +4,7 @@
 
 ## 保存主手物品
 
-将物品拿在主手，执行 `/uq saveitem tutorial_pickaxe`。默认使用 Bukkit 序列化保存，适合保留已有物品。
+将物品拿在主手，执行 `/uq saveitem tutorial_pickaxe`。保存后可以用这个 ID 在奖励和菜单中引用该物品。
 
 若想得到方便编辑的 ItemFormat 字段，执行 `/uq saveitem tutorial_pickaxe itemformat`。两种写法都会创建 `items/tutorial_pickaxe.yml`。
 

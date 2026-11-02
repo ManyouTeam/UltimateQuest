@@ -46,7 +46,7 @@ source:
 缺少所需数据时通常先返回不满足，再执行 `not`。因此“反转一个缺失目标的判断”可能变成满足，不能用反转证明目标存在。目标条件执行后还要通过防刷检查，才增加进度。
 
 
-当前注册 86 个事件条件 ID（含别名）。[扩展事件条件](extended.md)列出了移动状态、事件数值、环境筛选和带运行状态的条件。
+各条件的字段和示例见下方索引。
 
 ## 条件类型索引
 
@@ -91,6 +91,7 @@ source:
 | `interaction_action` | [interaction_action](extended.md#interaction_action) |
 | `input_type` | [input_type](extended.md#input_type) |
 | `event_state` | [event_state](extended.md#event_state) |
+| `advancement` | [advancement](extended.md#advancement) |
 | `smash_attack_lands` | [smash_attack_lands](extended.md#smash_attack_lands) |
 | `block_type_offset` | [block_type_offset](extended.md#block_type_offset) |
 | `in_structure` | [in_structure](extended.md#in_structure) |

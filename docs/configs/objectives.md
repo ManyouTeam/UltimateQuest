@@ -21,7 +21,7 @@ conditions:
 
 `quests/` holds objective templates. `tasks/` holds complete tasks players can accept. A template does not appear as a normal task or issue a task reward by itself.
 
-Subfolders under `quests/` are loaded recursively, including `.yml` and `.yaml` files. Bundled templates are organized into `common/`, `daily/<category>/`, `weekly/<category>/`, and `monthly/<category>/`. The template ID is always its filename without the extension: `quests/monthly/farming/monthly_crops.yml` is still referenced as `monthly_crops`. IDs must be unique across all subfolders. Existing templates may also remain directly under `quests/`. Following ER's default-definition extraction policy, templates are installed on first startup; later startups preserve the administrator's layout without regenerating defaults in new locations.
+Subfolders under `quests/` are loaded recursively, including `.yml` and `.yaml` files. Bundled templates are organized into `common/`, `daily/<category>/`, `weekly/<category>/`, and `monthly/<category>/`. The template ID is always its filename without the extension: `quests/monthly/farming/monthly_crops.yml` is still referenced as `monthly_crops`. IDs must be unique across all subfolders. Existing templates may also remain directly under `quests/`. Bundled templates are created on first startup. Later startups preserve your folder layout.
 
 Replace a normal task's `source` with:
 
@@ -52,7 +52,7 @@ The template must exist and be enabled. `source.quest` cannot reference a normal
 
 ## Progress counting
 
-Bundled movement templates default to `progress-feedback: false`. Normal tasks, periodic assignments, scrolls, and challenges inherit this switch when referencing these templates. Other objectives in mixed tasks can still display feedback. Override a template with `source.progress-feedback: true`; the whole task's feedback switch must also be enabled. Objective settings are saved in the acceptance or generation snapshot, so existing tasks need to be accepted or generated again to use new objective settings.
+Bundled movement templates default to `progress-feedback: false`. Normal tasks, periodic assignments, scrolls, and challenges inherit this switch when referencing these templates. Other objectives in mixed tasks can still display feedback. Override a template with `source.progress-feedback: true`; the whole task's feedback switch must also be enabled. After changing objective settings, tasks must be accepted or generated again for the changes to apply.
 
 `count: events` counts occurrences. With a supported quantity mode, `amount` uses that unit instead. For example, `attack` with `count: damage` and `amount: 100` requires 100 points of final event damage.
 

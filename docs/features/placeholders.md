@@ -1,6 +1,6 @@
 # 🧩 PlaceholderAPI
 
-Install PlaceholderAPI to display task and progression data in compatible scoreboard, hologram, or other plugins. UltimateQuest registers its own persistent expansion at startup. Menu-local `{name}` variables are a separate system.
+Install PlaceholderAPI to display task and progression data in compatible scoreboard, hologram, or other plugins. Use the `%ultimatequest_...%` placeholders below in external plugins. Menu variables such as `{name}` cannot be used there directly.
 
 ## Placeholder usage example
 

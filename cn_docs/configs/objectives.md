@@ -21,7 +21,7 @@ conditions:
 
 `quests/` 存目标模板；`tasks/` 存玩家可以接取的完整任务。模板不会单独出现在普通任务列表里，也不负责发放任务奖励。
 
-`quests/` 支持递归读取子文件夹中的 `.yml` 和 `.yaml`。内置模板按 `common/`、`daily/<分类>/`、`weekly/<分类>/`、`monthly/<分类>/` 整理。目标 ID 始终是去掉扩展名的文件名，例如 `quests/monthly/farming/monthly_crops.yml` 仍通过 `monthly_crops` 引用；不同子目录不能使用相同 ID。原来直接放在 `quests/` 下的模板仍可读取。默认文件参照 ER 的策略，仅首次启动时释放，后续保留管理员的目录布局，不再在新位置重新生成默认目标。
+`quests/` 支持递归读取子文件夹中的 `.yml` 和 `.yaml`。内置模板按 `common/`、`daily/<分类>/`、`weekly/<分类>/`、`monthly/<分类>/` 整理。目标 ID 始终是去掉扩展名的文件名，例如 `quests/monthly/farming/monthly_crops.yml` 仍通过 `monthly_crops` 引用；不同子目录不能使用相同 ID。原来直接放在 `quests/` 下的模板仍可读取。内置模板仅在首次启动时生成，后续启动保留你调整后的目录布局。
 
 在普通任务中，将原来的 `source` 替换成：
 
@@ -52,7 +52,7 @@ source:
 
 ## 进度计数方式
 
-内置移动目标模板默认使用 `progress-feedback: false`。普通任务、周期任务、卷轴和挑战引用这些模板时会继承该开关；混合任务的其他目标仍可显示进度。在引用处设置 `source.progress-feedback: true` 可覆写模板，但整个任务的提示开关仍需开启。目标配置随接取或生成时的快照保存，已有任务需要重新接取或生成后才会使用新的目标设置。
+内置移动目标模板默认使用 `progress-feedback: false`。普通任务、周期任务、卷轴和挑战引用这些模板时会继承该开关；混合任务的其他目标仍可显示进度。在引用处设置 `source.progress-feedback: true` 可覆写模板，但整个任务的提示开关仍需开启。修改目标设置后，任务需要重新接取或生成才会生效。
 
 `count: events` 按事件次数计数；改为受支持的数量模式后，`amount` 就表示对应单位的完成要求。例如 `attack` 配合 `count: damage`、`amount: 100` 表示累计 100 点最终伤害。
 

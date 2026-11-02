@@ -20,25 +20,25 @@ public final class TriggerData {
 
     private final Player player;
 
-    private final Entity source;
+    private final Entity sourceEntity;
 
-    private final Entity target;
-
-    private final Location from;
-
-    private final Location to;
-
-    private final EquipmentSlot triggerItemSlot;
-
-    private final long tick;
+    private final Entity targetEntity;
 
     private final Block block;
 
     private final Location location;
 
+    private final Location from;
+
+    private final Location to;
+
     private final Event event;
 
     private final ItemStack triggerItem;
+
+    private final EquipmentSlot triggerItemSlot;
+
+    private final long tick;
 
     private final List<ItemStack> outputItems;
 
@@ -47,17 +47,17 @@ public final class TriggerData {
     private final Map<ContextKey<?>, Object> extras;
 
     private TriggerData(Builder builder) {
-        player = builder.player;
-        source = builder.source;
-        target = builder.target;
-        from = builder.from == null ? null : builder.from.clone();
-        to = builder.to == null ? null : builder.to.clone();
-        triggerItemSlot = builder.triggerItemSlot;
-        tick = builder.tick;
+        player = Objects.requireNonNull(builder.player, "player");
+        sourceEntity = builder.sourceEntity;
+        targetEntity = builder.targetEntity;
         block = builder.block;
-        location = builder.location == null ? null : builder.location.clone();
+        location = cloneLocation(builder.location);
+        from = cloneLocation(builder.from);
+        to = cloneLocation(builder.to);
         event = builder.event;
         triggerItem = builder.triggerItem;
+        triggerItemSlot = builder.triggerItemSlot;
+        tick = builder.tick;
         outputItems = builder.outputItems;
         placedBlocks = List.copyOf(builder.placedBlocks);
         extras = Map.copyOf(builder.extras);
@@ -67,32 +67,20 @@ public final class TriggerData {
         return new Builder(player);
     }
 
-    public Player player() {
-        return player;
+    public Builder toBuilder() {
+        return new Builder(this);
     }
 
-    public Entity sourceEntity() {
-        return source;
+    public TriggerData withTarget(Entity target) {
+        return toBuilder().target(target).build();
     }
 
-    public Entity targetEntity() {
-        return target;
-    }
-
-    public Block block() {
-        return block;
-    }
-
-    public Location location() {
-        return location == null ? null : location.clone();
-    }
-
-    public Event event() {
-        return event;
-    }
-
-    public ItemStack triggerItem() {
-        return triggerItem;
+    public TriggerData withBlock(Block value) {
+        Builder builder = toBuilder().block(value);
+        if (value != null) {
+            builder.location(value.getLocation().add(0.5D, 0.5D, 0.5D));
+        }
+        return builder.build();
     }
 
     public List<ItemStack> outputItems() {
@@ -104,62 +92,57 @@ public final class TriggerData {
     }
 
     public TriggerData withCountedItem(ItemStack item) {
-        return copyBuilder().extra(BuiltinContextKeys.COUNTED_ITEM, item.clone()).build();
+        return toBuilder().extra(BuiltinContextKeys.COUNTED_ITEM, item.clone()).build();
     }
 
-    /** Snapshot a particular placed block for per-block conditions. */
     public TriggerData withPlacedBlock(BlockState state) {
-        return copyBuilder().block(state.getBlock())
+        return toBuilder().block(state.getBlock())
                 .location(state.getLocation().add(0.5D, 0.5D, 0.5D))
                 .extra(BuiltinContextKeys.BROKEN_BLOCK_STATE, state).build();
     }
 
-    private Builder copyBuilder() {
-        Builder copy = new Builder(player);
-        copy.source = source;
-        copy.target = target;
-        copy.from = from;
-        copy.to = to;
-        copy.triggerItemSlot = triggerItemSlot;
-        copy.tick = tick;
-        copy.block = block;
-        copy.location = location;
-        copy.event = event;
-        copy.triggerItem = triggerItem;
-        copy.outputItems = outputItems;
-        copy.placedBlocks = placedBlocks;
-        copy.extras.putAll(extras);
-        return copy;
+    public Player player() {
+        return player;
+    }
+
+    public Entity sourceEntity() {
+        return sourceEntity;
+    }
+
+    public Entity targetEntity() {
+        return targetEntity;
+    }
+
+    public Block block() {
+        return block;
+    }
+
+    public Location location() {
+        return cloneLocation(location);
+    }
+
+    public Location from() {
+        return cloneLocation(from);
+    }
+
+    public Location to() {
+        return cloneLocation(to);
+    }
+
+    public Event event() {
+        return event;
+    }
+
+    public ItemStack triggerItem() {
+        return triggerItem;
     }
 
     public EquipmentSlot triggerItemSlot() {
         return triggerItemSlot;
     }
 
-    public Location from() {
-        return from == null ? null : from.clone();
-    }
-
-    public Location to() {
-        return to == null ? null : to.clone();
-    }
-
     public long tick() {
         return tick;
-    }
-
-    public Entity resolveEntity(EntitySelector selector) {
-        return switch(selector) {
-            case PLAYER -> {
-                    yield player;
-                }
-            case SOURCE -> {
-                    yield source;
-                }
-            case TARGET -> {
-                    yield target;
-                }
-        };
     }
 
     public <T> Optional<T> extra(ContextKey<T> key) {
@@ -167,69 +150,55 @@ public final class TriggerData {
         return value == null ? Optional.empty() : Optional.of(key.type().cast(value));
     }
 
+    public Entity resolveEntity(EntitySelector selector) {
+        return switch (selector) {
+            case PLAYER -> player;
+            case SOURCE -> sourceEntity;
+            case TARGET -> targetEntity;
+        };
+    }
+
+    private static Location cloneLocation(Location location) {
+        return location == null ? null : location.clone();
+    }
+
     public static final class Builder {
 
         private final Player player;
-
-        private Entity source;
-
-        private Entity target;
-
-        private Location from;
-
-        private Location to;
-
-        private EquipmentSlot triggerItemSlot;
-
-        private long tick;
-
+        private Entity sourceEntity;
+        private Entity targetEntity;
         private Block block;
-
         private Location location;
-
+        private Location from;
+        private Location to;
         private Event event;
-
         private ItemStack triggerItem;
-
+        private EquipmentSlot triggerItemSlot;
+        private long tick;
         private List<ItemStack> outputItems = List.of();
         private List<BlockState> placedBlocks = List.of();
-
         private final Map<ContextKey<?>, Object> extras = new LinkedHashMap<>();
 
         private Builder(Player player) {
             this.player = Objects.requireNonNull(player, "player");
-            source = player;
+            sourceEntity = player;
         }
 
-        public Builder source(Entity value) {
-            source = value;
-            return this;
-        }
-
-        public Builder target(Entity value) {
-            target = value;
-            return this;
-        }
-
-        public Builder block(Block value) {
-            block = value;
-            return this;
-        }
-
-        public Builder location(Location value) {
-            location = value;
-            return this;
-        }
-
-        public Builder event(Event value) {
-            event = value;
-            return this;
-        }
-
-        public Builder triggerItem(ItemStack value, EquipmentSlot slot) {
-            triggerItem = value;
-            triggerItemSlot = slot;
-            return this;
+        private Builder(TriggerData data) {
+            player = data.player;
+            sourceEntity = data.sourceEntity;
+            targetEntity = data.targetEntity;
+            block = data.block;
+            location = data.location;
+            from = data.from;
+            to = data.to;
+            event = data.event;
+            triggerItem = data.triggerItem;
+            triggerItemSlot = data.triggerItemSlot;
+            tick = data.tick;
+            outputItems = data.outputItems;
+            placedBlocks = data.placedBlocks;
+            extras.putAll(data.extras);
         }
 
         public Builder outputItems(List<ItemStack> items) {
@@ -244,6 +213,37 @@ public final class TriggerData {
             return this;
         }
 
+        public Builder source(Entity entity) {
+            sourceEntity = entity;
+            return this;
+        }
+
+        public Builder target(Entity entity) {
+            targetEntity = entity;
+            return this;
+        }
+
+        public Builder block(Block value) {
+            block = value;
+            return this;
+        }
+
+        public Builder location(Location value) {
+            location = value;
+            return this;
+        }
+
+        public Builder movement(Location original, Location destination) {
+            from = original;
+            to = destination;
+            return this;
+        }
+
+        public Builder event(Event value) {
+            event = value;
+            return this;
+        }
+
         public Builder triggerItem() {
             EquipmentSlot slot = EquipmentSlot.HAND;
             ItemStack item = player.getInventory().getItemInMainHand();
@@ -255,9 +255,9 @@ public final class TriggerData {
             return triggerItem(item, slot);
         }
 
-        public Builder movement(Location original, Location destination) {
-            from = original;
-            to = destination;
+        public Builder triggerItem(ItemStack value, EquipmentSlot slot) {
+            triggerItem = value;
+            triggerItemSlot = slot;
             return this;
         }
 
@@ -267,8 +267,10 @@ public final class TriggerData {
         }
 
         public <T> Builder extra(ContextKey<T> key, T value) {
-            key.validate(value);
-            if (value != null) {
+            Objects.requireNonNull(key, "key").validate(value);
+            if (value == null) {
+                extras.remove(key);
+            } else {
                 extras.put(key, value);
             }
             return this;

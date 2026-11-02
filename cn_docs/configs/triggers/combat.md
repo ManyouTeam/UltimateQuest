@@ -21,14 +21,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`damage` |
-| 底层事件 | `EntityDamageByEntityEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 受伤/尝试攻击目标 |
 | LOCATION | 目标/实体位置 |
 | TRIGGER_ITEM / slot | 近战主手、三叉戟物品或跟踪发射武器/槽 |
-| 附加数据 | `original_damage`, `damage_cause` |
 
 ## `melee_attack`
 
@@ -37,14 +35,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`damage` |
-| 底层事件 | `EntityDamageByEntityEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 受伤/尝试攻击目标 |
 | LOCATION | 目标/实体位置 |
 | TRIGGER_ITEM / slot | 主手 / HAND |
-| 附加数据 | `original_damage`, `damage_cause` |
 
 ## `damage`
 
@@ -53,14 +49,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`damage` |
-| 底层事件 | `EntityDamageEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 已解析攻击者，环境伤害可未提供 |
 | `TARGET`：目标实体 | 任务玩家 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_damage`, `damage_cause`, `damage_by_entity`, `damage_by_block` |
 
 ## `damage_by_entity`
 
@@ -69,14 +63,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`damage` |
-| 底层事件 | `EntityDamageByEntityEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 已解析攻击者或直接伤害者 |
 | `TARGET`：目标实体 | 任务玩家 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_damage`, `damage_cause`, `damage_by_entity`, `damage_by_block` |
 
 ## `kill`
 
@@ -85,14 +77,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`items` |
-| 底层事件 | `EntityDeathEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 死亡实体 |
 | LOCATION | 目标/实体位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_experience` |
 
 ## `death`
 
@@ -101,14 +91,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EntityDeathEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 存在时的玩家击杀者 |
 | `TARGET`：目标实体 | 任务玩家 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_experience` |
 
 ## `regain`
 
@@ -117,14 +105,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`healing` |
-| 底层事件 | `EntityRegainHealthEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 未提供 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_amount` |
 
 ## `shield_block`
 
@@ -133,14 +119,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events`、`blocked_damage` |
-| 底层事件 | `EntityDamageByEntityEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 已解析攻击者或直接伤害者 |
 | `TARGET`：目标实体 | 任务玩家 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_damage`, `damage_cause`, `damage_by_entity` |
 
 ## `shield_disable`
 
@@ -149,7 +133,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `PlayerShieldDisableEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 事件伤害者 |
@@ -164,7 +147,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EntityAttemptSmashAttackEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
@@ -179,7 +161,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EntityKnockbackEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 事件提供的推挤实体，否则为玩家 |
@@ -194,14 +175,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EntityCombustEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 未提供 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_duration` |
 
 ## `creeper_explode`
 
@@ -210,15 +189,11 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `ExplosionPrimeEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 爆炸实体 |
 | `TARGET`：目标实体 | 任务玩家 |
 | LOCATION | 目标/实体位置 |
 | TRIGGER_ITEM / slot | 未提供 |
-| 附加数据 | `original_radius` |
-
-先确认当前平台支持该触发器，再用新任务测试。下表列出的附加数据供理解事件或开发扩展，不代表都有同名可用条件。
 
 [触发器概览](../triggers.md) · [事件条件](../conditions/README.md)

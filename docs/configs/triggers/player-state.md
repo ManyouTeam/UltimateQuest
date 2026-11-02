@@ -21,14 +21,12 @@ Counts changes in remaining air, not the number of air units changed.
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EntityAirChangeEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Absent |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_air`, `previous_air` |
 
 ## `food_level_change`
 
@@ -37,14 +35,12 @@ Counts food-level changes, which do not always represent eating. Prefer `consume
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `FoodLevelChangeEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Absent |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_food_level` |
 
 ## `exp_change`
 
@@ -53,14 +49,40 @@ Counts food-level changes, which do not always represent eating. Prefer `consume
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `experience` |
-| Event / payload | `PlayerExpChangeEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Absent |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_experience` |
+
+## `advancement_done`
+
+Adds one when a player completes a Minecraft advancement, rather than each individual criterion. Advancements completed before accepting the task are not counted retroactively. All events reported by the server count, including recipe unlocks and custom datapack advancements. Revoking and completing an advancement again counts again.
+
+| Available data | Value supplied by this event |
+| --- | --- |
+| Supported `count` | `events` |
+| Availability | Paper and Spigot |
+| PLAYER | Player completing the advancement |
+| SOURCE | Quest player |
+| TARGET | Absent |
+| LOCATION | Player location |
+| TRIGGER_ITEM / slot | Absent |
+
+Use the [`advancement` event condition](../conditions/extended.md#advancement) to directly match the advancement completed by this event. This example only counts `minecraft:story/mine_diamond`:
+
+```yaml
+source:
+  trigger: advancement_done
+  amount: 1
+  conditions:
+    advancement:
+      type: advancement
+      advancement: 'minecraft:story/mine_diamond'
+```
+
+Without conditions, all advancements count. Use an `advancements` list to match any of several IDs, or `not: true` to exclude the specified advancements.
 
 ## `potion_effect`
 
@@ -69,14 +91,12 @@ Counts potion-effect changes on the player. Duration comes from the changed effe
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EntityPotionEffectEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Quest player |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_duration` |
 
 ## `effect_tick`
 
@@ -85,7 +105,6 @@ Counts supported effect-tick events; effect details remain in the underlying eve
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EntityEffectTickEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -100,7 +119,6 @@ Counts supported effect-tick events; effect details remain in the underlying eve
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `exhaustion` |
-| Event / payload | `EntityExhaustionEvent` |
 | Availability | Optional class detection on any mode |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -115,15 +133,11 @@ Counts supported effect-tick events; effect details remain in the underlying eve
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `experience` |
-| Event / payload | `PlayerPickupExperienceEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Absent |
 | LOCATION | Experience-orb location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_experience` |
-
-Confirm platform support and test with a new task. Extra-data names in the tables describe event data or extension APIs; they do not imply matching condition types exist.
 
 [Trigger overview](../triggers.md) · [Event conditions](../conditions/README.md)

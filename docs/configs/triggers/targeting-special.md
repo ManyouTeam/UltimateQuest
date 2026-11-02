@@ -21,14 +21,12 @@ Counts an entity acquiring a player as its target and records that association. 
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EntityTargetEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Targeting entity |
 | TARGET | Quest player |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `target_reason`, `target_count` |
 
 ## `untag`
 
@@ -37,14 +35,12 @@ Counts a tracked entity dropping its previously associated player target. It dep
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EntityTargetEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Entity losing the tracked target |
 | TARGET | Quest player |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `target_reason` |
 
 ## `target_tick`
 
@@ -53,7 +49,6 @@ Scans for an entity within 32 blocks along the observed player’s view each tic
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `TriggerRuntime.PlayerTick` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -69,7 +64,6 @@ Counts the Enderman attack-player decision event. Requires the matching Paper ev
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EndermanAttackPlayerEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Enderman |
@@ -84,7 +78,6 @@ Counts non-aborted phantom pre-spawn events associated with a spawning player. A
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PhantomPreSpawnEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -100,14 +93,11 @@ Counts Warden anger changes targeting a player, adding event counts rather than 
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `WardenAngerChangeEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Warden |
 | LOCATION | Target/entity location |
 | TRIGGER_ITEM / slot | Absent |
-
-Confirm platform support and test with a new task. Extra-data names in the tables describe event data or extension APIs; they do not imply matching condition types exist.
 
 [Trigger overview](../triggers.md) · [Event conditions](../conditions/README.md)

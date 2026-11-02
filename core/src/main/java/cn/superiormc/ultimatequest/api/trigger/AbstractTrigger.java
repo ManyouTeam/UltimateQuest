@@ -1,8 +1,10 @@
 package cn.superiormc.ultimatequest.api.trigger;
 
 import cn.superiormc.ultimatequest.objects.triggers.TriggerRuntime;
+
 import java.util.Objects;
 import java.util.Set;
+
 import org.bukkit.NamespacedKey;
 
 public abstract class AbstractTrigger<E> {
@@ -34,9 +36,7 @@ public abstract class AbstractTrigger<E> {
         return configKey;
     }
 
-    /**
-     * The payload type accepted by this trigger, also for targeted dispatch.
-     */
+    /** The payload type accepted by this trigger, also for targeted dispatch. */
     public final Class<E> eventClass() {
         return eventClass;
     }

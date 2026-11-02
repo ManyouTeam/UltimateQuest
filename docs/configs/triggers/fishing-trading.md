@@ -21,14 +21,12 @@ The normal event route handles successful catches only. `events` adds one per su
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `items` |
-| Event / payload | `PlayerFishEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Caught entity, if any |
 | LOCATION | Fishing hook location |
 | TRIGGER_ITEM / slot | Fishing rod / resolved main or off hand |
-| Extra context | `original_experience` |
 
 ## `piglin_barter`
 
@@ -37,7 +35,6 @@ The normal event route handles successful catches only. `events` adds one per su
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `items` |
-| Event / payload | `PiglinBarterEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Bartering piglin |
@@ -52,7 +49,6 @@ The normal event route handles successful catches only. `events` adds one per su
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `items` |
-| Event / payload | `PlayerTradeEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -67,14 +63,11 @@ The normal event route handles successful catches only. `events` adds one per su
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `items` |
-| Event / payload | `PlayerPurchaseEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Merchant only when represented by an Entity |
 | LOCATION | Entity merchant location if available, otherwise player |
 | TRIGGER_ITEM / slot | Trade result / HAND |
-
-Confirm platform support and test with a new task. Extra-data names in the tables describe event data or extension APIs; they do not imply matching condition types exist.
 
 [Trigger overview](../triggers.md) · [Event conditions](../conditions/README.md)

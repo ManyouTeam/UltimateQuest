@@ -50,14 +50,14 @@ entity-health: 10
 
 ## `entity-tag`
 
-测试实体类型注册表标签，monster 为特殊 Monster 接口入口。
+按实体类型标签匹配一组生物。`monster` 表示怪物分类。
 
 ```yaml
 entity-tag:
 - minecraft:skeletons
 ```
 
-标签可用性取决于当前服务端注册表。
+请使用当前服务端支持的实体类型标签。
 
 ## `entity-pdc`
 
@@ -82,17 +82,17 @@ false 要求相反状态，不代表所有远程 AI 或法术。
 
 ## `monster`
 
-检查 Monster 接口。
+匹配服务端归类为怪物的生物。
 
 ```yaml
 monster: true
 ```
 
-false 反转接口测试。
+`false` 排除怪物。
 
 ## `animal`
 
-检查 Animals 接口。
+匹配服务端归类为动物的生物。
 
 ```yaml
 animal: true

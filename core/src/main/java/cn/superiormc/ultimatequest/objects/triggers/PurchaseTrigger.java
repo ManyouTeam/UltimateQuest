@@ -1,7 +1,9 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
-import java.util.List;
 import cn.superiormc.ultimatequest.api.trigger.TriggerData;
+
+import java.util.List;
+
 import io.papermc.paper.event.player.PlayerPurchaseEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EquipmentSlot;

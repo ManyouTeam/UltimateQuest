@@ -1,6 +1,6 @@
 # 🧩 PlaceholderAPI
 
-安装 PlaceholderAPI 后，可以在支持它的计分板、悬浮字等插件中显示任务和成长信息。UltimateQuest 启动时注册自己的持久扩展，不需要把菜单中的 `{name}` 直接搬到外部插件。
+安装 PlaceholderAPI 后，可以在支持它的计分板、悬浮字等插件中显示任务和成长信息。外部插件使用下表的 `%ultimatequest_...%` 占位符；菜单中的 `{name}` 等变量不能直接用于这些插件。
 
 ## 占位符使用示例
 

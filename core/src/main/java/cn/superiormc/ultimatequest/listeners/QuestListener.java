@@ -8,13 +8,17 @@ import cn.superiormc.ultimatequest.managers.QuestManager;
 import cn.superiormc.ultimatequest.managers.QuestScrollManager;
 import cn.superiormc.ultimatequest.managers.TriggerManager;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
+
 import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Piglin;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -39,37 +43,61 @@ public class QuestListener implements Listener, AutoCloseable {
     protected final TriggerManager triggerManager;
 
     public QuestListener(TriggerManager triggerManager) {
+        this(triggerManager, false);
+    }
+
+    protected QuestListener(TriggerManager triggerManager, boolean paper) {
         this.triggerManager = triggerManager;
-        for (Class<?> type : triggerManager.eventClasses()) {
-            if (Event.class.isAssignableFrom(type) && type.getName().startsWith("org.bukkit.")) {
-                registerEvent(type.asSubclass(Event.class));
+        registerTriggerEvents(paper);
+        if (!paper) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                triggerManager.runtime().startPlayerTicks(player);
             }
         }
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            triggerManager.runtime().startPlayerTicks(player);
+    }
+
+    protected void registerTriggerEvents(boolean paper) {
+        for (Class<?> type : triggerManager.eventClasses()) {
+            if (Event.class.isAssignableFrom(type) && paper != type.getName().startsWith("org.bukkit.")) {
+                registerEvent(type.asSubclass(Event.class));
+            }
         }
     }
 
     private <E extends Event> void registerEvent(Class<E> eventClass) {
-        Bukkit.getPluginManager().registerEvent(eventClass, this,
-                EventPriority.MONITOR, (listener, event) -> route(eventClass, event), UltimateQuest.instance, true);
+        Bukkit.getPluginManager().registerEvent(eventClass, this, eventPriority(eventClass),
+                (listener, event) -> route(eventClass, event), UltimateQuest.instance, ignoreCancelled(eventClass));
     }
 
-    @SuppressWarnings("deprecation")
     private <E extends Event> void route(Class<E> eventClass, Event event) {
-        if (!eventClass.isInstance(event)) {
-            return;
-        }
-        if (event instanceof PlayerFishEvent fishing && fishing.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
+        if (!eventClass.isInstance(event) || !accepted(eventClass, event)) {
             return;
         }
         triggerManager.dispatch(eventClass, eventClass.cast(event));
-        if (eventClass == EntityDamageByEntityEvent.class && event instanceof EntityDamageByEntityEvent damage && damage.getEntity() instanceof Player player && player.isBlocking() && damage.isApplicable(EntityDamageEvent.DamageModifier.BLOCKING) && damage.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) < 0.0D) {
-            triggerManager.dispatch("shield_block", damage);
+        if (eventClass == EntityDamageByEntityEvent.class && event instanceof EntityDamageByEntityEvent damage) {
+            onShieldBlock(damage);
         }
         if (event instanceof ProjectileHitEvent hit) {
             SchedulerUtil.runTaskLater(hit.getEntity(), () -> triggerManager.runtime().stopTrackingProjectile(hit.getEntity()), 1L);
         }
+    }
+
+    protected EventPriority eventPriority(Class<? extends Event> eventClass) {
+        return EventPriority.MONITOR;
+    }
+
+    protected boolean ignoreCancelled(Class<? extends Event> eventClass) {
+        return true;
+    }
+
+    protected boolean accepted(Class<? extends Event> eventClass, Event event) {
+        if (ignoreCancelled(eventClass) && event instanceof Cancellable cancellable && cancellable.isCancelled()) {
+            return false;
+        }
+        if (event instanceof PlayerFishEvent fishing && fishing.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
+            return false;
+        }
+        return true;
     }
 
     @EventHandler
@@ -129,12 +157,12 @@ public class QuestListener implements Listener, AutoCloseable {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onUnload(EntitiesUnloadEvent event) {
-        event.getEntities().forEach(entity -> {
+        for (Entity entity : event.getEntities()) {
             triggerManager.runtime().clearEntity(entity.getUniqueId());
             if (EventConditionsManager.eventConditions != null) {
                 EventConditionsManager.eventConditions.onEntityUnload(entity.getUniqueId());
             }
-        });
+        }
     }
 
     @EventHandler
@@ -150,5 +178,16 @@ public class QuestListener implements Listener, AutoCloseable {
     @Override
     public void close() {
         triggerManager.runtime().close();
+    }
+
+    @SuppressWarnings("deprecation")
+    private void onShieldBlock(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player player)
+                || !player.isBlocking()
+                || !event.isApplicable(EntityDamageEvent.DamageModifier.BLOCKING)
+                || event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) >= 0.0D) {
+            return;
+        }
+        triggerManager.dispatch("shield_block", event);
     }
 }

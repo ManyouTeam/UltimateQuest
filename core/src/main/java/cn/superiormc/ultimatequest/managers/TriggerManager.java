@@ -5,6 +5,7 @@ import cn.superiormc.ultimatequest.api.registry.KeyedRegistry;
 import cn.superiormc.ultimatequest.api.trigger.AbstractTrigger;
 import cn.superiormc.ultimatequest.api.trigger.TriggerData;
 import cn.superiormc.ultimatequest.objects.QuestContext;
+import cn.superiormc.ultimatequest.objects.triggers.AdvancementDoneTrigger;
 import cn.superiormc.ultimatequest.objects.triggers.AirChangeTrigger;
 import cn.superiormc.ultimatequest.objects.triggers.AttackTrigger;
 import cn.superiormc.ultimatequest.objects.triggers.BlockBreakTrigger;
@@ -50,22 +51,27 @@ import cn.superiormc.ultimatequest.objects.triggers.TriggerRuntime;
 import cn.superiormc.ultimatequest.objects.triggers.UntagTrigger;
 import cn.superiormc.ultimatequest.objects.triggers.VibrationReceiveTrigger;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
 public final class TriggerManager extends AbstractManager {
+
+    private static final String NAMESPACE = "ultimatequest";
 
     public static TriggerManager triggerManager;
 
@@ -81,69 +87,74 @@ public final class TriggerManager extends AbstractManager {
 
     public TriggerManager() {
         triggerManager = this;
-        register(new BlockBreakTrigger());
-        register(new KillTrigger());
-        register(new FishTrigger());
-        register(new ConsumeTrigger());
-        register(new BlockDamageTrigger());
+        registerBuiltIns();
+    }
+
+    private void registerBuiltIns() {
+        register(new TickTrigger());
+        register(new TargetTickTrigger());
         register(new AttackTrigger());
-        register(new MoveTrigger());
-        register(new ProjectileLaunchTrigger());
-        register(new PotionEffectTrigger());
-        register(new SwapHandTrigger());
-        register(new AirChangeTrigger());
-        register(new ToggleSneakTrigger());
-        register(new RiptideTrigger());
-        register(new InteractTrigger());
+        register(new MeleeAttackTrigger());
+        register(new DamageTrigger());
+        register(new DamageByEntityTrigger());
+        register(new KillTrigger());
+        register(new DeathTrigger());
         register(new ShootTrigger());
         register(new ShootBowTrigger());
-        register(new RespawnTrigger());
-        register(new ItemHeldTrigger());
-        register(new MeleeAttackTrigger());
-        register(new FoodLevelChangeTrigger());
-        register(new UntagTrigger());
-        register(new BlockDropItemTrigger());
-        register(new PiglinBarterTrigger());
-        register(new TickTrigger());
-        register(new SpawnTrigger());
-        register(new EnchantItemTrigger());
-        register(new ItemDamageTrigger());
-        register(new BlockPlaceTrigger());
-        register(new VibrationReceiveTrigger());
         register(new ProjectileHitTrigger());
-        register(new ShieldBlockTrigger());
+        register(new ProjectileLaunchTrigger());
         register(new ProjectileTickTrigger());
+        register(new PotionEffectTrigger());
         register(new CombustTrigger());
-        register(new CreeperExplodeTrigger());
-        register(new TargetTickTrigger());
-        register(new InputTrigger());
-        register(new DamageTrigger());
-        register(new ToggleFlightTrigger());
-        register(new ExpChangeTrigger());
-        register(new TargetTrigger());
-        register(new DamageByEntityTrigger());
-        register(new DeathTrigger());
         register(new RegainTrigger());
-        boolean paper = UltimateQuest.methodUtil != null && "paper".equals(UltimateQuest.methodUtil.methodID());
-        registerOptional("AttemptSmashAttackTrigger", paper);
-        registerOptional("ElytraBoostTrigger", paper);
-        registerOptional("PickupExperienceTrigger", paper);
-        registerOptional("TradeTrigger", paper);
-        registerOptional("BlockBreakProgressUpdateTrigger", paper);
-        registerOptional("EndermanAttackPlayerTrigger", paper);
-        registerOptional("NameEntityTrigger", paper);
-        registerOptional("PhantomPreSpawnTrigger", paper);
-        registerOptional("ShieldDisableTrigger", paper);
-        registerOptional("KnockbackTrigger", paper);
+        register(new TargetTrigger());
+        register(new UntagTrigger());
+        register(new CreeperExplodeTrigger());
+        register(new SpawnTrigger());
+        register(new RespawnTrigger());
+        register(new BlockBreakTrigger());
+        register(new BlockDamageTrigger());
+        register(new BlockDropItemTrigger());
+        register(new BlockPlaceTrigger());
+        register(new InteractTrigger());
+        register(new ConsumeTrigger());
+        register(new FishTrigger());
+        register(new ItemDamageTrigger());
+        register(new FoodLevelChangeTrigger());
+        register(new AirChangeTrigger());
+        register(new ExpChangeTrigger());
+        register(new ToggleFlightTrigger());
+        register(new ToggleSneakTrigger());
+        register(new SwapHandTrigger());
+        register(new RiptideTrigger());
+        register(new ItemHeldTrigger());
+        register(new EnchantItemTrigger());
+        register(new MoveTrigger());
+        register(new InputTrigger());
+        register(new ShieldBlockTrigger());
+        register(new PiglinBarterTrigger());
+        register(new VibrationReceiveTrigger());
+        register(new AdvancementDoneTrigger());
         registerOptional("ExhaustionTrigger", true);
+        boolean paper = UltimateQuest.methodUtil != null && "paper".equals(UltimateQuest.methodUtil.methodID());
+        registerOptional("LoadCrossbowTrigger", paper);
+        registerOptional("KnockbackTrigger", paper);
+        registerOptional("EffectTickTrigger", paper);
+        registerOptional("PhantomPreSpawnTrigger", paper);
+        registerOptional("EndermanAttackPlayerTrigger", paper);
         registerOptional("WardenAngerTrigger", paper);
         registerOptional("JumpTrigger", paper);
-        registerOptional("EffectTickTrigger", paper);
         registerOptional("ItemGroupCooldownTrigger", paper);
-        registerOptional("InsideBlockTrigger", paper);
+        registerOptional("ShieldDisableTrigger", paper);
         registerOptional("PurchaseTrigger", paper);
-        registerOptional("LoadCrossbowTrigger", paper);
+        registerOptional("TradeTrigger", paper);
+        registerOptional("InsideBlockTrigger", paper);
+        registerOptional("BlockBreakProgressUpdateTrigger", paper);
+        registerOptional("NameEntityTrigger", paper);
+        registerOptional("ElytraBoostTrigger", paper);
+        registerOptional("PickupExperienceTrigger", paper);
         registerOptional("LungeTrigger", paper);
+        registerOptional("AttemptSmashAttackTrigger", paper);
     }
 
     private void registerOptional(String name, boolean enabled) {
@@ -166,10 +177,17 @@ public final class TriggerManager extends AbstractManager {
     }
 
     public synchronized void register(AbstractTrigger<?> trigger) {
+        registerTrigger(trigger);
+    }
+
+    private void registerTrigger(AbstractTrigger<?> trigger) {
+        if (closed) {
+            throw new IllegalStateException("Trigger manager is closed");
+        }
         Set<? extends Class<?>> classes = Set.copyOf(trigger.getEventClasses());
         for (Class<?> eventClass : classes) {
             if (!trigger.eventClass().isAssignableFrom(eventClass)) {
-                throw new IllegalArgumentException("Invalid event subscription: " + eventClass.getName());
+                throw new IllegalArgumentException("Incompatible event subscription: " + eventClass.getName());
             }
         }
         triggers.register(trigger.key(), trigger);
@@ -179,8 +197,11 @@ public final class TriggerManager extends AbstractManager {
     }
 
     public synchronized Optional<AbstractTrigger<?>> get(String id) {
-        String normalized = id.contains(":") ? id : "ultimatequest:" + id;
-        return Optional.ofNullable(triggers.get(NamespacedKey.fromString(normalized)));
+        return get(key(id));
+    }
+
+    public synchronized Optional<AbstractTrigger<?>> get(NamespacedKey key) {
+        return Optional.ofNullable(triggers.get(key));
     }
 
     public synchronized Collection<AbstractTrigger<?>> values() {
@@ -204,16 +225,22 @@ public final class TriggerManager extends AbstractManager {
     }
 
     public void dispatch(String id, Object event) {
-        if (!closed) {
-            get(id).ifPresent(trigger -> trigger.dispatch(event, runtime));
+        dispatch(key(id), event);
+    }
+
+    public void dispatch(NamespacedKey key, Object event) {
+        if (closed) {
+            return;
         }
+        get(key).ifPresent(trigger -> trigger.dispatch(event, runtime));
     }
 
     public <E> void dispatch(Class<E> eventClass, E event) {
+        Objects.requireNonNull(eventClass, "eventClass");
+        eventClass.cast(Objects.requireNonNull(event, "event"));
         if (closed || (event instanceof Cancellable cancellable && cancellable.isCancelled())) {
             return;
         }
-        eventClass.cast(event);
         List<AbstractTrigger<?>> selected;
         synchronized (this) {
             selected = List.copyOf(eventTriggers.getOrDefault(eventClass, List.of()));
@@ -237,13 +264,27 @@ public final class TriggerManager extends AbstractManager {
         }
     }
 
-    @Override
-    public synchronized void onPluginDisable() {
+    public synchronized void close() {
         closed = true;
         runtime.close();
         subscribers.clear();
         eventTriggers.clear();
         triggers.clear();
         triggerManager = null;
+    }
+
+    @Override
+    public void onPluginDisable() {
+        close();
+    }
+
+    private static NamespacedKey key(String id) {
+        Objects.requireNonNull(id, "id");
+        String normalized = id.contains(":") ? id : NAMESPACE + ":" + id;
+        NamespacedKey key = NamespacedKey.fromString(normalized);
+        if (key == null) {
+            throw new IllegalArgumentException("Invalid trigger id: " + id);
+        }
+        return key;
     }
 }

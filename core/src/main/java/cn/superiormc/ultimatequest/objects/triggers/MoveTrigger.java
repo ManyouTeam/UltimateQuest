@@ -1,7 +1,9 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
 import cn.superiormc.ultimatequest.api.trigger.BuiltinContextKeys;
+
 import java.util.Objects;
+
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -16,10 +18,13 @@ public final class MoveTrigger extends EventTrigger<PlayerMoveEvent> {
     protected void handle(PlayerMoveEvent event, TriggerRuntime runtime) {
         Location from = event.getFrom();
         Location to = event.getTo();
-        if (to == null || (Objects.equals(from.getWorld(), to.getWorld()) && from.getX() == to.getX() && from.getY() == to.getY() && from.getZ() == to.getZ())) {
+        if (to == null || (Objects.equals(from.getWorld(), to.getWorld())
+                && from.getX() == to.getX() && from.getY() == to.getY() && from.getZ() == to.getZ())) {
             return;
         }
-        double distance = event instanceof PlayerTeleportEvent || !Objects.equals(from.getWorld(), to.getWorld()) ? 0D : from.distance(to);
-        runtime.fire(this, runtime.movement(event.getPlayer(), event, from, to).extra(BuiltinContextKeys.MOVEMENT_DISTANCE, distance));
+        double distance = event instanceof PlayerTeleportEvent || !Objects.equals(from.getWorld(), to.getWorld())
+                ? 0D : from.distance(to);
+        runtime.fire(this, runtime.movement(event.getPlayer(), event, from, to)
+                .extra(BuiltinContextKeys.MOVEMENT_DISTANCE, distance));
     }
 }

@@ -85,4 +85,4 @@ click-actions:
 | `cycle_scroll_group` | [cycle_scroll_group](navigation.md#cycle_scroll_group) |
 | `set_scroll_group` | [set_scroll_group](navigation.md#set_scroll_group) |
 
-声音和标题等不能直接写进任务 `rewards`。奖励允许的类型见[奖励配置](../rewards/README.md)。随机动作在运行时选择，随机奖励则按任务或阶段保存结果。
+声音和标题等不能直接写进任务 `rewards`。奖励允许的类型见[奖励配置](../rewards/README.md)。随机动作每次执行时重新抽取，随机奖励的结果则随任务或阶段保存。

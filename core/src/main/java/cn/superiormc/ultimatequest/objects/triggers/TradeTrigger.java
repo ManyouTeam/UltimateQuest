@@ -1,6 +1,7 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
 import java.util.List;
+
 import io.papermc.paper.event.player.PlayerTradeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
@@ -13,9 +14,9 @@ public final class TradeTrigger extends EventTrigger<PlayerTradeEvent> {
     @Override
     protected void handle(PlayerTradeEvent event, TriggerRuntime runtime) {
         runtime.fire(this, runtime.base(event.getPlayer(), event)
+                .outputItems(List.of(event.getTrade().getResult()))
                 .target(event.getMerchant())
                 .location(event.getMerchant().getLocation())
-                .outputItems(List.of(event.getTrade().getResult()))
                 .triggerItem(event.getTrade().getResult(), EquipmentSlot.HAND));
     }
 }

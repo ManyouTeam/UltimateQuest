@@ -21,7 +21,6 @@ This requires ten matching events. Some types fire frequently; combine the expla
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `distance` |
-| Event / payload | `PlayerMoveEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -61,7 +60,6 @@ Counts reported player input updates where the event is supported. Input changes
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerInputEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -76,7 +74,6 @@ Counts sneak-state toggles. Starting and stopping can both trigger; add a player
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerToggleSneakEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -91,7 +88,6 @@ Counts flight-state toggles. The event carries the enabled/disabled state; an oc
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerToggleFlightEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -106,7 +102,6 @@ Counts the player activating Riptide with an item; the context item is the item 
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerRiptideEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -121,7 +116,6 @@ Counts player jumps and retains the from/to locations. Requires the matching Pap
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerJumpEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -137,7 +131,6 @@ Counts player elytra boosts for flight-activity goals.
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerElytraBoostEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -152,14 +145,11 @@ Counts reported player lunges, retaining the active item when resolvable. Requir
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EntityLungeEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Absent |
 | LOCATION | Player location |
-| TRIGGER_ITEM / slot | Active item when available, otherwise implementation fallback |
-
-Confirm platform support and test with a new task. Extra-data names in the tables describe event data or extension APIs; they do not imply matching condition types exist.
+| TRIGGER_ITEM / slot | Active item, or the item held in the corresponding hand |
 
 [Trigger overview](../triggers.md) · [Event conditions](../conditions/README.md)

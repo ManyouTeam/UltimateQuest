@@ -50,7 +50,7 @@ source:
 
 使用普通的 `conditions.match_item`，将 `item` 设为 `COUNTED_ITEM`，逐项检查本次产出的物品堆，只累计通过条件的数量。`match` 仍使用 [MatchItemFormat](../shared-formats/match-item-format/README.md)。没有物品条件时会累计全部产物。`CONTEXT`、`TRIGGER_ITEM` 等选择器保持原意，例如方块掉落事件中的事件物品仍是工具。`COUNTED_ITEM` 只在 `count: items` 逐项检查条件期间存在；其他场景中不匹配。
 
-物品筛选统一放在 `conditions`，不再读取 `count-items`，也不为旧字段额外报错。UQ 的 `amount` 是完成目标所需的累计数量；ER 的 `count-every` 是可重复结算的批次大小，二者用途不同。
+物品筛选写在 `conditions` 中，完成目标所需的累计数量写在 `amount` 中。
 
 ## 小数进度与倍率
 
@@ -70,4 +70,4 @@ source:
 
 省略 `count` 时按事件次数累计。不支持的 `count` 会在加载时报告允许的值，修正配置后执行 `/uq reload`。
 
-存档保留原有整数进度字段，另外保存小数余量。现有 Java API 中返回 `long` 的进度接口继续返回整数部分；需要小数时使用 `QuestInstance.progressAmount` 或 `totalAmount`。无需手动修改余量字段。
+小数进度会自动保存，无需手动修改玩家数据。

@@ -85,4 +85,4 @@ Type names normalize case and hyphens; the documentation consistently uses lower
 | `cycle_scroll_group` | [cycle_scroll_group](navigation.md#cycle_scroll_group) |
 | `set_scroll_group` | [set_scroll_group](navigation.md#set_scroll_group) |
 
-Sounds and titles cannot be placed directly in task `rewards`; see [supported rewards](../rewards/README.md). Random actions select on execution, whereas random rewards save their outcomes with the task or unlocked stage.
+Sounds and titles cannot be placed directly in task `rewards`; see [supported rewards](../rewards/README.md). Random actions draw again on each execution. Random rewards keep the result saved with the task or unlocked stage.

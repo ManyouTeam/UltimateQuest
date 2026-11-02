@@ -25,7 +25,7 @@ This page describes `modify-enchants` in detail.
 
 ## `modify-enchants`
 
-Changes the current levels of normal item enchantments without rebuilding or serializing the item.
+Changes regular enchantment levels on the item.
 
 ### Additive shorthand
 

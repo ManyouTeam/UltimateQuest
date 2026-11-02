@@ -15,7 +15,7 @@ This page documents MatchItemFormat rules for provider IDs, material, tags, rari
 
 ## `items`
 
-Matches item IDs understood by registered item-provider hooks.
+Matches custom items using IDs supplied by their item plugin.
 
 ```yaml
 match:
@@ -54,7 +54,7 @@ match:
     - minecraft:axes
 ```
 
-Tags are preferable to long material lists because they follow the server registry and can include mod/plugin-defined tag content where supported.
+Tags select groups such as all swords or all pickaxes without listing every material.
 
 Common vanilla tag examples include:
 
@@ -117,7 +117,7 @@ match:
   has-name: false
 ```
 
-A translated vanilla item name is not necessarily a custom name. This rule checks item metadata/component state as implemented by the matcher.
+An item’s default display name does not count as a custom name. For example, an unrenamed diamond sword has no custom name.
 
 ## `contains-name`
 
@@ -130,7 +130,7 @@ match:
     - Legendary
 ```
 
-Entries normally use OR. Text comparison may pass through color/component normalization implemented by the shared matcher, but do not assume formatting codes are always stripped.
+A name containing any listed text matches. Prefer keywords without color codes.
 
 Name matching is less stable than provider IDs or persistent metadata because players and other plugins can rename items.
 
@@ -142,8 +142,6 @@ Requires or rejects lore.
 match:
   has-lore: true
 ```
-
-An empty lore component may behave differently from no lore depending on the server API and item serialization.
 
 ## `contains-lore`
 
@@ -201,7 +199,7 @@ match:
 
 ## Matching translated or component text
 
-Modern Minecraft stores names and lore as components. A plugin may use MiniMessage, legacy color codes, translation components, or raw JSON components. For dependable automation:
+Names and lore can change with renaming, language, and color formatting. Prefer matching in this order:
 
 1. prefer provider/item IDs;
 2. prefer material/tags;

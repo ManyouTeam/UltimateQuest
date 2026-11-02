@@ -1,7 +1,8 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
-import org.bukkit.event.block.BlockMultiPlaceEvent;
 import java.util.List;
+
+import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 public final class BlockPlaceTrigger extends EventTrigger<BlockPlaceEvent> {

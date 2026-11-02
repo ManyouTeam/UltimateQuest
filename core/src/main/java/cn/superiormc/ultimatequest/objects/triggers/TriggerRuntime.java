@@ -6,11 +6,13 @@ import cn.superiormc.ultimatequest.api.trigger.TriggerData;
 import cn.superiormc.ultimatequest.managers.CacheManager;
 import cn.superiormc.ultimatequest.managers.TriggerManager;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -55,7 +57,10 @@ public final class TriggerRuntime {
     }
 
     public TriggerData.Builder base(Player player, Event event) {
-        return TriggerData.builder(player).source(player).location(player.getLocation()).event(event);
+        return TriggerData.builder(player)
+                .source(player)
+                .location(player.getLocation())
+                .event(event);
     }
 
     public TriggerData.Builder movement(Player player, Event event, Location from, Location to) {
@@ -209,7 +214,7 @@ public final class TriggerRuntime {
         }
         stopTrackingProjectile(projectile);
         EquipmentSlot hand = slot == null ? EquipmentSlot.HAND : slot;
-        projectile.getPersistentDataContainer().set(FIRING_SLOT_KEY, PersistentDataType.STRING, hand.name());
+        writeFiringSlot(projectile, hand);
         ItemStack snapshot = item == null ? null : item.clone();
         UUID id = projectile.getUniqueId();
         UUID shooter = projectile.getShooter() instanceof Entity entity ? entity.getUniqueId() : player.getUniqueId();
@@ -258,7 +263,18 @@ public final class TriggerRuntime {
         return tracked;
     }
 
+    public static void writeFiringSlot(Projectile projectile, EquipmentSlot slot) {
+        if (projectile == null || slot == null) {
+            return;
+        }
+        projectile.getPersistentDataContainer().set(
+                FIRING_SLOT_KEY, PersistentDataType.STRING, slot.name());
+    }
+
     public static EquipmentSlot readFiringSlot(Projectile projectile) {
+        if (projectile == null) {
+            return null;
+        }
         String stored = projectile.getPersistentDataContainer().get(FIRING_SLOT_KEY, PersistentDataType.STRING);
         if (stored == null) {
             return null;
@@ -272,8 +288,12 @@ public final class TriggerRuntime {
 
     public EquipmentSlot findSlot(Player player, ItemStack item) {
         PlayerInventory inventory = player.getInventory();
-        for (EquipmentSlot slot : List.of(EquipmentSlot.HAND, EquipmentSlot.OFF_HAND,
-                EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)) {
+        for (EquipmentSlot slot : List.of(EquipmentSlot.HAND, EquipmentSlot.OFF_HAND, EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)) {
+            if (inventory.getItem(slot) == item) {
+                return slot;
+            }
+        }
+        for (EquipmentSlot slot : List.of(EquipmentSlot.HAND, EquipmentSlot.OFF_HAND, EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)) {
             if (item != null && item.equals(inventory.getItem(slot))) {
                 return slot;
             }

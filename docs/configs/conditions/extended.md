@@ -1,11 +1,36 @@
 # Additional event conditions
 
-These conditions use the same IDs and fields as the applicable ER conditions. Put them in an objective’s `source.conditions` or a reusable objective’s `conditions`. Common `not` and result-message fields still apply. UQ selectors are `PLAYER`, `SOURCE`, and `TARGET`; event values are read from the observed event rather than an ER modifier result. `skill_level`, `state_value`, and `attribute_value` depend on ER systems and are not registered in UQ.
+Put these conditions in an objective's `source.conditions` or an objective template's `conditions`. See [condition basics](README.md) for configuration paths, entity selectors, and common fields.
 
-Numeric conditions support `value`, `compare` (`>`, `>=`, `<`, `<=`, `=`, `!=` and their ER aliases), plus inclusive `min`/`max`. `value` defaults to the current quantity and `compare` defaults to `>=`. Missing event or entity data does not satisfy the condition before common inversion. The `damage_value` condition checks the event damage before armor; `count: damage` counts final damage.
+## Numeric comparisons
 
-Stateful conditions are scoped by their task configuration. Entity unload, player quit, reload, and disable clear their state; state is not persisted. First-attack checks are idempotent for the same event and reset when either entity unloads. `stationary` tracks an entity’s position per condition type. `perfect_guard` listens for shield raising. `in_rain`, saved spawn-reason fallback, and Paper event-only conditions require the corresponding server API; missing APIs produce a non-match. `headshot` uses the projectile from the damage or projectile-hit event; `fatal_damage` checks the damaged entity.
+Conditions marked as supporting numeric comparisons accept these fields:
 
+| Field | Default | Description |
+| --- | --- | --- |
+| `value` | current value | Number to compare against. |
+| `compare` | `>=` | Operator: `>`, `>=`, `<`, `<=`, `=`, or `!=`. |
+| `min` / `max` | unbounded | Inclusive range; can be combined with an operator comparison. |
+
+## `advancement`
+
+Matches the advancement ID completed by the current `advancement_done` event. It does not check previously completed advancements. Missing advancement data or an empty ID configuration produces a non-match before common `not` inversion.
+
+| Field | Default | Description |
+| --- | --- | --- |
+| `advancement` | unset | One full advancement ID, such as `minecraft:story/mine_diamond`. |
+| `advancements` | empty list | Match any listed full advancement ID; combined with `advancement` when both are supplied. |
+
+IDs are case-insensitive and surrounding configuration whitespace is ignored. Include the namespace; wildcards are not supported. Common `not`, `meet-message`, and `not-meet-message` fields apply.
+
+```yaml
+conditions:
+  advancement:
+    type: advancement
+    advancements:
+      - 'minecraft:story/mine_diamond'
+      - 'minecraft:story/enter_the_nether'
+```
 
 ## `item_damage`
 
@@ -318,7 +343,7 @@ Performs a fresh probability roll.
 
 ## `first_attack_from_monster`
 
-Matches the first tracked attack received from a specific monster for this condition path.
+Matches the first attack received from a specific monster. Rechecking the same attack preserves the result. Unloading either entity resets the record. Each condition keeps its own record.
 
 _No type-specific fields._
 
@@ -475,7 +500,7 @@ Supports the common numeric comparison fields described above.
 
 ## `damage_value`
 
-Checks raw damage from the current event, before armor and other final-damage modifiers.
+Checks raw damage from the current event, before armor and other final-damage modifiers. Use `count: damage` to accumulate actual damage dealt.
 
 Supports the common numeric comparison fields described above.
 
@@ -486,7 +511,7 @@ Supports the common numeric comparison fields described above.
 
 ## `first_attack_against_entity`
 
-Matches only the first qualifying source-player/target pair for this condition path.
+Matches the source player’s first attack against a particular target. Rechecking the same attack preserves the result. Unloading either entity resets the record. Each condition keeps its own record.
 
 _No type-specific fields._
 
@@ -608,7 +633,7 @@ Distinguishes an actual villager trade from another Paper purchase event.
 
 ## `cooldown`
 
-Acquires a condition-scoped runtime cooldown and matches only when it can be acquired.
+Passes on the first check after the cooldown expires, then starts the next cooldown. Checks fail during the cooldown. Each condition has its own timer, which resets on reload or restart.
 
 | Field | Default | Description |
 | --- | --- | --- |

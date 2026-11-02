@@ -4,6 +4,7 @@ import cn.superiormc.ultimatequest.api.registry.KeyedRegistry;
 import cn.superiormc.ultimatequest.objects.ObjectSingleCondition;
 import cn.superiormc.ultimatequest.objects.QuestContext;
 import cn.superiormc.ultimatequest.objects.eventconditions.AbstractEventCondition;
+import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionAdvancement;
 import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionAny;
 import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionBlockType;
 import cn.superiormc.ultimatequest.objects.eventconditions.EventConditionCatchMatchItem;
@@ -104,6 +105,7 @@ public final class EventConditionsManager extends AbstractManager {
     }
 
     private void registerBuiltIns() {
+        register(new EventConditionAdvancement());
         register(new EventConditionAny());
         register(new EventConditionBlockType());
         register(new EventConditionCatchMatchItem());

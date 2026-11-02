@@ -127,6 +127,6 @@ These commands require administrator access:
 
 Manual `start`, `schedule`, and `end` operations disable automatic rotation for that pass. Player, global, and permission boosts use the highest applicable multiplier; they do not multiply together. Configure permission boosts under `permission-boosters.<id>.permission` and `.multiplier`.
 
-Season commands save server-wide runtime state without changing task or battle pass configuration files. With external SQL disabled, this state is stored separately in `data/server/seasons.yml`; with SQL enabled, it is stored in `ultimatequest_server_data`. Player progress remains in the player data store.
+Season command settings survive restarts. These commands do not rewrite configuration files. See [storage and saves](storage.md) for backup guidance.
 
 Definition edits do not redraw already unlocked random level rewards. See [commands and permissions](../info/commands-permissions.md) for all management commands.

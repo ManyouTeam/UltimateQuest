@@ -1,6 +1,7 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
 import cn.superiormc.ultimatequest.api.trigger.BuiltinContextKeys;
+
 import io.papermc.paper.event.block.BlockBreakProgressUpdateEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;

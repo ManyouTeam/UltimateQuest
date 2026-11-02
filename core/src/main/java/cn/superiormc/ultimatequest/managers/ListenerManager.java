@@ -4,9 +4,9 @@ import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.listeners.AntiAbuseListener;
 import cn.superiormc.ultimatequest.listeners.GUIListener;
 import cn.superiormc.ultimatequest.listeners.QuestListener;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 
 public final class ListenerManager extends AbstractManager {
 
@@ -20,9 +20,9 @@ public final class ListenerManager extends AbstractManager {
         if (UltimateQuest.methodUtil.methodID().equals("paper")) {
             try {
                 Class<?> type = Class.forName("cn.superiormc.ultimatequest.paper.PaperQuestListener");
-                Listener listener = (Listener) type.getDeclaredConstructor(TriggerManager.class)
+                type.getDeclaredConstructor(TriggerManager.class)
                         .newInstance(TriggerManager.triggerManager);
-                Bukkit.getPluginManager().registerEvents(listener, UltimateQuest.instance);
+
             } catch (ReflectiveOperationException | LinkageError exception) {
                 ErrorManager.errorManager.sendErrorMessage("§cError: Could not register Paper quest events: " + exception.getMessage());
                 throw new IllegalStateException("Could not register Paper quest events", exception);

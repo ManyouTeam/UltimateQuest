@@ -1,6 +1,7 @@
 package cn.superiormc.ultimatequest.objects.triggers;
 
 import cn.superiormc.ultimatequest.api.trigger.BuiltinContextKeys;
+
 import org.bukkit.event.player.PlayerExpChangeEvent;
 
 public final class ExpChangeTrigger extends EventTrigger<PlayerExpChangeEvent> {

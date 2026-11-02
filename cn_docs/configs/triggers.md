@@ -40,7 +40,7 @@ source:
 * [方块与交互](triggers/blocks-interactions.md)：`block_break`、`block_damage`、`block_drop_item`、`block_place`、`block_break_progress_update`、`interact`、`inside_block`、`vibration_receive`。
 * [物品与装备](triggers/items-equipment.md)：`consume`、`enchant_item`、`item_damage`、`item_held`、`swap_hand`、`item_group_cooldown`、`name_entity`。
 * [移动与输入](triggers/movement-input.md)：`move`、`input`、`toggle_sneak`、`toggle_flight`、`riptide`、`jump`、`elytra_boost`、`lunge`。
-* [玩家状态](triggers/player-state.md)：`air_change`、`food_level_change`、`exp_change`、`potion_effect`、`effect_tick`、`exhaustion`、`pickup_experience`。
+* [玩家状态](triggers/player-state.md)：`air_change`、`food_level_change`、`exp_change`、`advancement_done`、`potion_effect`、`effect_tick`、`exhaustion`、`pickup_experience`。
 * [钓鱼与交易](triggers/fishing-trading.md)：`fish`、`piglin_barter`、`trade`、`purchase`。
 * [目标与特殊实体](triggers/targeting-special.md)：`target`、`untag`、`target_tick`、`enderman_attack_player`、`phantom_pre_spawn`、`warden_anger_change`。
 

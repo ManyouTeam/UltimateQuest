@@ -21,7 +21,6 @@ Counts item consumption such as eating or drinking. The context item is the cons
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerItemConsumeEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -31,19 +30,17 @@ Counts item consumption such as eating or drinking. The context item is the cons
 
 ## `enchant_item`
 
-Counts enchanting-table enchants, not anvil combinations. Extra `original_experience` is the displayed level cost; `enchantment_level_cost` and `original_lapis` are the selected button index plus one, usually 1–3. These do not become progress increments.
+Counts enchanting-table enchants, excluding anvil combinations. Experience and lapis costs do not change the amount counted.
 
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EnchantItemEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Absent |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Enchanted stack / HAND |
-| Extra context | `original_experience`, `enchantment_level_cost`, `original_lapis` |
 
 ## `item_damage`
 
@@ -52,14 +49,12 @@ Counts enchanting-table enchants, not anvil combinations. Extra `original_experi
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `durability` |
-| Event / payload | `PlayerItemDamageEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Absent |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Damaged item / resolved slot |
-| Extra context | `original_item_damage` |
 
 ## `item_held`
 
@@ -68,7 +63,6 @@ Counts changes to the selected hotbar slot; actually using the item is not requi
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerItemHeldEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -83,7 +77,6 @@ Counts main/offhand swaps. The context item is the new main-hand item, so match 
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerSwapHandItemsEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -98,7 +91,6 @@ Counts item or item-group cooldown changes. A concrete context item is supplied 
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerItemGroupCooldownEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -113,14 +105,11 @@ Counts players naming entities. TARGET conditions can filter the named entity.
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerNameEntityEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Named entity |
 | LOCATION | Target/entity location |
 | TRIGGER_ITEM / slot | Held NAME_TAG if found |
-
-Confirm platform support and test with a new task. Extra-data names in the tables describe event data or extension APIs; they do not imply matching condition types exist.
 
 [Trigger overview](../triggers.md) · [Event conditions](../conditions/README.md)

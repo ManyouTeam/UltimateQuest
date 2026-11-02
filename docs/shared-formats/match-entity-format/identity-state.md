@@ -50,14 +50,14 @@ Health points are not percentages. Combine with entity-types to narrow the targe
 
 ## `entity-tag`
 
-Tests entity-type registry tags; monster is a special Monster-interface entry.
+Matches groups of mobs by entity-type tag. `monster` selects the monster category.
 
 ```yaml
 entity-tag:
 - minecraft:skeletons
 ```
 
-Tag availability depends on the current server registry.
+Use entity-type tags supported by your server.
 
 ## `entity-pdc`
 
@@ -82,17 +82,17 @@ False requests the opposite. This is not a classification of all ranged AI or sp
 
 ## `monster`
 
-Checks the Monster interface.
+Matches mobs classified as monsters by the server.
 
 ```yaml
 monster: true
 ```
 
-False inverts this interface test.
+`false` excludes monsters.
 
 ## `animal`
 
-Checks the Animals interface.
+Matches mobs classified as animals by the server.
 
 ```yaml
 animal: true

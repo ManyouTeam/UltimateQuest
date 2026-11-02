@@ -23,6 +23,8 @@ public final class BuiltinContextKeys {
 
     public static final ContextKey<Integer> ORIGINAL_EXPERIENCE = key("original_experience", Integer.class);
 
+    public static final ContextKey<String> ADVANCEMENT_KEY = key("advancement_key", String.class);
+
     public static final ContextKey<Boolean> INTERNAL_BLOCK_BREAK = key("internal_block_break", Boolean.class);
 
     public static final ContextKey<ItemStack> COUNTED_ITEM = key("counted_item", ItemStack.class);

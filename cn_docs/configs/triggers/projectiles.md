@@ -21,14 +21,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `ProjectileLaunchEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 弹射物 |
 | LOCATION | 弹射物位置 |
 | TRIGGER_ITEM / slot | 已解析发射/手持物品和槽 |
-| 附加数据 | `projectile` |
 
 ## `projectile_hit`
 
@@ -37,7 +35,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `ProjectileHitEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 已解析射手 |
@@ -45,7 +42,6 @@ source:
 | LOCATION | 弹射物位置 |
 | TRIGGER_ITEM / slot | 已知时的跟踪发射物品/槽 |
 | BLOCK | 被命中的方块；仅命中实体时可不提供 |
-| 附加数据 | `projectile` |
 
 ## `projectile_tick`
 
@@ -54,7 +50,6 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `TriggerRuntime.ProjectileTick` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 跟踪射手 |
@@ -62,7 +57,6 @@ source:
 | LOCATION | 弹射物位置 |
 | TRIGGER_ITEM / slot | 跟踪发射物品/槽 |
 | BLOCK | 弹射物当前位置所在方块 |
-| 附加数据 | `projectile` |
 
 ## `shoot`
 
@@ -71,14 +65,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EntityShootBowEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 弹射物 |
 | LOCATION | 弹射物位置 |
 | TRIGGER_ITEM / slot | 弓/弩 / 事件手 |
-| 附加数据 | `bow_force`, `bow`, `consumable`, `hand`, `projectile` |
 
 ## `shoot_bow`
 
@@ -87,14 +79,12 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EntityShootBowEvent` |
 | 平台要求 | Paper 和 Spigot |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 弹射物 |
 | LOCATION | 弹射物位置 |
 | TRIGGER_ITEM / slot | 弓/弩 / 事件手 |
-| 附加数据 | `bow_force`, `bow`, `consumable`, `hand`, `projectile` |
 
 ## `load_crossbow`
 
@@ -103,14 +93,11 @@ source:
 | 可检查的数据 | 此事件提供的内容 |
 | --- | --- |
 | 支持的 `count` | `events` |
-| 底层事件 | `EntityLoadCrossbowEvent` |
 | 平台要求 | 需 Paper 模式及对应事件类 |
 | `PLAYER`：任务玩家 | 此事件关联的玩家 |
 | `SOURCE`：来源实体 | 任务玩家 |
 | `TARGET`：目标实体 | 未提供 |
 | LOCATION | 玩家位置 |
 | TRIGGER_ITEM / slot | 弩 / 事件手 |
-
-先确认当前平台支持该触发器，再用新任务测试。下表列出的附加数据供理解事件或开发扩展，不代表都有同名可用条件。
 
 [触发器概览](../triggers.md) · [事件条件](../conditions/README.md)

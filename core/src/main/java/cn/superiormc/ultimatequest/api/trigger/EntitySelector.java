@@ -3,7 +3,6 @@ package cn.superiormc.ultimatequest.api.trigger;
 import java.util.Locale;
 
 public enum EntitySelector {
-
     PLAYER,
     SOURCE,
     TARGET;

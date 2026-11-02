@@ -66,6 +66,10 @@ Registration adds a trigger to the manager but does not install a new Bukkit eve
 
 Trigger `subscribe` currently has no unsubscribe handle, unlike progression subscriptions. Avoid repeated long-lived registrations or retaining disabled-plugin state.
 
+## Fractional progress
+
+Java progress methods returning `long` expose the integer part. Use `QuestInstance.progressAmount` or `totalAmount` to read fractional progress.
+
 ## Event data
 
 `QuestContext` exposes trigger, triggerData, player, and source(), target(), block(), brokenBlockState(), triggerItem(), location(), and event(). Availability depends on the trigger; check null or Optional before use.

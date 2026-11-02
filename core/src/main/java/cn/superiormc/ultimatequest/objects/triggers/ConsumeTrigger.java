@@ -10,6 +10,7 @@ public final class ConsumeTrigger extends EventTrigger<PlayerItemConsumeEvent> {
 
     @Override
     protected void handle(PlayerItemConsumeEvent event, TriggerRuntime runtime) {
-        runtime.fire(this, runtime.base(event.getPlayer(), event).triggerItem(event.getItem(), event.getHand()));
+        runtime.fire(this, runtime.base(event.getPlayer(), event)
+                .triggerItem(event.getItem(), event.getHand()));
     }
 }

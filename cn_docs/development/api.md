@@ -66,6 +66,10 @@ AutoCloseable subscription = service.subscribe(event -> {
 
 触发器 `subscribe` 当前不返回退订句柄，与成长事件订阅不同。避免反复注册长期监听器或保留已停用插件的数据。
 
+## 小数进度
+
+现有 Java API 中返回 `long` 的进度接口返回整数部分；读取小数进度时使用 `QuestInstance.progressAmount` 或 `totalAmount`。
+
 ## 事件数据
 
 `QuestContext` 提供 trigger、triggerData、player，以及 source()、target()、block()、brokenBlockState()、triggerItem()、location()、event()。具体字段是否存在取决于触发器，读取前检查 null 或 Optional。

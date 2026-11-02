@@ -24,7 +24,7 @@ The plugin also recognizes paired gradient endpoints:
 name: '&<#60A5FA>Stone mining&<#22D3EE>'
 ```
 
-Full gradient rendering depends on the parsing path and receiving component. A result in one interface does not guarantee identical rendering elsewhere.
+Check gradients separately in chat, item lore, and menu titles, since supported formatting may differ.
 
 ## MiniMessage
 

@@ -21,14 +21,12 @@ This requires ten matching events. Some types fire frequently; combine the expla
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `damage` |
-| Event / payload | `EntityDamageByEntityEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Damaged/attempted target |
 | LOCATION | Target/entity location |
 | TRIGGER_ITEM / slot | Melee main hand, trident item, or tracked firing weapon/slot |
-| Extra context | `original_damage`, `damage_cause` |
 
 ## `melee_attack`
 
@@ -37,14 +35,12 @@ This requires ten matching events. Some types fire frequently; combine the expla
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `damage` |
-| Event / payload | `EntityDamageByEntityEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Damaged/attempted target |
 | LOCATION | Target/entity location |
 | TRIGGER_ITEM / slot | Main hand / HAND |
-| Extra context | `original_damage`, `damage_cause` |
 
 ## `damage`
 
@@ -53,14 +49,12 @@ This requires ten matching events. Some types fire frequently; combine the expla
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `damage` |
-| Event / payload | `EntityDamageEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Resolved attacker; may be absent for environmental damage |
 | TARGET | Quest player |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_damage`, `damage_cause`, `damage_by_entity`, `damage_by_block` |
 
 ## `damage_by_entity`
 
@@ -69,14 +63,12 @@ This requires ten matching events. Some types fire frequently; combine the expla
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `damage` |
-| Event / payload | `EntityDamageByEntityEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Resolved attacker or direct damager |
 | TARGET | Quest player |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_damage`, `damage_cause`, `damage_by_entity`, `damage_by_block` |
 
 ## `kill`
 
@@ -85,14 +77,12 @@ This requires ten matching events. Some types fire frequently; combine the expla
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `items` |
-| Event / payload | `EntityDeathEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Dead entity |
 | LOCATION | Target/entity location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_experience` |
 
 ## `death`
 
@@ -101,14 +91,12 @@ Counts the task player’s own death. Unlike `kill`, TARGET is the dead player a
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EntityDeathEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Player killer if available |
 | TARGET | Quest player |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_experience` |
 
 ## `regain`
 
@@ -117,14 +105,12 @@ Counts the task player’s own death. Unlike `kill`, TARGET is the dead player a
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `healing` |
-| Event / payload | `EntityRegainHealthEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Absent |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_amount` |
 
 ## `shield_block`
 
@@ -133,14 +119,12 @@ Counts the task player’s own death. Unlike `kill`, TARGET is the dead player a
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events`, `blocked_damage` |
-| Event / payload | `EntityDamageByEntityEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Resolved attacker or direct damager |
 | TARGET | Quest player |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_damage`, `damage_cause`, `damage_by_entity` |
 
 ## `shield_disable`
 
@@ -149,7 +133,6 @@ Counts the player’s shield being disabled and requires the matching Paper even
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `PlayerShieldDisableEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Event damager |
@@ -164,7 +147,6 @@ Counts player smash-attack attempts when the event result is not DENY. Requires 
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EntityAttemptSmashAttackEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
@@ -179,7 +161,6 @@ Counts knockback affecting the player. SOURCE is the pushing entity when supplie
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EntityKnockbackEvent` |
 | Availability | Paper mode and event class required |
 | PLAYER | Player associated with this event |
 | SOURCE | Pushing entity if exposed, otherwise the player |
@@ -194,14 +175,12 @@ Counts the player starting to burn, rather than the number of seconds spent burn
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `EntityCombustEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Quest player |
 | TARGET | Absent |
 | LOCATION | Player location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_duration` |
 
 ## `creeper_explode`
 
@@ -210,15 +189,11 @@ Counts explosion preparation when a player can be associated, typically the cree
 | Available data | Value supplied by this event |
 | --- | --- |
 | Supported `count` | `events` |
-| Event / payload | `ExplosionPrimeEvent` |
 | Availability | Paper and Spigot |
 | PLAYER | Player associated with this event |
 | SOURCE | Exploding entity |
 | TARGET | Quest player |
 | LOCATION | Target/entity location |
 | TRIGGER_ITEM / slot | Absent |
-| Extra context | `original_radius` |
-
-Confirm platform support and test with a new task. Extra-data names in the tables describe event data or extension APIs; they do not imply matching condition types exist.
 
 [Trigger overview](../triggers.md) · [Event conditions](../conditions/README.md)
