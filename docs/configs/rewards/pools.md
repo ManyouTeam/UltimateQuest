@@ -7,7 +7,7 @@ Use a reward pool when several tasks share random candidates. Use the reward lib
 Create this file under `plugins/UltimateQuest/`:
 
 ```yaml
-# reward-pools/tutorial_supplies.yml
+# reward_pools/tutorial_supplies.yml
 enabled: true
 rewards:
   food:
@@ -37,7 +37,7 @@ rewards:
 
 Save both files and run `/uq reload`. Newly accepted tasks draw one reward group from the pool. Keep `count` and `repeat` at the reference so different tasks can use different draw settings with the same pool.
 
-The pool ID is its filename and accepts lowercase letters, digits, underscores, and hyphens. Only direct-child `.yml` files in `reward-pools/` are scanned. Referenced pools must exist and be enabled.
+The pool ID is its filename and accepts lowercase letters, digits, underscores, and hyphens. Only direct-child `.yml` files in `reward_pools/` are scanned. Referenced pools must exist and be enabled.
 
 ## Reward library references
 
@@ -66,4 +66,6 @@ rewards:
 - Pool candidates need `rate` and nested `rewards`. The objective-weight mapping from `pools/` is a different format.
 - Missing, cyclic, or excessively deep references reject loading. Reloading validates enabled pools and their consumers.
 
-Edit the pool in `reward-pools/*.yml`, then apply changes with `/uq reload`. Edits do not redraw existing task rewards or unlocked stage rewards; see [random rewards](random.md).
+Edit the pool in `reward_pools/*.yml`, then apply changes with `/uq reload`. Edits do not redraw existing task rewards or unlocked stage rewards; see [random rewards](random.md).
+
+The legacy `reward-pools/` directory is renamed automatically when `reward_pools/` does not yet exist. If both directories exist, the plugin uses `reward_pools/`; merge custom legacy configurations manually.

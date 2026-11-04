@@ -52,6 +52,7 @@ progression:
     healing: 'health point restored'
     durability: 'durability point'
     experience: 'experience point'
+    levels: 'level gained'
     distance: 'block travelled'
     exhaustion: 'exhaustion unit'
   unit:
@@ -80,6 +81,14 @@ progression:
     PREMIUM_REQUIRED: '&6Premium access required'
     INACTIVE: '&cOutside the active period'
 period:
+  reset-usage: '&#98FB98[UltimateQuest] &e/uq period reset <player> <period-id|all>'
+  not-found: '&#98FB98[UltimateQuest] &cPeriodic quest group {period} does not exist.'
+  reset-busy: '&#98FB98[UltimateQuest] &cQuest data for {player} is not ready or is being saved. Try again shortly.'
+  reset-inactive: '&#98FB98[UltimateQuest] &cNo selected periodic quest group is currently active.'
+  reset-blocked: '&#98FB98[UltimateQuest] &cA current-cycle quest is claiming rewards or requires review. Reset was cancelled.'
+  reset-limit: '&#98FB98[UltimateQuest] &cThe redraw exceeds task limits or contains no tasks. Existing records were preserved.'
+  reset-saved: '&#98FB98[UltimateQuest] &aReset and redrew current-cycle quests in {period} for {player}. Changes have been saved.'
+  reset-failed: '&#98FB98[UltimateQuest] &cPeriodic quest reset failed. Existing records were preserved.'
   ready: '&#98FB98[UltimateQuest] &aYour periodic quests are ready. Open /uq period to view them.'
 scroll:
   given: '&#98FB98[UltimateQuest] &aQuest scroll issued. Keep it in your inventory to make progress.'
@@ -389,6 +398,32 @@ override-lang:
       place_spruce_planks: '&fBuild with spruce planks'
       place_stone_bricks: '&fBuild with stone bricks'
     objectives:
+      honey_collector: '&fCollect 4 honey bottles from full beehives.'
+      honeycomb_collector: '&fCollect 12 honeycombs with shears (Paper).'
+      anvil_restorer: '&fRepair an iron pickaxe at an anvil and take the result.'
+      anvil_enchanter: '&fAdd or upgrade an enchantment on an iron sword at an anvil.'
+      anvil_namer: '&fRename an iron sword at an anvil and take the result.'
+      placeholder_level_check: '&fReach level 10; requires PlaceholderAPI and the Player expansion.'
+      bread_crafter: '&fCraft 16 bread; shift crafting counts each item.'
+      crop_fertilizer: '&fSuccessfully fertilize wheat with bone meal 8 times.'
+      netherite_smith: '&fTake a netherite pickaxe forged at a smithing table.'
+      sword_grinder: '&fProcess and take an iron sword from a grindstone.'
+      dairy_farmer: '&fSuccessfully milk cows 8 times.'
+      wool_collector: '&fShear 8 sheep. Cutting leashes does not count.'
+      mushroom_shearer: '&fShear a mooshroom once.'
+      leash_cutter: '&fCut the leashes of 4 entities with shears.'
+      cattle_breeder: '&fBreed 4 calves.'
+      sheep_breeder: '&fBreed 4 lambs.'
+      wolf_companion: '&fSuccessfully tame a wolf.'
+      cat_companion: '&fSuccessfully tame a cat.'
+      swiftness_brewer: '&fBrew 3 regular swiftness potions; add the brewing inputs yourself.'
+      healing_brewer: '&fBrew 3 regular healing potions; add the brewing inputs yourself.'
+      chicken_cook: '&fCook 16 chicken in a furnace or smoker; add the raw chicken yourself.'
+      steak_cook: '&fCook 16 beef in a furnace or smoker; add the raw beef yourself.'
+      level_training: '&fGain a total of 5 Minecraft experience levels after accepting.'
+      level_mastery: '&fGain a total of 15 Minecraft experience levels after accepting.'
+      worn_pickaxe: '&fUse up a wooden pickaxe until it breaks.'
+      worn_shears: '&fUse up a pair of shears until it breaks.'
       miner: '&fMine natural stone'
       hunter: '&fDefeat zombies'
       veteran: '&fChop natural logs'
@@ -413,6 +448,84 @@ override-lang:
       enderman: '&fDefeat endermen'
       barter: '&fBarter with piglins'
     tasks:
+      honey_collector:
+        name: '&eSweet Harvest'
+        description: '&7Collect 4 honey bottles from full beehives.'
+      honeycomb_collector:
+        name: '&eWax for the Workshop'
+        description: '&7Collect 12 honeycombs with shears (Paper).'
+      anvil_restorer:
+        name: '&eReady for Another Expedition'
+        description: '&7Repair an iron pickaxe at an anvil and take the result.'
+      anvil_enchanter:
+        name: '&eForged with Magic'
+        description: '&7Add or upgrade an enchantment on an iron sword at an anvil.'
+      anvil_namer:
+        name: '&eA Blade with a Name'
+        description: '&7Rename an iron sword at an anvil and take the result.'
+      placeholder_level_check:
+        name: '&eCheck Your Experience'
+        description: '&7Reach level 10; requires PlaceholderAPI and the Player expansion.'
+      bread_crafter:
+        name: '&eBake It Yourself'
+        description: '&7Craft 16 bread; shift crafting counts each item.'
+      crop_fertilizer:
+        name: '&eA Helping Hand for Wheat'
+        description: '&7Successfully fertilize wheat with bone meal 8 times.'
+      netherite_smith:
+        name: '&eA Stronger Pickaxe'
+        description: '&7Take a netherite pickaxe forged at a smithing table.'
+      sword_grinder:
+        name: '&eBack to Basics'
+        description: '&7Process and take an iron sword from a grindstone.'
+      dairy_farmer:
+        name: '&eFresh from the Herd'
+        description: '&7Successfully milk cows 8 times.'
+      wool_collector:
+        name: '&eWool for Winter'
+        description: '&7Shear 8 sheep. Cutting leashes does not count.'
+      mushroom_shearer:
+        name: '&eA Mushroom Makeover'
+        description: '&7Shear a mooshroom once.'
+      leash_cutter:
+        name: '&eSnip the Leads'
+        description: '&7Cut the leashes of 4 entities with shears.'
+      cattle_breeder:
+        name: '&eGrowing the Herd'
+        description: '&7Breed 4 calves.'
+      sheep_breeder:
+        name: '&eNew Lambs'
+        description: '&7Breed 4 lambs.'
+      wolf_companion:
+        name: '&eA Loyal Companion'
+        description: '&7Successfully tame a wolf.'
+      cat_companion:
+        name: '&eA Feline Friend'
+        description: '&7Successfully tame a cat.'
+      swiftness_brewer:
+        name: '&eFleet of Foot'
+        description: '&7Brew 3 regular swiftness potions; add the brewing inputs yourself.'
+      healing_brewer:
+        name: '&eHealing Hands'
+        description: '&7Brew 3 regular healing potions; add the brewing inputs yourself.'
+      chicken_cook:
+        name: '&eChicken Supper'
+        description: '&7Cook 16 chicken in a furnace or smoker; add the raw chicken yourself.'
+      steak_cook:
+        name: '&eSteak for the Settlement'
+        description: '&7Cook 16 beef in a furnace or smoker; add the raw beef yourself.'
+      level_training:
+        name: '&eFive Levels Stronger'
+        description: '&7Gain a total of 5 Minecraft experience levels after accepting.'
+      level_mastery:
+        name: '&eExperience Pays Off'
+        description: '&7Gain a total of 15 Minecraft experience levels after accepting.'
+      worn_pickaxe:
+        name: '&eA Pickaxe Well Used'
+        description: '&7Use up a wooden pickaxe until it breaks.'
+      worn_shears:
+        name: '&eThe Last Snip'
+        description: '&7Use up a pair of shears until it breaks.'
       miner:
         name: '&eFirst Stone'
         description: '&7Mine 16 natural stone blocks; claim to receive your first scroll.'

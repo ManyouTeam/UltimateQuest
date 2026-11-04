@@ -30,7 +30,7 @@
                     <include>battlepasses/**</include>
                     <include>milestones/**</include>
                     <include>pools/**</include>
-                    <include>reward-pools/**</include>
+                    <include>reward_pools/**</include>
                     <include>periods/**</include>
                     <include>scrolls/**</include>
                     <include>items/**</include>

@@ -9,6 +9,8 @@ import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.TriggerManager;
 import cn.superiormc.ultimatequest.objects.AbstractConfiguredSection;
 import cn.superiormc.ultimatequest.objects.QuestContext;
+import cn.superiormc.ultimatequest.objects.triggers.PlaceholderTrigger;
+import org.bukkit.event.Cancellable;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 import java.util.ArrayList;
 import java.util.Map;
@@ -40,10 +42,16 @@ public final class QuestObjective extends AbstractConfiguredSection<QuestContext
         super(id, section);
         String value = section.getString("trigger", "").toLowerCase(Locale.ROOT).replace('-', '_');
         trigger = value.contains(":") ? value : "ultimatequest:" + value;
-        required = source ? 1L : QuestDefinition.positiveLong(section, "amount", 0L);
+        required = source ? 1L : QuestDefinition.positiveLong(section, "amount", trigger.equals("ultimatequest:placeholder") ? 1L : 0L);
         this.value = source ? QuestDefinition.positiveLong(section, "value", 1L) : 1L;
         if (required <= 0L || TriggerManager.triggerManager.get(trigger).isEmpty()) {
             throw new IllegalArgumentException("Invalid amount or trigger for objective " + id);
+        }
+        if (trigger.equals("ultimatequest:placeholder")) {
+            PlaceholderTrigger.validate(section);
+            if (source) {
+                throw new IllegalArgumentException("Placeholder checks are task objectives, not progression XP sources");
+            }
         }
         counter = new TriggerCounter(section, trigger);
         EventConditionsManager.eventConditions.validate(section.getConfigurationSection("conditions"));
@@ -203,14 +211,25 @@ public final class QuestObjective extends AbstractConfiguredSection<QuestContext
 
     public BigDecimal contribution(QuestContext context, String scope) {
         if (context == null || context.trigger() == null || !trigger.equals(context.trigger().key().toString())
-                || context.event() instanceof org.bukkit.event.Cancellable cancelled && cancelled.isCancelled()) {
+                || context.event() instanceof Cancellable cancelled && cancelled.isCancelled()) {
             return BigDecimal.ZERO;
         }
-        BigDecimal amount = counter.measure(context, counted -> EventConditionsManager.eventConditions.matches(
-                section.getConfigurationSection("conditions"), counted));
+        BigDecimal amount;
+        if (trigger.equals("ultimatequest:placeholder")) {
+            if (!PlaceholderTrigger.matches(section, context.player())
+                    || !EventConditionsManager.eventConditions.matches(section.getConfigurationSection("conditions"), context)) {
+                return BigDecimal.ZERO;
+            }
+            amount = BigDecimal.valueOf(required);
+        } else {
+            amount = counter.measure(context, counted -> EventConditionsManager.eventConditions.matches(
+                    section.getConfigurationSection("conditions"), counted));
+        }
         amount = amount.multiply(BigDecimal.valueOf(value)).min(CountMode.MAXIMUM);
         if (amount.signum() <= 0 || !AntiAbuseManager.antiAbuseManager.allows(
-                section.getConfigurationSection("anti-abuse"), context, scope, true)) return BigDecimal.ZERO;
+                section.getConfigurationSection("anti-abuse"), context, scope, true)) {
+            return BigDecimal.ZERO;
+        }
         return amount;
     }
 

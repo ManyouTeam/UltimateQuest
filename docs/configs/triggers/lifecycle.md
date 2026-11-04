@@ -60,3 +60,18 @@ Counts player respawns, excluding logins.
 | BLOCK | Block at the respawn location |
 
 [Trigger overview](../triggers.md) · [Event conditions](../conditions/README.md)
+
+## `placeholder`
+
+Task objectives only. Resolves and compares once per second without registering Bukkit events. A match satisfies the objective immediately; later decreases do not undo completion. Unresolved placeholders, invalid numeric values, and parsing failures do not match. This is not a battle-pass or milestone XP source.
+
+```yaml
+source:
+  trigger: placeholder
+  placeholder: "%player_level%"
+  rule: ">="
+  value: 10
+  amount: 1
+```
+
+Requires PlaceholderAPI and the relevant expansion. Numeric rules: `>=`, `>`, `<=`, `<`, `=`. String rules: `==`, `!=`, contains `*=`, reverse contains `=*`, and their negations `!*=`, `!=*`. `operator` aliases `rule`. The bundled `placeholder_level_check` example is disabled; enable both task and objective after installing its expansion.

@@ -52,6 +52,7 @@ progression:
     healing: '点生命回复'
     durability: '点耐久损耗'
     experience: '点经验'
+    levels: '等级'
     distance: '格移动距离'
     exhaustion: '点消耗度'
   unit:
@@ -80,6 +81,14 @@ progression:
     PREMIUM_REQUIRED: '&6需要高级战令权限'
     INACTIVE: '&c当前不在开放时间内'
 period:
+  reset-usage: '&#98FB98[UltimateQuest] &e/uq period reset <玩家> <周期ID|all>'
+  not-found: '&#98FB98[UltimateQuest] &c周期任务组 {period} 不存在。'
+  reset-busy: '&#98FB98[UltimateQuest] &c玩家 {player} 的数据尚未就绪或正在保存，请稍后重试。'
+  reset-inactive: '&#98FB98[UltimateQuest] &c指定周期组当前均未开放，无法重新抽取任务。'
+  reset-blocked: '&#98FB98[UltimateQuest] &c本期任务正在发奖或需要审核，无法重置。'
+  reset-limit: '&#98FB98[UltimateQuest] &c重新抽取的任务超出任务名额或没有可用任务，未修改原记录。'
+  reset-saved: '&#98FB98[UltimateQuest] &a已重置玩家 {player} 的本期任务组 {period} 并重新抽取，数据已保存。'
+  reset-failed: '&#98FB98[UltimateQuest] &c周期任务重置失败，原记录已保留。'
   ready: '&#98FB98[UltimateQuest] &a周期任务已准备就绪，使用 /uq period 查看。'
 scroll:
   given: '&#98FB98[UltimateQuest] &a任务卷轴已发放，放在背包中即可推进任务。'
@@ -388,6 +397,32 @@ override-lang:
       place_spruce_planks: '&f放置云杉木板'
       place_stone_bricks: '&f放置石砖'
     objectives:
+      honey_collector: '&f从满蜜蜂巢或蜂箱采集 4 瓶蜂蜜。'
+      honeycomb_collector: '&f使用剪刀采集 12 个蜜脾（需要 Paper）。'
+      anvil_restorer: '&f在铁砧修补并取出 1 把铁镐。'
+      anvil_enchanter: '&f在铁砧为铁剑添加或提升一次附魔。'
+      anvil_namer: '&f在铁砧为铁剑改名并取出成品。'
+      placeholder_level_check: '&f达到 10 级，需要 PlaceholderAPI 及 Player 扩展。'
+      bread_crafter: '&f合成 16 个面包，支持 Shift 批量合成计数。'
+      crop_fertilizer: '&f使用骨粉成功催熟小麦 8 次。'
+      netherite_smith: '&f在锻造台完成并取出 1 把下界合金镐。'
+      sword_grinder: '&f在砂轮处理并取出 1 把铁剑。'
+      dairy_farmer: '&f从牛身上成功挤取 8 桶牛奶。'
+      wool_collector: '&f剪羊毛 8 次，剪断栓绳不计数。'
+      mushroom_shearer: '&f使用剪刀剪切 1 只蘑菇牛。'
+      leash_cutter: '&f使用剪刀解除 4 个实体的栓绳。'
+      cattle_breeder: '&f繁殖出 4 只小牛。'
+      sheep_breeder: '&f繁殖出 4 只小羊。'
+      wolf_companion: '&f成功驯服 1 只狼。'
+      cat_companion: '&f成功驯服 1 只猫。'
+      swiftness_brewer: '&f酿造 3 瓶普通迅捷药水，需亲自放入酿造原料。'
+      healing_brewer: '&f酿造 3 瓶普通治疗药水，需亲自放入酿造原料。'
+      chicken_cook: '&f在熔炉或烟熏炉中烧制 16 份熟鸡肉，需亲自放入生鸡肉。'
+      steak_cook: '&f在熔炉或烟熏炉中烧制 16 份牛排，需亲自放入生牛肉。'
+      level_training: '&f接取后累计提升 5 个原版经验等级。'
+      level_mastery: '&f接取后累计提升 15 个原版经验等级。'
+      worn_pickaxe: '&f将 1 把木镐使用到耐久耗尽并损坏。'
+      worn_shears: '&f将 1 把剪刀使用到耐久耗尽并损坏。'
       miner: '&f开采天然石料'
       hunter: '&f击杀僵尸'
       veteran: '&f砍伐天然原木'
@@ -412,6 +447,84 @@ override-lang:
       enderman: '&f击杀末影人'
       barter: '&f与猪灵以物易物'
     tasks:
+      honey_collector:
+        name: '&e甜蜜收获'
+        description: '&7从满蜜蜂巢或蜂箱采集 4 瓶蜂蜜。'
+      honeycomb_collector:
+        name: '&e蜂蜡工坊'
+        description: '&7使用剪刀采集 12 个蜜脾（需要 Paper）。'
+      anvil_restorer:
+        name: '&e修补再出发'
+        description: '&7在铁砧修补并取出 1 把铁镐。'
+      anvil_enchanter:
+        name: '&e铁砧魔法'
+        description: '&7在铁砧为铁剑添加或提升一次附魔。'
+      anvil_namer:
+        name: '&e为剑命名'
+        description: '&7在铁砧为铁剑改名并取出成品。'
+      placeholder_level_check:
+        name: '&e检查经验等级'
+        description: '&7达到 10 级，需要 PlaceholderAPI 及 Player 扩展。'
+      bread_crafter:
+        name: '&e亲手合成'
+        description: '&7合成 16 个面包，支持 Shift 批量合成计数。'
+      crop_fertilizer:
+        name: '&e助麦生长'
+        description: '&7使用骨粉成功催熟小麦 8 次。'
+      netherite_smith:
+        name: '&e锻造下界合金'
+        description: '&7在锻造台完成并取出 1 把下界合金镐。'
+      sword_grinder:
+        name: '&e砂轮整备'
+        description: '&7在砂轮处理并取出 1 把铁剑。'
+      dairy_farmer:
+        name: '&e牧场鲜奶'
+        description: '&7从牛身上成功挤取 8 桶牛奶。'
+      wool_collector:
+        name: '&e御寒羊毛'
+        description: '&7剪羊毛 8 次，剪断栓绳不计数。'
+      mushroom_shearer:
+        name: '&e蘑菇变身'
+        description: '&7使用剪刀剪切 1 只蘑菇牛。'
+      leash_cutter:
+        name: '&e剪断牵绳'
+        description: '&7使用剪刀解除 4 个实体的栓绳。'
+      cattle_breeder:
+        name: '&e牛群壮大'
+        description: '&7繁殖出 4 只小牛。'
+      sheep_breeder:
+        name: '&e羊群新生'
+        description: '&7繁殖出 4 只小羊。'
+      wolf_companion:
+        name: '&e忠诚伙伴'
+        description: '&7成功驯服 1 只狼。'
+      cat_companion:
+        name: '&e猫咪朋友'
+        description: '&7成功驯服 1 只猫。'
+      swiftness_brewer:
+        name: '&e迅捷药师'
+        description: '&7酿造 3 瓶普通迅捷药水，需亲自放入酿造原料。'
+      healing_brewer:
+        name: '&e治愈药师'
+        description: '&7酿造 3 瓶普通治疗药水，需亲自放入酿造原料。'
+      chicken_cook:
+        name: '&e香烤鸡肉'
+        description: '&7在熔炉或烟熏炉中烧制 16 份熟鸡肉，需亲自放入生鸡肉。'
+      steak_cook:
+        name: '&e村庄牛排'
+        description: '&7在熔炉或烟熏炉中烧制 16 份牛排，需亲自放入生牛肉。'
+      level_training:
+        name: '&e成长五级'
+        description: '&7接取后累计提升 5 个原版经验等级。'
+      level_mastery:
+        name: '&e经验积累'
+        description: '&7接取后累计提升 15 个原版经验等级。'
+      worn_pickaxe:
+        name: '&e物尽其用'
+        description: '&7将 1 把木镐使用到耐久耗尽并损坏。'
+      worn_shears:
+        name: '&e最后一剪'
+        description: '&7将 1 把剪刀使用到耐久耗尽并损坏。'
       miner:
         name: '&e初识矿脉'
         description: '&7开采16块天然石料，领取奖励后获得第一张任务卷轴。'

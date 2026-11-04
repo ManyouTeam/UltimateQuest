@@ -12,7 +12,7 @@ All files are under `plugins/UltimateQuest/`. Choose the folder for the feature 
 | `tasks/*.yml` | [Normal tasks](../configs/tasks.md). |
 | `categories/*.yml` | [Category names, icons, and order](../configs/categories.md). |
 | `pools/*.yml` | [Weighted objective pools](../configs/pools.md). |
-| `reward-pools/*.yml` | [Reusable weighted reward choices](../configs/rewards/README.md). |
+| `reward_pools/*.yml` | [Reusable weighted reward choices](../configs/rewards/README.md). |
 | `periods/*.yml` | [Periodic assignments](../configs/periods.md). |
 | `scrolls/*.yml` | [Physical scroll profiles](../configs/scrolls.md). |
 | `battlepasses/*.yml` | [Battle passes and challenges](../configs/battlepasses.md). |

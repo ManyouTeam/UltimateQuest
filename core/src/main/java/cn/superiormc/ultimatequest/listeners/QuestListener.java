@@ -49,10 +49,8 @@ public class QuestListener implements Listener, AutoCloseable {
     protected QuestListener(TriggerManager triggerManager, boolean paper) {
         this.triggerManager = triggerManager;
         registerTriggerEvents(paper);
-        if (!paper) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                triggerManager.runtime().startPlayerTicks(player);
-            }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            triggerManager.runtime().startPlayerTicks(player);
         }
     }
 

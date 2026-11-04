@@ -90,3 +90,7 @@ The plugin checks [task slots](task-limits.md) before assigning a whole batch. I
 ## Edit and test
 
 Reloading does not replace the requirements or rewards of generated assignments. Check a new batch after editing. For schedule testing, use a separate test definition with a short interval, then restore the intended schedule.
+
+## Reset periodic quests
+
+Administrators can run `/uq period reset <player> <period-id|all>` with `ultimatequest.admin`. The target must be online with loaded data. This removes selected active groups' current-cycle task records, including progress, completion, and claim state, redraws tasks and rewards, and saves immediately. `all` selects every currently active group. Historical cycles, the cycle schedule, and other task types are preserved. Random draws may repeat previous results; a fixed single task remains that task. Previously delivered rewards are not reclaimed, and reset tasks can award rewards again. Current-cycle claims in progress or requiring review block the reset; failed saves restore the previous records.

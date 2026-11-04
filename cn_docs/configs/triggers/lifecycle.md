@@ -60,3 +60,18 @@ source:
 | BLOCK | 重生位置所在方块 |
 
 [触发器概览](../triggers.md) · [事件条件](../conditions/README.md)
+
+## `placeholder`
+
+仅用于任务目标；每秒解析并比较一次，不注册 Bukkit 事件。达到条件时一次满足目标，不要求连续达标；已完成任务不会因值降低而撤回。未解析的占位符、非数值比较或解析异常均判为不满足，不会反复输出错误。不能用于战令／里程碑经验来源。
+
+```yaml
+source:
+  trigger: placeholder
+  placeholder: "%player_level%"
+  rule: ">="
+  value: 10
+  amount: 1
+```
+
+需要安装 PlaceholderAPI 及对应扩展。支持数值 `>=`、`>`、`<=`、`<`、`=`，字符串 `==`、`!=`，以及包含 `*=`／反向包含 `=*` 和各自的否定 `!*=`／`!=*`。`operator` 是 `rule` 的别名。默认示例 `placeholder_level_check` 关闭，安装所需扩展后同时启用目标和任务文件。

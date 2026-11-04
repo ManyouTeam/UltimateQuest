@@ -34,14 +34,14 @@ Cancelled events are ignored by the ordinary event route. Normal tasks need acce
 Each reference entry lists available data and platform requirements. Triggers needing Paper or a particular event class cannot be used on unsupported platforms. Do not infer support from the ID alone.
 
 ## Trigger index
-* [Tick and lifecycle](triggers/lifecycle.md): `tick`, `spawn`, `respawn`.
+* [Tick and lifecycle](triggers/lifecycle.md): `tick`, `placeholder`, `spawn`, `respawn`.
 * [Combat and damage](triggers/combat.md): `attack`, `melee_attack`, `damage`, `damage_by_entity`, `kill`, `death`, `regain`, `shield_block`, `shield_disable`, `attempt_smash_attack`, `knockback`, `combust`, `creeper_explode`.
 * [Projectiles and ranged attacks](triggers/projectiles.md): `projectile_launch`, `projectile_hit`, `projectile_tick`, `shoot`, `shoot_bow`, `load_crossbow`.
-* [Blocks and interactions](triggers/blocks-interactions.md): `block_break`, `block_damage`, `block_drop_item`, `block_place`, `block_break_progress_update`, `interact`, `inside_block`, `vibration_receive`.
-* [Items and equipment](triggers/items-equipment.md): `consume`, `enchant_item`, `item_damage`, `item_held`, `swap_hand`, `item_group_cooldown`, `name_entity`.
+* [Blocks and interactions](triggers/blocks-interactions.md): `block_break`, `block_damage`, `block_drop_item`, `block_place`, `block_break_progress_update`, `interact`, `inside_block`, `vibration_receive`, `brew`, `cook`, `craft_item`, `fertilize_block`, `forge_item`, `grindstone_item`, `milk_mob`, `honey_extract`, `honey_comb_extract`, `anvil_repair`, `anvil_enchant`, `anvil_rename`.
+* [Items and equipment](triggers/items-equipment.md): `consume`, `enchant_item`, `item_damage`, `item_held`, `swap_hand`, `item_group_cooldown`, `name_entity`, `item_broken`.
 * [Movement and input](triggers/movement-input.md): `move`, `input`, `toggle_sneak`, `toggle_flight`, `riptide`, `jump`, `elytra_boost`, `lunge`.
-* [Player state](triggers/player-state.md): `air_change`, `food_level_change`, `exp_change`, `advancement_done`, `potion_effect`, `effect_tick`, `exhaustion`, `pickup_experience`.
+* [Player state](triggers/player-state.md): `air_change`, `food_level_change`, `exp_change`, `advancement_done`, `potion_effect`, `effect_tick`, `exhaustion`, `pickup_experience`, `gain_level`.
 * [Fishing and trading](triggers/fishing-trading.md): `fish`, `piglin_barter`, `trade`, `purchase`.
-* [Targeting and special entities](triggers/targeting-special.md): `target`, `untag`, `target_tick`, `enderman_attack_player`, `phantom_pre_spawn`, `warden_anger_change`.
+* [Targeting and special entities](triggers/targeting-special.md): `target`, `untag`, `target_tick`, `enderman_attack_player`, `phantom_pre_spawn`, `warden_anger_change`, `shear`, `cut_leash`, `breed`, `tame`.
 
 See [event conditions](conditions/README.md) for filtering and [objective templates](objectives.md) for reuse.

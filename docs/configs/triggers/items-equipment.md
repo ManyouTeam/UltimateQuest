@@ -112,4 +112,8 @@ Counts players naming entities. TARGET conditions can filter the named entity.
 | LOCATION | Target/entity location |
 | TRIGGER_ITEM / slot | Held NAME_TAG if found |
 
+## `item_broken`
+
+Supported `count`: `events`. Runs once when a player's item breaks from durability exhaustion. The trigger item is a snapshot of the broken item; the slot uses the existing slot lookup. Use `TRIGGER_ITEM` matching to restrict item types. For ordinary durability wear, use `item_damage`. Available on Paper and Spigot.
+
 [Trigger overview](../triggers.md) · [Event conditions](../conditions/README.md)

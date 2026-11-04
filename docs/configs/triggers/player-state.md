@@ -140,4 +140,8 @@ Counts supported effect-tick events; effect details remain in the underlying eve
 | LOCATION | Experience-orb location |
 | TRIGGER_ITEM / slot | Absent |
 
+## `gain_level`
+
+Supported `count`: `events`, `levels`. Runs only for positive Minecraft level changes. `events` counts each increase once; `levels` counts the actual gain, so advancing from level 5 to 8 contributes 3. Decreases and unchanged levels do not trigger it. Numeric context `levels_gained` exposes the increase. Available on Paper and Spigot through `PlayerLevelChangeEvent`; plugin changes that bypass this event are not captured.
+
 [Trigger overview](../triggers.md) · [Event conditions](../conditions/README.md)

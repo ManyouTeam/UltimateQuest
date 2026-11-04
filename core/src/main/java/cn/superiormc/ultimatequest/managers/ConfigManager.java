@@ -261,7 +261,7 @@ public class ConfigManager extends AbstractManager {
 
     private void initRewardPoolConfigs() {
         rewardPoolConfigs = new LinkedHashMap<>();
-        File directory = new File(UltimateQuest.instance.getDataFolder(), "reward-pools");
+        File directory = new File(UltimateQuest.instance.getDataFolder(), "reward_pools");
         if (!directory.exists() && !directory.mkdirs()) {
             ErrorManager.errorManager.sendErrorMessage("§cError: Could not create directory: " + directory);
             return;

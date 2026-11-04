@@ -8,13 +8,14 @@ All built-in triggers support `events`. The table lists additional modes. Unlist
 
 | `count` | Supported triggers | Quantity |
 | --- | --- | --- |
-| `items` | `fish`, `block_drop_item`, `piglin_barter`, `trade`, `purchase`, `kill` | Sum of caught, dropped, or output item stack quantities. |
-| `blocks` | `block_place` | Blocks involved in the placement, with conditions evaluated per block. |
+| `items` | `fish`, `block_drop_item`, `piglin_barter`, `trade`, `purchase`, `kill`, `brew`, `cook`, `craft_item`, `forge_item`, `grindstone_item`, `milk_mob`, `honey_extract`, `honey_comb_extract`, `anvil_repair`, `anvil_enchant`, `anvil_rename` | Sum of caught, dropped, or output item stack quantities. |
+| `blocks` | `block_place`, `fertilize_block` | Blocks involved in the placement, with conditions evaluated per block. |
 | `damage` | `attack`, `melee_attack`, `damage`, `damage_by_entity` | Final event damage after modifiers such as armor; not capped by remaining health. |
 | `blocked_damage` | `shield_block` | Damage actually blocked by the shield. |
 | `healing` | `regain` | Positive healing capped by missing health. |
 | `durability` | `item_damage` | Event wear capped by remaining item durability. |
 | `experience` | `exp_change`, `pickup_experience` | Positive Minecraft XP points, not levels. |
+| `levels` | `gain_level` | Positive Minecraft level increase; decreases do not count. |
 | `distance` | `move` | Three-dimensional straight-line distance between event positions, in blocks. |
 | `exhaustion` | `exhaustion` | Positive exhaustion amounts. |
 

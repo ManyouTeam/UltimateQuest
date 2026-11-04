@@ -7,14 +7,14 @@
 | 内容 | 数量 | 文件夹 |
 | --- | ---: | --- |
 | 分类 | 8 | `categories/` |
-| 可复用目标 | 37 | `quests/` |
-| 普通任务 | 26 | `tasks/` |
+| 可复用目标 | 339 | `quests/` |
+| 普通任务 | 52 | `tasks/` |
 | 目标池 | 6 | `pools/` |
 | 周期配置 | 3 | `periods/` |
 | 卷轴配置 | 4 | `scrolls/` |
 | 里程碑 | 6 | `milestones/` |
 | 战令 | 1 | `battlepasses/` |
-| 奖励池 | 7 | `reward-pools/` |
+| 奖励池 | 7 | `reward_pools/` |
 
 ## 普通任务路线
 
@@ -66,3 +66,27 @@
 默认目标筛选生存/冒险模式。矿石、木材目标排除记录到的玩家放置方块，相关战斗目标排除带刷怪笼标记的生物。作物要求成熟，并允许玩家种植；移动目标按跨方块事件和冷却统计，不是精确距离。
 
 显示文本在两种语言文件的 `override-lang.defaults` 下。翻译时保留 ID、材质、命令和 Cron。已有配置文件不会因升级全部替换，缺失内置文件会补充；停用内容用 `enabled: false`。更新步骤仍按[安装说明](install.md)操作。
+
+## 新增交互与生产任务
+
+下列普通任务及同名可复用目标已加入默认内容，并加入 daily 和 adventure 任务池。
+
+| ID | Trigger | 目标 |
+| --- | --- | --- |
+| `wool_collector` | `shear` | 剪羊毛 8 次，剪断栓绳不计数。 |
+| `mushroom_shearer` | `shear` | 使用剪刀剪切 1 只蘑菇牛。 |
+| `leash_cutter` | `cut_leash` | 使用剪刀解除 4 个实体的栓绳。 |
+| `cattle_breeder` | `breed` | 繁殖出 4 只小牛。 |
+| `sheep_breeder` | `breed` | 繁殖出 4 只小羊。 |
+| `wolf_companion` | `tame` | 成功驯服 1 只狼。 |
+| `cat_companion` | `tame` | 成功驯服 1 只猫。 |
+| `swiftness_brewer` | `brew` | 酿造 3 瓶普通迅捷药水，需亲自放入酿造原料。 |
+| `healing_brewer` | `brew` | 酿造 3 瓶普通治疗药水，需亲自放入酿造原料。 |
+| `chicken_cook` | `cook` | 在熔炉或烟熏炉中烧制 16 份熟鸡肉，需亲自放入生鸡肉。 |
+| `steak_cook` | `cook` | 在熔炉或烟熏炉中烧制 16 份牛排，需亲自放入生牛肉。 |
+| `level_training` | `gain_level` | 接取后累计提升 5 个原版经验等级。 |
+| `level_mastery` | `gain_level` | 接取后累计提升 15 个原版经验等级。 |
+| `worn_pickaxe` | `item_broken` | 将 1 把木镐使用到耐久耗尽并损坏。 |
+| `worn_shears` | `item_broken` | 将 1 把剪刀使用到耐久耗尽并损坏。 |
+
+额外示例：`bread_crafter`、`crop_fertilizer`、`netherite_smith`、`sword_grinder`、`dairy_farmer`、`honey_collector`、`honeycomb_collector`、`anvil_restorer`、`anvil_enchanter`、`anvil_namer`、`placeholder_level_check`。蜜脾示例默认关闭，需要 Paper 后启用；Placeholder 示例默认关闭，需要相应扩展后启用。

@@ -88,3 +88,7 @@ Other menus and passes can define their own `permission` and `premium-permission
 ## Usage example
 
 `/uq accept tutorial_mining`, `/uq info tutorial_mining`, and `/uq claim tutorial_mining` accept, inspect, and claim the task from the [normal task tutorial](../configs/tasks.md). Create it before testing. Reload edits with `/uq reload`, which requires `ultimatequest.reload`.
+
+## Reset periodic quests
+
+Administrators can run `/uq period reset <player> <period-id|all>` with `ultimatequest.admin`. The target must be online with loaded data. This removes selected active groups' current-cycle task records, including progress, completion, and claim state, redraws tasks and rewards, and saves immediately. `all` selects every currently active group. Historical cycles, the cycle schedule, and other task types are preserved. Random draws may repeat previous results; a fixed single task remains that task. Previously delivered rewards are not reclaimed, and reset tasks can award rewards again. Current-cycle claims in progress or requiring review block the reset; failed saves restore the previous records.

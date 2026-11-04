@@ -4,6 +4,8 @@ import cn.superiormc.ultimatequest.UltimateQuest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -37,9 +39,26 @@ public final class InitManager extends AbstractManager {
         resourceOutputFolder("battlepasses", true);
         resourceOutputFolder("milestones", true);
         resourceOutputFolder("pools", true);
-        resourceOutputFolder("reward-pools", true);
+        migrateRewardPools();
+        resourceOutputFolder("reward_pools", true);
         resourceOutputFolder("periods", true);
         resourceOutputFolder("scrolls", true);
+    }
+
+    private void migrateRewardPools() {
+        Path dataFolder = UltimateQuest.instance.getDataFolder().toPath();
+        Path previous = dataFolder.resolve("reward-pools");
+        Path current = dataFolder.resolve("reward_pools");
+        if (!Files.isDirectory(previous) || Files.exists(current)) {
+            return;
+        }
+        try {
+            Files.move(previous, current);
+        } catch (IOException exception) {
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not migrate reward-pools to reward_pools: "
+                    + exception.getMessage());
+            throw new IllegalStateException("Could not migrate reward pool directory", exception);
+        }
     }
 
     private void resourceOutputFolder(String folderName, boolean regenerate) {

@@ -10,3 +10,26 @@ quests:
   wheat: 8
   crops: 8
   walker: 6
+  wool_collector: 6
+  mushroom_shearer: 6
+  leash_cutter: 6
+  cattle_breeder: 6
+  sheep_breeder: 6
+  wolf_companion: 6
+  cat_companion: 6
+  swiftness_brewer: 6
+  healing_brewer: 6
+  chicken_cook: 6
+  steak_cook: 6
+  level_training: 6
+  level_mastery: 6
+  worn_pickaxe: 6
+  worn_shears: 6
+  bread_crafter: 6
+  crop_fertilizer: 6
+  sword_grinder: 6
+  dairy_farmer: 6
+  honey_collector: 6
+  anvil_restorer: 6
+  anvil_enchanter: 6
+  anvil_namer: 6

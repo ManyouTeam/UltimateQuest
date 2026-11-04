@@ -88,3 +88,7 @@ uq milestone [id] <player> [-b]
 ## 使用示例
 
 `/uq accept tutorial_mining`、`/uq info tutorial_mining`、`/uq claim tutorial_mining` 依次完成接取、查询和领奖；使用前先按[普通任务教程](../configs/tasks.md)创建该任务。修改配置后执行 `/uq reload`，重载权限为 `ultimatequest.reload`。
+
+## 手动重置周期任务
+
+管理员可执行 `/uq period reset <玩家> <周期ID|all>`，需要 `ultimatequest.admin`，目标玩家必须在线且数据加载完成。该操作删除指定活动周期组的本期任务记录（包括进度、完成和领奖状态），重新抽取任务及奖励，并立即保存。`all` 处理所有当前开放的周期组；历史周期记录、周期起止时间和其他类型任务不受影响。随机结果可能与之前相同；单一固定任务不会变成其他任务。已发放的物品、货币及其他奖励不会被追回，重置后的任务可以再次领奖。正在发奖或待审核的本期记录会阻止操作，保存失败会恢复原记录。

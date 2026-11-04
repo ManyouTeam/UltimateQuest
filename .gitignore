@@ -52,7 +52,7 @@ Desktop.ini
 !/plugin/src/main/resources/battlepasses/
 !/plugin/src/main/resources/milestones/
 !/plugin/src/main/resources/pools/
-!/plugin/src/main/resources/reward-pools/
+!/plugin/src/main/resources/reward_pools/
 !/plugin/src/main/resources/periods/
 !/plugin/src/main/resources/scrolls/
 !/plugin/src/main/resources/items/

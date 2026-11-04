@@ -12,7 +12,7 @@
 | `tasks/*.yml` | [普通任务](../configs/tasks.md)。 |
 | `categories/*.yml` | [分类名称、图标和排序](../configs/categories.md)。 |
 | `pools/*.yml` | [加权目标池](../configs/pools.md)。 |
-| `reward-pools/*.yml` | [可复用加权奖励选项](../configs/rewards/README.md)。 |
+| `reward_pools/*.yml` | [可复用加权奖励选项](../configs/rewards/README.md)。 |
 | `periods/*.yml` | [周期任务](../configs/periods.md)。 |
 | `scrolls/*.yml` | [实体卷轴配置](../configs/scrolls.md)。 |
 | `battlepasses/*.yml` | [战令与挑战](../configs/battlepasses.md)。 |

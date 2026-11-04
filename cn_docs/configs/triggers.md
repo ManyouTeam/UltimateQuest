@@ -34,14 +34,14 @@ source:
 每个参考条目会列出可用数据和平台要求。依赖 Paper 或特定事件类的触发器，在不支持的平台上不能使用；不要只根据 ID 名称猜测支持情况。
 
 ## 触发器索引
-* [Tick 与生命周期](triggers/lifecycle.md)：`tick`、`spawn`、`respawn`。
+* [Tick 与生命周期](triggers/lifecycle.md)：`tick`、`placeholder`、`spawn`、`respawn`。
 * [战斗与伤害](triggers/combat.md)：`attack`、`melee_attack`、`damage`、`damage_by_entity`、`kill`、`death`、`regain`、`shield_block`、`shield_disable`、`attempt_smash_attack`、`knockback`、`combust`、`creeper_explode`。
 * [弹射物与远程](triggers/projectiles.md)：`projectile_launch`、`projectile_hit`、`projectile_tick`、`shoot`、`shoot_bow`、`load_crossbow`。
-* [方块与交互](triggers/blocks-interactions.md)：`block_break`、`block_damage`、`block_drop_item`、`block_place`、`block_break_progress_update`、`interact`、`inside_block`、`vibration_receive`。
-* [物品与装备](triggers/items-equipment.md)：`consume`、`enchant_item`、`item_damage`、`item_held`、`swap_hand`、`item_group_cooldown`、`name_entity`。
+* [方块与交互](triggers/blocks-interactions.md)：`block_break`、`block_damage`、`block_drop_item`、`block_place`、`block_break_progress_update`、`interact`、`inside_block`、`vibration_receive`、`brew`、`cook`、`craft_item`、`fertilize_block`、`forge_item`、`grindstone_item`、`milk_mob`、`honey_extract`、`honey_comb_extract`、`anvil_repair`、`anvil_enchant`、`anvil_rename`。
+* [物品与装备](triggers/items-equipment.md)：`consume`、`enchant_item`、`item_damage`、`item_held`、`swap_hand`、`item_group_cooldown`、`name_entity`、`item_broken`。
 * [移动与输入](triggers/movement-input.md)：`move`、`input`、`toggle_sneak`、`toggle_flight`、`riptide`、`jump`、`elytra_boost`、`lunge`。
-* [玩家状态](triggers/player-state.md)：`air_change`、`food_level_change`、`exp_change`、`advancement_done`、`potion_effect`、`effect_tick`、`exhaustion`、`pickup_experience`。
+* [玩家状态](triggers/player-state.md)：`air_change`、`food_level_change`、`exp_change`、`advancement_done`、`potion_effect`、`effect_tick`、`exhaustion`、`pickup_experience`、`gain_level`。
 * [钓鱼与交易](triggers/fishing-trading.md)：`fish`、`piglin_barter`、`trade`、`purchase`。
-* [目标与特殊实体](triggers/targeting-special.md)：`target`、`untag`、`target_tick`、`enderman_attack_player`、`phantom_pre_spawn`、`warden_anger_change`。
+* [目标与特殊实体](triggers/targeting-special.md)：`target`、`untag`、`target_tick`、`enderman_attack_player`、`phantom_pre_spawn`、`warden_anger_change`、`shear`、`cut_leash`、`breed`、`tame`。
 
 筛选方法见[事件条件](conditions/README.md)，复用方法见[目标模板](objectives.md)。

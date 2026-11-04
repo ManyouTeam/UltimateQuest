@@ -1092,6 +1092,113 @@ public final class QuestManager extends AbstractManager {
         }
     }
 
+    public void resetPeriods(CommandSender sender, Player player, String group) {
+        if (!sender.hasPermission("ultimatequest.admin")) {
+            periodResetFeedback(sender, "error.miss-permission", player, group);
+            return;
+        }
+        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
+        if (cache == null) {
+            periodResetFeedback(sender, "period.reset-busy", player, group);
+            return;
+        }
+        synchronized (cache) {
+            if (!cacheManager.isSession(cache, player) || !cache.ready() || cache.pending()) {
+                periodResetFeedback(sender, "period.reset-busy", player, group);
+                return;
+            }
+            Instant now = Instant.now();
+            Map<String, YamlConfiguration> configurations = ConfigManager.configManager.getPeriodConfigurations();
+            Map<String, String> cycles = new LinkedHashMap<>();
+            for (Map.Entry<String, YamlConfiguration> entry : configurations.entrySet()) {
+                if ((group.equals("all") || group.equals(entry.getKey()))
+                        && SeasonManager.seasonManager.periodWindow(entry.getKey(), entry.getValue()).active(now)) {
+                    cycles.put(entry.getKey(), QuestPeriodManager.cycle(entry.getKey(), entry.getValue(), now));
+                }
+            }
+            if (cycles.isEmpty()) {
+                periodResetFeedback(sender, "period.reset-inactive", player, group);
+                return;
+            }
+            Map<String, QuestInstance> quests = cacheManager.quests(player.getUniqueId());
+            Map<String, QuestInstance> removed = new LinkedHashMap<>();
+            for (QuestInstance quest : quests.values()) {
+                if (quest.source().equals("period") && quest.cycle().equals(cycles.get(quest.sourceId()))) {
+                    if (Set.of("CLAIMING", "REVIEW").contains(quest.state())) {
+                        periodResetFeedback(sender, "period.reset-blocked", player, group);
+                        return;
+                    }
+                    removed.put(quest.key(), quest);
+                }
+            }
+            Map<String, QuestInstance> replacements = new LinkedHashMap<>();
+            List<QuestDefinition> drawn = new ArrayList<>();
+            try {
+                for (Map.Entry<String, String> entry : cycles.entrySet()) {
+                    String period = entry.getKey();
+                    YamlConfiguration config = configurations.get(period);
+                    ConfigurationSection source = config.getConfigurationSection("source");
+                    List<QuestDefinition> selected = new ArrayList<>();
+                    if (source.contains("pool")) {
+                        for (String objective : QuestPoolManager.questPoolManager.draw(source, new Random())) {
+                            selected.add(ConfigManager.configManager.getPeriod(period).createDefinition(objective,
+                                    ConfigManager.configManager.getQuestConfigurations()));
+                        }
+                    } else {
+                        selected.add(ConfigManager.configManager.getPeriod(period).createDefinition(null,
+                                ConfigManager.configManager.getQuestConfigurations()));
+                    }
+                    long expires = QuestPeriodManager.end(period, config, now).plusSeconds(
+                            Math.max(0L, config.getLong("claim-grace-seconds", 0L))).toEpochMilli();
+                    for (QuestDefinition definition : selected) {
+                        QuestInstance replacement = new QuestInstance(definition, "period", period, entry.getValue(), expires);
+                        replacements.put(replacement.key(), replacement);
+                    }
+                    drawn.addAll(selected);
+                }
+            } catch (RuntimeException exception) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Could not redraw periodic quests for "
+                        + player.getUniqueId() + ": " + exception.getMessage());
+                periodResetFeedback(sender, "period.reset-failed", player, group);
+                return;
+            }
+            if (drawn.isEmpty() || !withinLimits(player, "period", drawn, removed.keySet())) {
+                periodResetFeedback(sender, "period.reset-limit", player, group);
+                return;
+            }
+            Map<String, String> rolls = cache.periodRolls();
+            Map<String, String> previousRolls = new HashMap<>(rolls);
+            removed.keySet().forEach(quests::remove);
+            quests.putAll(replacements);
+            rolls.putAll(cycles);
+            UUID id = player.getUniqueId();
+            cacheManager.changed(id);
+            cacheManager.persist(id, () -> {
+                rebuildIndex(id);
+                periodResetFeedback(sender, "period.reset-saved", player, group);
+            }, () -> {
+                replacements.keySet().forEach(quests::remove);
+                quests.putAll(removed);
+                rolls.clear();
+                rolls.putAll(previousRolls);
+                cacheManager.changed(id);
+                rebuildIndex(id);
+                periodResetFeedback(sender, "period.reset-failed", player, group);
+            });
+        }
+    }
+
+    private void periodResetFeedback(CommandSender sender, String key, Player target, String group) {
+        String playerName = target.getName();
+        Runnable feedback = () -> LanguageManager.languageManager.sendStringText(sender, key,
+                "player", playerName, "period", group);
+        if (sender instanceof Player player) {
+            SchedulerUtil.runSync(player, feedback);
+        } else {
+            SchedulerUtil.runSync(feedback);
+        }
+    }
+
     public void refreshPeriods(Player player) {
         refreshPeriods(player, Instant.now());
     }

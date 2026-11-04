@@ -140,4 +140,8 @@ source:
 | LOCATION | 经验球位置 |
 | TRIGGER_ITEM / slot | 未提供 |
 
+## `gain_level`
+
+支持 `count: events` 和 `count: levels`。仅在玩家原版等级上升时触发：前者每次升级事件计 1，后者累计实际提升等级数，例如从 5 级升到 8 级计 3。降级和等级不变不触发。数值上下文 `levels_gained` 提供本次增加等级。支持 Paper 和 Spigot；依赖服务器发送 `PlayerLevelChangeEvent`，其他插件绕过事件的等级修改不会被捕获。
+
 [触发器概览](../triggers.md) · [事件条件](../conditions/README.md)

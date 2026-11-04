@@ -7,7 +7,7 @@
 在 `plugins/UltimateQuest/` 下创建这个文件：
 
 ```yaml
-# reward-pools/tutorial_supplies.yml
+# reward_pools/tutorial_supplies.yml
 enabled: true
 rewards:
   food:
@@ -37,7 +37,7 @@ rewards:
 
 保存两个文件并执行 `/uq reload`。新接取的任务会从这个池抽一组奖励。`count` 和 `repeat` 写在引用处，因此不同任务可以用同一个池、不同的抽取次数。
 
-池 ID 是文件名，只允许小写字母、数字、下划线和短横线。只扫描 `reward-pools/` 直接子级 `.yml`；池必须存在并启用。
+池 ID 是文件名，只允许小写字母、数字、下划线和短横线。只扫描 `reward_pools/` 直接子级 `.yml`；池必须存在并启用。
 
 ## 奖励库引用
 
@@ -66,4 +66,6 @@ rewards:
 - 奖励池里的候选要包含 `rate` 和嵌套 `rewards`，不能直接照搬 `pools/` 的目标权重表。
 - 缺失、循环或过深引用会导致加载失败。重载也会校验启用池及使用它的配置。
 
-可修改 `reward-pools/*.yml` 中的池配置，再使用 `/uq reload` 应用更改。修改池不会重抽已有任务或已经解锁的阶段奖励，参见[随机奖励](random.md)。
+可修改 `reward_pools/*.yml` 中的池配置，再使用 `/uq reload` 应用更改。修改池不会重抽已有任务或已经解锁的阶段奖励，参见[随机奖励](random.md)。
+
+旧版 `reward-pools/` 目录会在 `reward_pools/` 尚不存在时自动改名。若两个目录同时存在，插件使用 `reward_pools/`，请手动合并旧目录中的自定义配置。

@@ -8,13 +8,14 @@
 
 | `count` | 支持的触发器 | 累计内容 |
 | --- | --- | --- |
-| `items` | `fish`、`block_drop_item`、`piglin_barter`、`trade`、`purchase`、`kill` | 钓获物、掉落物或交易产物的堆叠数量之和。 |
-| `blocks` | `block_place` | 本次实际涉及的放置方块数，逐块检查条件。 |
+| `items` | `fish`, `block_drop_item`, `piglin_barter`, `trade`, `purchase`, `kill`, `brew`, `cook`, `craft_item`, `forge_item`, `grindstone_item`, `milk_mob`, `honey_extract`, `honey_comb_extract`, `anvil_repair`, `anvil_enchant`, `anvil_rename` | 钓获物、掉落物或交易产物的堆叠数量之和。 |
+| `blocks` | `block_place`, `fertilize_block` | 本次实际涉及的放置方块数，逐块检查条件。 |
 | `damage` | `attack`、`melee_attack`、`damage`、`damage_by_entity` | 事件最终伤害，计入护甲等修正；不按目标剩余生命截断。 |
 | `blocked_damage` | `shield_block` | 盾牌实际格挡的伤害量。 |
 | `healing` | `regain` | 正数恢复量，最多计入玩家缺失的生命值。 |
 | `durability` | `item_damage` | 事件损耗量，最多计入物品剩余耐久。 |
 | `experience` | `exp_change`、`pickup_experience` | 正数 Minecraft 经验点数，不是等级。 |
+| `levels` | `gain_level` | 实际提升的原版等级数；降级不计数。 |
 | `distance` | `move` | 相邻事件坐标之间的三维直线距离，单位为方块。 |
 | `exhaustion` | `exhaustion` | 正数消耗度数值。 |
 

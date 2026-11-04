@@ -7,14 +7,14 @@ The first startup provides survival content to try and customize. Complete one n
 | Content | Count | Folder |
 | --- | ---: | --- |
 | Categories | 8 | `categories/` |
-| Reusable objectives | 37 | `quests/` |
-| Normal tasks | 26 | `tasks/` |
+| Reusable objectives | 339 | `quests/` |
+| Normal tasks | 52 | `tasks/` |
 | Objective pools | 6 | `pools/` |
 | Period profiles | 3 | `periods/` |
 | Scroll profiles | 4 | `scrolls/` |
 | Milestones | 6 | `milestones/` |
 | Battle passes | 1 | `battlepasses/` |
-| Reward pools | 7 | `reward-pools/` |
+| Reward pools | 7 | `reward_pools/` |
 
 ## Normal task progression
 
@@ -66,3 +66,27 @@ Default challenges do not require premium access. Premium rewards require `ultim
 Default objectives allow survival/adventure modes. Mining/wood goals exclude recorded player-placed blocks; applicable combat goals exclude spawner-tagged mobs. Crop goals require maturity and allow player planting. Movement goals count block-coordinate changes with cooldowns, not exact distance.
 
 Visible text lives under `override-lang.defaults` in both language files. Translate text without changing IDs, materials, commands, or Cron. Updates preserve existing files and restore missing bundled files; disable unwanted content with `enabled: false`. Continue to use the unchanged [installation guide](install.md) for updates.
+
+## New interaction and production tasks
+
+These normal tasks and reusable objectives are bundled and included in the daily and adventure pools.
+
+| ID | Trigger | Goal |
+| --- | --- | --- |
+| `wool_collector` | `shear` | Shear 8 sheep. Cutting leashes does not count. |
+| `mushroom_shearer` | `shear` | Shear a mooshroom once. |
+| `leash_cutter` | `cut_leash` | Cut the leashes of 4 entities with shears. |
+| `cattle_breeder` | `breed` | Breed 4 calves. |
+| `sheep_breeder` | `breed` | Breed 4 lambs. |
+| `wolf_companion` | `tame` | Successfully tame a wolf. |
+| `cat_companion` | `tame` | Successfully tame a cat. |
+| `swiftness_brewer` | `brew` | Brew 3 regular swiftness potions; add the brewing inputs yourself. |
+| `healing_brewer` | `brew` | Brew 3 regular healing potions; add the brewing inputs yourself. |
+| `chicken_cook` | `cook` | Cook 16 chicken in a furnace or smoker; add the raw chicken yourself. |
+| `steak_cook` | `cook` | Cook 16 beef in a furnace or smoker; add the raw beef yourself. |
+| `level_training` | `gain_level` | Gain a total of 5 Minecraft experience levels after accepting. |
+| `level_mastery` | `gain_level` | Gain a total of 15 Minecraft experience levels after accepting. |
+| `worn_pickaxe` | `item_broken` | Use up a wooden pickaxe until it breaks. |
+| `worn_shears` | `item_broken` | Use up a pair of shears until it breaks. |
+
+Additional examples: `bread_crafter`, `crop_fertilizer`, `netherite_smith`, `sword_grinder`, `dairy_farmer`, `honey_collector`, `honeycomb_collector`, `anvil_restorer`, `anvil_enchanter`, `anvil_namer`, `placeholder_level_check`. Honeycomb and Placeholder examples are disabled by default; enable with Paper or the required PlaceholderAPI expansion respectively.
