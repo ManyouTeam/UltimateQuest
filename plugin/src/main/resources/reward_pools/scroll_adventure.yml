@@ -1,0 +1,602 @@
+enabled: true
+rewards:
+  common_bread:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: BREAD
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_bread}'
+  common_cooked_beef:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COOKED_BEEF
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_cooked_beef}'
+  common_cooked_chicken:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COOKED_CHICKEN
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_cooked_chicken}'
+  common_cooked_porkchop:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COOKED_PORKCHOP
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_cooked_porkchop}'
+  common_cooked_salmon:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COOKED_SALMON
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_cooked_salmon}'
+  common_cooked_cod:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COOKED_COD
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_cooked_cod}'
+  common_baked_potato:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: BAKED_POTATO
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_baked_potato}'
+  common_apple:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: APPLE
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_apple}'
+  common_carrot:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: CARROT
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_carrot}'
+  common_sweet_berries:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: SWEET_BERRIES
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_sweet_berries}'
+  common_torch:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: TORCH
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_torch}'
+  common_oak_log:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: OAK_LOG
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_oak_log}'
+  common_spruce_log:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: SPRUCE_LOG
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_spruce_log}'
+  common_jungle_log:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: JUNGLE_LOG
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_jungle_log}'
+  common_acacia_log:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: ACACIA_LOG
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_acacia_log}'
+  common_dark_oak_log:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: DARK_OAK_LOG
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_dark_oak_log}'
+  common_bamboo:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: BAMBOO
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_bamboo}'
+  common_sugar_cane:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: SUGAR_CANE
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_sugar_cane}'
+  common_leather:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: LEATHER
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_leather}'
+  common_string:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: STRING
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_string}'
+  common_feather:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: FEATHER
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_feather}'
+  common_bone:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: BONE
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_bone}'
+  common_arrow:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: ARROW
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_arrow}'
+  common_paper:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: PAPER
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_common_paper}'
+  uncommon_iron_ingot:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: IRON_INGOT
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_iron_ingot}'
+  uncommon_gold_ingot:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLD_INGOT
+          amount: 6
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_gold_ingot}'
+  uncommon_coal:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: COAL
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_coal}'
+  uncommon_book:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: BOOK
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_book}'
+  uncommon_slime_ball:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: SLIME_BALL
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_slime_ball}'
+  uncommon_gunpowder:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: GUNPOWDER
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_gunpowder}'
+  uncommon_ink_sac:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: INK_SAC
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_ink_sac}'
+  uncommon_glow_ink_sac:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: GLOW_INK_SAC
+          amount: 6
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_glow_ink_sac}'
+  uncommon_rabbit_hide:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: RABBIT_HIDE
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_rabbit_hide}'
+  uncommon_honey_bottle:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: HONEY_BOTTLE
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_honey_bottle}'
+  uncommon_pumpkin_seeds:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: PUMPKIN_SEEDS
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_pumpkin_seeds}'
+  uncommon_melon_seeds:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: MELON_SEEDS
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_melon_seeds}'
+  uncommon_cocoa_beans:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: COCOA_BEANS
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_cocoa_beans}'
+  uncommon_compass:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: COMPASS
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_compass}'
+  uncommon_clock:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: CLOCK
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_clock}'
+  uncommon_spyglass:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: SPYGLASS
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_uncommon_spyglass}'
+  rare_emerald:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: EMERALD
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_emerald}'
+  rare_experience_bottle:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_experience_bottle}'
+  rare_ender_pearl:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: ENDER_PEARL
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_ender_pearl}'
+  rare_blaze_rod:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: BLAZE_ROD
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_blaze_rod}'
+  rare_magma_cream:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: MAGMA_CREAM
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_magma_cream}'
+  rare_phantom_membrane:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: PHANTOM_MEMBRANE
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_phantom_membrane}'
+  rare_prismarine_shard:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: PRISMARINE_SHARD
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_prismarine_shard}'
+  rare_prismarine_crystals:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: PRISMARINE_CRYSTALS
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_prismarine_crystals}'
+  rare_nautilus_shell:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: NAUTILUS_SHELL
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_nautilus_shell}'
+  rare_saddle:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: SADDLE
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_saddle}'
+  rare_name_tag:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: NAME_TAG
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_name_tag}'
+  rare_golden_carrot:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLDEN_CARROT
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_rare_golden_carrot}'
+  epic_diamond:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 3
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_epic_diamond}'
+  epic_golden_apple:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLDEN_APPLE
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_epic_golden_apple}'
+  epic_ghast_tear:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: GHAST_TEAR
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_epic_ghast_tear}'
+  epic_diamond_sword:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_SWORD
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_epic_diamond_sword}'
+  epic_diamond_boots:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_BOOTS
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_epic_diamond_boots}'
+  epic_turtle_scute:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: TURTLE_SCUTE
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_epic_turtle_scute}'
+  legendary_heart_of_the_sea:
+    rate: 1
+    rewards:
+      item:
+        type: item
+        item:
+          material: HEART_OF_THE_SEA
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_legendary_heart_of_the_sea}'
+  legendary_totem_of_undying:
+    rate: 1
+    rewards:
+      item:
+        type: item
+        item:
+          material: TOTEM_OF_UNDYING
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.adventure_legendary_totem_of_undying}'

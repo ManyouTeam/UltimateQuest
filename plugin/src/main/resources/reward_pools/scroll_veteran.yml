@@ -1,0 +1,602 @@
+enabled: true
+rewards:
+  common_iron_ingot:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: IRON_INGOT
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_iron_ingot}'
+  common_gold_ingot:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLD_INGOT
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_gold_ingot}'
+  common_copper_ingot:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COPPER_INGOT
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_copper_ingot}'
+  common_coal:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COAL
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_coal}'
+  common_redstone:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: REDSTONE
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_redstone}'
+  common_lapis_lazuli:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: LAPIS_LAZULI
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_lapis_lazuli}'
+  common_quartz:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: QUARTZ
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_quartz}'
+  common_amethyst_shard:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: AMETHYST_SHARD
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_amethyst_shard}'
+  common_glowstone_dust:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: GLOWSTONE_DUST
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_glowstone_dust}'
+  common_obsidian:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: OBSIDIAN
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_obsidian}'
+  common_cooked_beef:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COOKED_BEEF
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_cooked_beef}'
+  common_cooked_porkchop:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COOKED_PORKCHOP
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_cooked_porkchop}'
+  common_cooked_salmon:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COOKED_SALMON
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_cooked_salmon}'
+  common_golden_carrot:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLDEN_CARROT
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_golden_carrot}'
+  common_arrow:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: ARROW
+          amount: 64
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_arrow}'
+  common_torch:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: TORCH
+          amount: 64
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_torch}'
+  common_leather:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: LEATHER
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_leather}'
+  common_book:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: BOOK
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_book}'
+  common_gunpowder:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: GUNPOWDER
+          amount: 24
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_gunpowder}'
+  common_slime_ball:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: SLIME_BALL
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_slime_ball}'
+  common_blaze_rod:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: BLAZE_ROD
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_blaze_rod}'
+  common_ender_pearl:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: ENDER_PEARL
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_ender_pearl}'
+  common_prismarine_shard:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: PRISMARINE_SHARD
+          amount: 32
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_prismarine_shard}'
+  common_prismarine_crystals:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: PRISMARINE_CRYSTALS
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_common_prismarine_crystals}'
+  uncommon_emerald:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: EMERALD
+          amount: 12
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_emerald}'
+  uncommon_experience_bottle:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 16
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_experience_bottle}'
+  uncommon_iron_block:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: IRON_BLOCK
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_iron_block}'
+  uncommon_gold_block:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLD_BLOCK
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_gold_block}'
+  uncommon_redstone_block:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: REDSTONE_BLOCK
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_redstone_block}'
+  uncommon_lapis_block:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: LAPIS_BLOCK
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_lapis_block}'
+  uncommon_coal_block:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: COAL_BLOCK
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_coal_block}'
+  uncommon_crying_obsidian:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: CRYING_OBSIDIAN
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_crying_obsidian}'
+  uncommon_magma_cream:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: MAGMA_CREAM
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_magma_cream}'
+  uncommon_phantom_membrane:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: PHANTOM_MEMBRANE
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_phantom_membrane}'
+  uncommon_ghast_tear:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: GHAST_TEAR
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_ghast_tear}'
+  uncommon_nautilus_shell:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: NAUTILUS_SHELL
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_nautilus_shell}'
+  uncommon_name_tag:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: NAME_TAG
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_name_tag}'
+  uncommon_saddle:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: SADDLE
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_saddle}'
+  uncommon_hopper:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: HOPPER
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_hopper}'
+  uncommon_sea_lantern:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: SEA_LANTERN
+          amount: 8
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_uncommon_sea_lantern}'
+  rare_diamond:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 6
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_diamond}'
+  rare_emerald_block:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: EMERALD_BLOCK
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_emerald_block}'
+  rare_golden_apple:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLDEN_APPLE
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_golden_apple}'
+  rare_diamond_sword:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_SWORD
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_diamond_sword}'
+  rare_diamond_pickaxe:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_PICKAXE
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_diamond_pickaxe}'
+  rare_diamond_axe:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_AXE
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_diamond_axe}'
+  rare_diamond_shovel:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_SHOVEL
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_diamond_shovel}'
+  rare_diamond_helmet:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_HELMET
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_diamond_helmet}'
+  rare_diamond_boots:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_BOOTS
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_diamond_boots}'
+  rare_turtle_scute:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: TURTLE_SCUTE
+          amount: 4
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_turtle_scute}'
+  rare_shulker_shell:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: SHULKER_SHELL
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_shulker_shell}'
+  rare_heart_of_the_sea:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: HEART_OF_THE_SEA
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_rare_heart_of_the_sea}'
+  epic_diamond_chestplate:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_CHESTPLATE
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_epic_diamond_chestplate}'
+  epic_diamond_leggings:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_LEGGINGS
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_epic_diamond_leggings}'
+  epic_diamond_block:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_BLOCK
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_epic_diamond_block}'
+  epic_netherite_scrap:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: NETHERITE_SCRAP
+          amount: 2
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_epic_netherite_scrap}'
+  epic_enchanted_golden_apple:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: ENCHANTED_GOLDEN_APPLE
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_epic_enchanted_golden_apple}'
+  epic_wither_skeleton_skull:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: WITHER_SKELETON_SKULL
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_epic_wither_skeleton_skull}'
+  legendary_netherite_ingot:
+    rate: 1
+    rewards:
+      item:
+        type: item
+        item:
+          material: NETHERITE_INGOT
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_legendary_netherite_ingot}'
+  legendary_totem_of_undying:
+    rate: 1
+    rewards:
+      item:
+        type: item
+        item:
+          material: TOTEM_OF_UNDYING
+          amount: 1
+        display:
+          name: '{lang:defaults.scroll-rewards.veteran_legendary_totem_of_undying}'

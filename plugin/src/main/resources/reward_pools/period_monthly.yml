@@ -1,0 +1,402 @@
+enabled: true
+rewards:
+  common_iron_ingot:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: IRON_INGOT
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_iron_ingot}'
+  common_gold_ingot:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLD_INGOT
+          amount: 12
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_gold_ingot}'
+  common_copper_ingot:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COPPER_INGOT
+          amount: 32
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_copper_ingot}'
+  common_coal:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COAL
+          amount: 32
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_coal}'
+  common_redstone:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: REDSTONE
+          amount: 32
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_redstone}'
+  common_lapis_lazuli:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: LAPIS_LAZULI
+          amount: 32
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_lapis_lazuli}'
+  common_quartz:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: QUARTZ
+          amount: 32
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_quartz}'
+  common_amethyst_shard:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: AMETHYST_SHARD
+          amount: 24
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_amethyst_shard}'
+  common_glowstone_dust:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: GLOWSTONE_DUST
+          amount: 24
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_glowstone_dust}'
+  common_obsidian:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: OBSIDIAN
+          amount: 24
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_obsidian}'
+  common_cooked_beef:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: COOKED_BEEF
+          amount: 24
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_cooked_beef}'
+  common_golden_carrot:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLDEN_CARROT
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_golden_carrot}'
+  common_arrow:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: ARROW
+          amount: 64
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_arrow}'
+  common_leather:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: LEATHER
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_leather}'
+  common_book:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: BOOK
+          amount: 12
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_book}'
+  common_gunpowder:
+    rate: 30
+    rewards:
+      item:
+        type: item
+        item:
+          material: GUNPOWDER
+          amount: 24
+        display:
+          name: '{lang:defaults.period-rewards.monthly_common_gunpowder}'
+  uncommon_emerald:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: EMERALD
+          amount: 12
+        display:
+          name: '{lang:defaults.period-rewards.monthly_uncommon_emerald}'
+  uncommon_experience_bottle:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: EXPERIENCE_BOTTLE
+          amount: 16
+        display:
+          name: '{lang:defaults.period-rewards.monthly_uncommon_experience_bottle}'
+  uncommon_iron_block:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: IRON_BLOCK
+          amount: 4
+        display:
+          name: '{lang:defaults.period-rewards.monthly_uncommon_iron_block}'
+  uncommon_gold_block:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLD_BLOCK
+          amount: 2
+        display:
+          name: '{lang:defaults.period-rewards.monthly_uncommon_gold_block}'
+  uncommon_coal_block:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: COAL_BLOCK
+          amount: 4
+        display:
+          name: '{lang:defaults.period-rewards.monthly_uncommon_coal_block}'
+  uncommon_crying_obsidian:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: CRYING_OBSIDIAN
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.monthly_uncommon_crying_obsidian}'
+  uncommon_ghast_tear:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: GHAST_TEAR
+          amount: 2
+        display:
+          name: '{lang:defaults.period-rewards.monthly_uncommon_ghast_tear}'
+  uncommon_nautilus_shell:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: NAUTILUS_SHELL
+          amount: 4
+        display:
+          name: '{lang:defaults.period-rewards.monthly_uncommon_nautilus_shell}'
+  uncommon_name_tag:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: NAME_TAG
+          amount: 2
+        display:
+          name: '{lang:defaults.period-rewards.monthly_uncommon_name_tag}'
+  uncommon_sea_lantern:
+    rate: 16
+    rewards:
+      item:
+        type: item
+        item:
+          material: SEA_LANTERN
+          amount: 8
+        display:
+          name: '{lang:defaults.period-rewards.monthly_uncommon_sea_lantern}'
+  rare_diamond:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND
+          amount: 6
+        display:
+          name: '{lang:defaults.period-rewards.monthly_rare_diamond}'
+  rare_emerald_block:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: EMERALD_BLOCK
+          amount: 2
+        display:
+          name: '{lang:defaults.period-rewards.monthly_rare_emerald_block}'
+  rare_golden_apple:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: GOLDEN_APPLE
+          amount: 4
+        display:
+          name: '{lang:defaults.period-rewards.monthly_rare_golden_apple}'
+  rare_diamond_sword:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_SWORD
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.monthly_rare_diamond_sword}'
+  rare_diamond_pickaxe:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_PICKAXE
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.monthly_rare_diamond_pickaxe}'
+  rare_diamond_helmet:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_HELMET
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.monthly_rare_diamond_helmet}'
+  rare_diamond_boots:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_BOOTS
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.monthly_rare_diamond_boots}'
+  rare_shulker_shell:
+    rate: 7
+    rewards:
+      item:
+        type: item
+        item:
+          material: SHULKER_SHELL
+          amount: 2
+        display:
+          name: '{lang:defaults.period-rewards.monthly_rare_shulker_shell}'
+  epic_diamond_chestplate:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_CHESTPLATE
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.monthly_epic_diamond_chestplate}'
+  epic_diamond_leggings:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: DIAMOND_LEGGINGS
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.monthly_epic_diamond_leggings}'
+  epic_netherite_scrap:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: NETHERITE_SCRAP
+          amount: 2
+        display:
+          name: '{lang:defaults.period-rewards.monthly_epic_netherite_scrap}'
+  epic_enchanted_golden_apple:
+    rate: 3
+    rewards:
+      item:
+        type: item
+        item:
+          material: ENCHANTED_GOLDEN_APPLE
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.monthly_epic_enchanted_golden_apple}'
+  legendary_netherite_ingot:
+    rate: 1
+    rewards:
+      item:
+        type: item
+        item:
+          material: NETHERITE_INGOT
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.monthly_legendary_netherite_ingot}'
+  legendary_totem_of_undying:
+    rate: 1
+    rewards:
+      item:
+        type: item
+        item:
+          material: TOTEM_OF_UNDYING
+          amount: 1
+        display:
+          name: '{lang:defaults.period-rewards.monthly_legendary_totem_of_undying}'
