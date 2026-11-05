@@ -5,12 +5,14 @@ import cn.superiormc.ultimatequest.database.AbstractDatabase;
 import cn.superiormc.ultimatequest.database.DatabaseExecutor;
 import cn.superiormc.ultimatequest.database.SQLDatabase;
 import cn.superiormc.ultimatequest.database.YamlDatabase;
+import cn.superiormc.ultimatequest.objects.quests.ObjectScrollRecord;
 import cn.superiormc.ultimatequest.objects.quests.QuestPlayerData;
+import cn.superiormc.ultimatequest.objects.quests.QuestSeasonData;
 import cn.superiormc.ultimatequest.utils.TextUtil;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public final class QuestStorage extends AbstractManager {
 
@@ -32,24 +34,26 @@ public final class QuestStorage extends AbstractManager {
         return DatabaseExecutor.supplyDatabaseTask(database::allPlayers);
     }
 
-    public YamlConfiguration loadSeasons() {
-        return database.loadServerData("seasons");
+    public Map<String, QuestSeasonData> loadSeasons() {
+        return database.loadSeasons();
     }
 
-    public void saveSeasons(YamlConfiguration data, long expectedRevision) {
-        database.saveServerData("seasons", data, expectedRevision);
+    public Map<String, QuestSeasonData> saveSeasons(Map<String, QuestSeasonData> data,
+            Map<String, QuestSeasonData> previous) {
+        return database.saveSeasons(data, previous);
     }
 
-    public CompletableFuture<Void> saveCritical(QuestPlayerData snapshot) {
-        return DatabaseExecutor.executePlayerTask(snapshot.storageId(), () -> database.updateData(snapshot));
+    public CompletableFuture<Void> saveCritical(QuestPlayerData data, QuestPlayerData previous) {
+        return DatabaseExecutor.executePlayerTask(data.storageId(), () -> database.updateData(data, previous));
     }
 
-    public CompletableFuture<QuestPlayerData> loadScroll(UUID token) {
-        return DatabaseExecutor.supplyPlayerTask("scroll:" + token, () -> database.checkData(token, true));
+    public CompletableFuture<ObjectScrollRecord> loadScroll(UUID token) {
+        return DatabaseExecutor.supplyPlayerTask("scroll:" + token, () -> database.checkScroll(token));
     }
 
-    public CompletableFuture<Void> saveScroll(QuestPlayerData snapshot) {
-        return DatabaseExecutor.executePlayerTask("scroll:" + snapshot.storageId(), () -> database.updateData(snapshot, true));
+    public CompletableFuture<Void> saveScroll(ObjectScrollRecord data) {
+        ObjectScrollRecord copy = data.copy();
+        return DatabaseExecutor.executePlayerTask("scroll:" + data.token(), () -> database.updateScroll(copy));
     }
 
     @Override

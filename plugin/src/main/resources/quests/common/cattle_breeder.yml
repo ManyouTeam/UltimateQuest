@@ -1,0 +1,22 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.objectives.cattle_breeder}'
+icon:
+  material: WHEAT
+trigger: breed
+amount: 4
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  animal:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - COW

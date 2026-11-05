@@ -226,7 +226,7 @@ public class DatabaseExecutor {
                     throw new RejectedExecutionException("Database executor is shut down");
                 }
                 warnQueueFull(threadName);
-                runnable.run();
+                throw new RejectedExecutionException("Database executor queue is full");
             });
         }
 
@@ -279,6 +279,6 @@ public class DatabaseExecutor {
         if (now - previous < WARNING_INTERVAL_MILLIS || !lastQueueWarning.compareAndSet(previous, now)) {
             return;
         }
-        ErrorManager.errorManager.sendErrorMessage("§cError: " + executorName + " queue is full; applying caller backpressure to prevent data loss.");
+        ErrorManager.errorManager.sendErrorMessage("§cError: " + executorName + " queue is full; rejected task while preserving unsaved data.");
     }
 }

@@ -1,13 +1,12 @@
 package cn.superiormc.ultimatequest.managers;
 
-import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.database.DatabaseExecutor;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
+import cn.superiormc.ultimatequest.objects.quests.QuestSeasonData;
 import cn.superiormc.ultimatequest.objects.time.ObjectSeason;
 import cn.superiormc.ultimatequest.objects.time.TimeWindow;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
 import cn.superiormc.ultimatequest.utils.TextUtil;
-import java.io.File;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -16,18 +15,17 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public final class SeasonManager {
 
     public static SeasonManager seasonManager;
 
-    private volatile YamlConfiguration data = new YamlConfiguration();
+    private volatile Map<String, QuestSeasonData> data = Map.of();
 
-    private YamlConfiguration working;
+    private Map<String, QuestSeasonData> working;
 
-    private String originalData;
+    private Map<String, QuestSeasonData> originalData;
 
     private Map<String, TimeWindow> workingWindows;
 
@@ -90,20 +88,23 @@ public final class SeasonManager {
     }
 
     private void editState(String type, String id, String operation, List<String> values) {
-        String path = statePath(type, id);
+        String key = statePath(type, id);
+        QuestSeasonData state = working.getOrDefault(key, QuestSeasonData.empty());
         Instant now = Instant.now();
         switch (operation) {
             case "pause", "resume" -> {
                 requireValues(values, 0);
-                working.set(path + ".paused", operation.equals("pause"));
+                working.put(key, new QuestSeasonData(state.revision(), state.season(), state.cycleStart(),
+                        operation.equals("pause"), state.rotationDisabled(), state.windowOverride(), state.window(),
+                        state.booster(), state.boosterUntil(), state.history()));
             }
             case "end" -> {
                 requireValues(values, 0);
                 TimeWindow window = targetWindow(type, id);
-                working.set(path + ".starts-at", window.startsAt() != null && window.startsAt().isBefore(now)
-                        ? window.startsAt().toString() : "");
-                working.set(path + ".ends-at", now.toString());
-                working.set(path + ".rotation-disabled", true);
+                TimeWindow ended = new TimeWindow(window.startsAt() != null && window.startsAt().isBefore(now)
+                        ? window.startsAt() : null, now, window.claimGraceSeconds(), false);
+                working.put(key, new QuestSeasonData(state.revision(), state.season(), state.cycleStart(),
+                        state.paused(), true, true, ended, state.booster(), state.boosterUntil(), state.history()));
             }
             case "start" -> {
                 requireValues(values, 2);
@@ -124,8 +125,9 @@ public final class SeasonManager {
                 if (!Double.isFinite(multiplier) || multiplier < 1D || seconds <= 0L) {
                     throw new IllegalArgumentException("Invalid booster");
                 }
-                working.set(path + ".global-booster.multiplier", multiplier);
-                working.set(path + ".global-booster.expires-at", now.plusSeconds(seconds).toEpochMilli());
+                working.put(key, new QuestSeasonData(state.revision(), state.season(), state.cycleStart(),
+                        state.paused(), state.rotationDisabled(), state.windowOverride(), state.window(), multiplier,
+                        now.plusSeconds(seconds).toEpochMilli(), state.history()));
             }
             default -> {
                 throw new IllegalArgumentException("Unknown season operation");
@@ -146,24 +148,21 @@ public final class SeasonManager {
         String path = statePath(type, id);
         QuestDefinition definition = ConfigManager.configManager.getDefinitions().values().stream()
                 .filter(candidate -> candidate.type().equals(type) && candidate.id().equals(id)).findFirst().orElse(null);
-        String previous = definition == null ? working.getString(path + ".season", "")
-                : currentSeason(definition, working, targetWindow(type, id));
-        if (season.equals(previous) || working.contains(path + ".history." + season)) {
+        QuestSeasonData state = working.getOrDefault(path, QuestSeasonData.empty());
+        String previous = definition == null ? state.season() : currentSeason(definition, working, targetWindow(type, id));
+        if (season.equals(previous) || state.history().containsKey(season)) {
             throw new IllegalArgumentException("Use a new season ID");
         }
+        Map<String, TimeWindow> history = new LinkedHashMap<>(state.history());
+        TimeWindow window = targetWindow(type, id);
         if (!previous.isEmpty()) {
-            TimeWindow window = targetWindow(type, id);
             Instant now = Instant.now();
             Instant previousEnd = window.endsAt() == null || window.endsAt().isAfter(now) ? now : window.endsAt();
             Instant previousStart = window.startsAt() != null && window.startsAt().isBefore(previousEnd) ? window.startsAt() : null;
-            saveWindow(path + ".history." + previous,
-                    new TimeWindow(previousStart, previousEnd, window.claimGraceSeconds(), false));
+            history.put(previous, new TimeWindow(previousStart, previousEnd, window.claimGraceSeconds(), false));
         }
-        working.set(path + ".season", season);
-        working.set(path + ".starts-at", start.toString());
-        working.set(path + ".ends-at", end.toString());
-        working.set(path + ".rotation-disabled", true);
-        working.set(path + ".paused", false);
+        working.put(path, new QuestSeasonData(state.revision(), season, state.cycleStart(), false, true, true,
+                new TimeWindow(start, end, window.claimGraceSeconds(), false), state.booster(), state.boosterUntil(), history));
     }
 
     private TimeWindow targetWindow(String type, String id) {
@@ -176,22 +175,8 @@ public final class SeasonManager {
     }
 
     public void beginReload() throws Exception {
-        working = QuestStorage.questStorage.loadSeasons();
-        if (!working.getKeys(false).isEmpty() && working.getInt("schema-version") != 1) {
-            throw new IllegalStateException("Unsupported season data version");
-        }
-        originalData = working.saveToString();
-        working.set("schema-version", 1);
-        if (working.getLong("revision") == 0L) {
-            File legacyFile = new File(UltimateQuest.instance.getDataFolder(), "season-cycles.yml");
-            if (legacyFile.isFile()) {
-                YamlConfiguration legacy = new YamlConfiguration();
-                legacy.load(legacyFile);
-                for (String key : legacy.getKeys(false)) {
-                    working.set("cycles." + key, legacy.getLong(key));
-                }
-            }
-        }
+        originalData = QuestStorage.questStorage.loadSeasons();
+        working = new LinkedHashMap<>(originalData);
         workingWindows = new LinkedHashMap<>();
         candidateNext = Instant.MAX;
     }
@@ -213,27 +198,24 @@ public final class SeasonManager {
             return;
         }
         Instant start = season.getPrevious(now);
-        long saved = working.getLong("cycles." + key, Long.MIN_VALUE);
+        QuestSeasonData state = working.getOrDefault(key, QuestSeasonData.empty());
+        long saved = state.cycleStart() == null ? Long.MIN_VALUE : state.cycleStart();
         if (saved > start.getEpochSecond()) {
             start = Instant.ofEpochSecond(saved);
         }
         Instant end = season.getNext(start);
         TimeWindow window = new TimeWindow(start, end, definition.settings().getLong("claim-grace-seconds", 0L),
-                working.getBoolean(statePath(definition) + ".paused", definition.settings().getBoolean("paused", false)));
+                state.paused() == null ? definition.settings().getBoolean("paused", false) : state.paused());
         workingWindows.put(key, window);
-        working.set("cycles." + key, start.getEpochSecond());
+        working.put(key, new QuestSeasonData(state.revision(), state.season(), start.getEpochSecond(), state.paused(),
+                state.rotationDisabled(), state.windowOverride(), state.window(), state.booster(), state.boosterUntil(), state.history()));
         if (end.isBefore(candidateNext)) {
             candidateNext = end;
         }
     }
 
     public void commitReload() {
-        if (!working.saveToString().equals(originalData)) {
-            long revision = working.getLong("revision");
-            working.set("revision", Math.addExact(revision, 1L));
-            QuestStorage.questStorage.saveSeasons(working, revision);
-        }
-        data = working;
+        data = QuestStorage.questStorage.saveSeasons(working, originalData);
         Instant poll = Instant.now().plusSeconds(5L);
         nextCheck = candidateNext.isBefore(poll) ? candidateNext : poll;
         cancelReload();
@@ -246,18 +228,19 @@ public final class SeasonManager {
         candidateNext = Instant.MAX;
     }
 
-    private boolean rotating(QuestDefinition definition, YamlConfiguration state) {
+    private boolean rotating(QuestDefinition definition, Map<String, QuestSeasonData> state) {
         return definition.growth() && definition.seasonConfig().isRotating()
-                && !state.getBoolean(statePath(definition) + ".rotation-disabled", false);
+                && !state.getOrDefault(statePath(definition), QuestSeasonData.empty()).rotationDisabled();
     }
 
-    private String currentSeason(QuestDefinition definition, YamlConfiguration state, TimeWindow window) {
+    private String currentSeason(QuestDefinition definition, Map<String, QuestSeasonData> state, TimeWindow window) {
         return rotating(definition, state) ? definition.seasonConfig().getId(window.startsAt())
-                : state.getString(statePath(definition) + ".season", definition.season());
+                : (state.getOrDefault(statePath(definition), QuestSeasonData.empty()).season().isEmpty() ? definition.season()
+                        : state.get(statePath(definition)).season());
     }
 
     public String season(QuestDefinition definition) {
-        YamlConfiguration current = data;
+        Map<String, QuestSeasonData> current = data;
         return currentSeason(definition, current, window(definition, current));
     }
 
@@ -270,13 +253,14 @@ public final class SeasonManager {
         return window(definition, data);
     }
 
-    private TimeWindow window(QuestDefinition definition, YamlConfiguration state) {
+    private TimeWindow window(QuestDefinition definition, Map<String, QuestSeasonData> state) {
         if (rotating(definition, state)) {
-            long saved = state.getLong("cycles." + definition.catalogKey(), Long.MIN_VALUE);
+            QuestSeasonData savedState = state.getOrDefault(statePath(definition), QuestSeasonData.empty());
+            long saved = savedState.cycleStart() == null ? Long.MIN_VALUE : savedState.cycleStart();
             Instant start = saved == Long.MIN_VALUE ? definition.seasonConfig().getPrevious(Instant.now()) : Instant.ofEpochSecond(saved);
             return new TimeWindow(start, definition.seasonConfig().getNext(start),
                     definition.settings().getLong("claim-grace-seconds", 0L),
-                    state.getBoolean(statePath(definition) + ".paused", definition.settings().getBoolean("paused", false)));
+                    savedState.paused() == null ? definition.settings().getBoolean("paused", false) : savedState.paused());
         }
         return configuredWindow(definition, state);
     }
@@ -290,9 +274,9 @@ public final class SeasonManager {
         if (season.equals(season(definition))) {
             return window(definition);
         }
-        ConfigurationSection history = data.getConfigurationSection(statePath(definition) + ".history." + season);
+        TimeWindow history = data.getOrDefault(statePath(definition), QuestSeasonData.empty()).history().get(season);
         if (history != null) {
-            return TimeWindow.read(history);
+            return history;
         }
         if (fallback != null) {
             return fallback;
@@ -312,37 +296,30 @@ public final class SeasonManager {
     }
 
     public boolean paused(QuestDefinition definition) {
-        return data.getBoolean(statePath(definition) + ".paused", definition.settings().getBoolean("paused", false));
+        Boolean paused = data.getOrDefault(statePath(definition), QuestSeasonData.empty()).paused();
+        return paused == null ? definition.settings().getBoolean("paused", false) : paused;
     }
 
     public double globalBooster(QuestDefinition definition, Instant now) {
-        String path = statePath(definition) + ".global-booster";
-        return now.toEpochMilli() < data.getLong(path + ".expires-at", 0L)
-                ? data.getDouble(path + ".multiplier", 1D) : 1D;
+        QuestSeasonData state = data.getOrDefault(statePath(definition), QuestSeasonData.empty());
+        return now.toEpochMilli() < state.boosterUntil() ? state.booster() : 1D;
     }
 
     public TimeWindow periodWindow(String id, ConfigurationSection settings) {
         return resolveWindow(data, "period", id, TimeWindow.read(settings));
     }
 
-    private TimeWindow configuredWindow(QuestDefinition definition, YamlConfiguration state) {
+    private TimeWindow configuredWindow(QuestDefinition definition, Map<String, QuestSeasonData> state) {
         TimeWindow defaults = new TimeWindow(definition.startsAt(), definition.endsAt(),
                 definition.settings().getLong("claim-grace-seconds", 0L), definition.settings().getBoolean("paused", false));
         return resolveWindow(state, definition.type(), definition.id(), defaults);
     }
 
-    private TimeWindow resolveWindow(YamlConfiguration state, String type, String id, TimeWindow defaults) {
-        String path = statePath(type, id);
-        String start = state.getString(path + ".starts-at", defaults.startsAt() == null ? "" : defaults.startsAt().toString());
-        String end = state.getString(path + ".ends-at", defaults.endsAt() == null ? "" : defaults.endsAt().toString());
-        return new TimeWindow(start.isBlank() ? null : Instant.parse(start), end.isBlank() ? null : Instant.parse(end),
-                defaults.claimGraceSeconds(), state.getBoolean(path + ".paused", defaults.paused()));
-    }
-
-    private void saveWindow(String path, TimeWindow window) {
-        working.set(path + ".starts-at", window.startsAt() == null ? "" : window.startsAt().toString());
-        working.set(path + ".ends-at", window.endsAt() == null ? "" : window.endsAt().toString());
-        working.set(path + ".claim-grace-seconds", window.claimGraceSeconds());
+    private TimeWindow resolveWindow(Map<String, QuestSeasonData> state, String type, String id, TimeWindow defaults) {
+        QuestSeasonData saved = state.getOrDefault(statePath(type, id), QuestSeasonData.empty());
+        TimeWindow window = saved.windowOverride() ? saved.window() : defaults;
+        return new TimeWindow(window.startsAt(), window.endsAt(), defaults.claimGraceSeconds(),
+                saved.paused() == null ? defaults.paused() : saved.paused());
     }
 
     private String statePath(QuestDefinition definition) {
@@ -350,7 +327,7 @@ public final class SeasonManager {
     }
 
     private String statePath(String type, String id) {
-        return "definitions." + type + "." + id;
+        return type + "/" + id;
     }
 
     public void refresh() {

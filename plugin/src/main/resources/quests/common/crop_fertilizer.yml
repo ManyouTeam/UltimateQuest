@@ -1,0 +1,20 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.objectives.crop_fertilizer}'
+icon:
+  material: BONE_MEAL
+trigger: fertilize_block
+amount: 8
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  crop:
+    type: block_type
+    types:
+    - WHEAT

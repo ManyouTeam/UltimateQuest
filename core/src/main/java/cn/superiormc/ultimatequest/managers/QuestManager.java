@@ -1,14 +1,14 @@
 package cn.superiormc.ultimatequest.managers;
 
-import static cn.superiormc.ultimatequest.managers.CacheManager.cacheManager;
-
 import cn.superiormc.ultimatequest.gui.inv.CategoryMenuGUI;
 import cn.superiormc.ultimatequest.gui.inv.ConfiguredMenuGUI;
 import cn.superiormc.ultimatequest.objects.QuestContext;
 import cn.superiormc.ultimatequest.objects.caches.ObjectCache;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
 import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
+import cn.superiormc.ultimatequest.objects.quests.QuestInstanceData;
 import cn.superiormc.ultimatequest.objects.quests.QuestObjective;
+import cn.superiormc.ultimatequest.objects.quests.QuestPlayerData;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
 import cn.superiormc.ultimatequest.utils.TextUtil;
@@ -36,6 +36,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import static cn.superiormc.ultimatequest.managers.CacheManager.cacheManager;
 
 public final class QuestManager extends AbstractManager {
 
@@ -140,7 +141,7 @@ public final class QuestManager extends AbstractManager {
                 LanguageManager.languageManager.sendStringText(player, "quests.admin-only");
                 return;
             }
-            if (quests.containsKey(definition.id())) {
+            if (quests.containsKey(definition.id()) || cache.unresolved(definition.id())) {
                 LanguageManager.languageManager.sendStringText(player, "quests.already-accepted");
                 return;
             }
@@ -476,9 +477,6 @@ public final class QuestManager extends AbstractManager {
                         cacheManager.changed(id);
                         feedbackChanged |= objective.getBoolean("progress-feedback", true)
                                 && objective.getBoolean("progress-feedback.enabled", true);
-                        if (quest.source().equals("scroll")) {
-                            QuestScrollManager.questScrollManager.saveProgress(context.player(), quest);
-                        }
                     }
                 }
                 if (feedbackChanged) {
@@ -701,7 +699,7 @@ public final class QuestManager extends AbstractManager {
             String key = SeasonManager.seasonManager.storageKey(definition);
             QuestInstance quest = quests.get(key);
             if (quest == null) {
-                if (SeasonManager.seasonManager.paused(definition)
+                if (cacheManager.getObjectCache(id).unresolved(key) || SeasonManager.seasonManager.paused(definition)
                         || !SeasonManager.seasonManager.window(definition).active(Instant.now())) {
                     continue;
                 }
@@ -778,14 +776,15 @@ public final class QuestManager extends AbstractManager {
         cacheManager.editOffline(id, data -> {
             try {
                 String key = pass.contains("@") ? type + "/" + pass.replace('@', '/') : SeasonManager.seasonManager.storageKey(definition);
-                ConfigurationSection section = data.getConfigurationSection("quests." + key);
-                QuestInstance quest = section == null ? new QuestInstance(definition) : new QuestInstance(key, section);
+                QuestInstanceData saved = data.quests().get(key);
+                QuestInstance quest = saved == null ? new QuestInstance(definition) : new QuestInstance(saved, definition);
                 if (!quest.key().equals(key)) {
                     throw new IllegalArgumentException("Archived season not found");
                 }
                 progression.applyChange(quest, operation, values);
-                data.set("quests." + key, null);
-                quest.write(data.createSection("quests." + key));
+                Map<String, QuestInstanceData> edited = new LinkedHashMap<>(data.quests());
+                edited.put(key, quest.data());
+                return new QuestPlayerData(id, data.playerName(), data.revision(), edited, data.periodRolls());
             } catch (Exception exception) {
                 throw new IllegalArgumentException("Could not edit progression data", exception);
             }
@@ -1367,7 +1366,7 @@ public final class QuestManager extends AbstractManager {
         }
     }
 
-    private void rebuildIndex(UUID id) {
+    public void rebuildIndex(UUID id) {
         Map<String, List<String>> index = new HashMap<>();
         for (QuestInstance quest : cacheManager.questsOrEmpty(id).values()) {
             if (!quest.state().equals("ACTIVE")) {

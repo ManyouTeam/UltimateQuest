@@ -1,0 +1,24 @@
+enabled: true
+categories:
+- craftsmanship
+name: '{lang:defaults.objectives.swiftness_brewer}'
+icon:
+  material: SUGAR
+trigger: brew
+amount: 3
+count: items
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  output:
+    type: match_item
+    item: COUNTED_ITEM
+    match:
+      material:
+      - POTION
+      potion-types:
+      - SWIFTNESS

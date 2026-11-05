@@ -1,10 +1,12 @@
 package cn.superiormc.ultimatequest.database.sql;
 
+import java.util.List;
+
 public final class MySQLDialect extends DatabaseDialect {
 
     @Override
-    protected String serverDataPayloadType() {
-        return "LONGTEXT";
+    public List<String> createTables() {
+        return super.createTables().stream().map(sql -> sql + " ENGINE=InnoDB").toList();
     }
 
     @Override
@@ -20,30 +22,6 @@ public final class MySQLDialect extends DatabaseDialect {
     @Override
     public int minIdle() {
         return 1;
-    }
-
-    @Override
-    public String createPlayerDataTable() {
-        return """
-            CREATE TABLE IF NOT EXISTS ultimatequest_player_data (
-                player_uuid VARCHAR(36) NOT NULL PRIMARY KEY,
-                player_name VARCHAR(32) NOT NULL,
-                revision BIGINT NOT NULL,
-                payload LONGTEXT NOT NULL
-            )
-            """;
-    }
-
-    @Override
-    public String upsertPlayerData() {
-        return """
-            INSERT INTO ultimatequest_player_data (player_uuid, player_name, revision, payload)
-            VALUES (?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE
-            player_name = IF(VALUES(revision) >= revision, VALUES(player_name), player_name),
-            payload = IF(VALUES(revision) >= revision, VALUES(payload), payload),
-            revision = GREATEST(revision, VALUES(revision))
-            """;
     }
 
     @Override

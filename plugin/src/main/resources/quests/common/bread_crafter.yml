@@ -1,0 +1,22 @@
+enabled: true
+categories:
+- craftsmanship
+name: '{lang:defaults.objectives.bread_crafter}'
+icon:
+  material: BREAD
+trigger: craft_item
+amount: 16
+count: items
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  output:
+    type: match_item
+    item: COUNTED_ITEM
+    match:
+      material:
+      - BREAD

@@ -1,10 +1,10 @@
 package cn.superiormc.ultimatequest.objects.quests;
 
-import cn.superiormc.ultimatequest.managers.ConfigManager;
 import cn.superiormc.ultimatequest.managers.RewardManager;
 import cn.superiormc.ultimatequest.managers.SeasonManager;
 import cn.superiormc.ultimatequest.objects.time.TimeWindow;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,21 +28,13 @@ public final class QuestInstance {
 
     private final long acceptedAt;
 
-    private final Map<String, Long> progress = new LinkedHashMap<>();
+    private final Map<String, BigDecimal> progress = new LinkedHashMap<>();
 
-    private final Map<String, BigDecimal> progressRemainders = new LinkedHashMap<>();
-
-    private BigDecimal totalRemainder = BigDecimal.ZERO;
-
-    private final Map<String, String> stageStates = new LinkedHashMap<>();
-
-    private final Map<String, List<String>> stageRewardKeys = new LinkedHashMap<>();
-
-    private final Map<String, Long> stageRequirements = new LinkedHashMap<>();
+    private final Map<String, QuestStageData> stages = new LinkedHashMap<>();
 
     private final List<String> rewardKeys;
 
-    private long total;
+    private BigDecimal total = BigDecimal.ZERO;
 
     private boolean premium;
 
@@ -67,11 +59,7 @@ public final class QuestInstance {
         seasonWindow = original.seasonWindow;
         acceptedAt = original.acceptedAt;
         progress.putAll(original.progress);
-        progressRemainders.putAll(original.progressRemainders);
-        totalRemainder = original.totalRemainder;
-        stageStates.putAll(original.stageStates);
-        original.stageRewardKeys.forEach((key, value) -> stageRewardKeys.put(key, List.copyOf(value)));
-        stageRequirements.putAll(original.stageRequirements);
+        stages.putAll(original.stages);
         rewardKeys = original.rewardKeys == null ? null : List.copyOf(original.rewardKeys);
         total = original.total;
         premium = original.premium;
@@ -104,101 +92,36 @@ public final class QuestInstance {
         validateSource();
     }
 
-    public QuestInstance(String id, ConfigurationSection section) throws Exception {
-        this(id, section, ConfigManager.configManager.resolveDefinition(id, section));
-    }
-
-    public QuestInstance(String id, ConfigurationSection section, QuestDefinition definition) throws Exception {
-        if (section == null) {
-            throw new IllegalArgumentException("Missing quest instance: " + id);
+    public QuestInstance(QuestInstanceData data, QuestDefinition definition) {
+        if (definition == null || !definition.catalogKey().equals(data.templateId())) {
+            throw new IllegalArgumentException("Missing or mismatched quest definition: " + data.templateId());
         }
-        if (definition == null) {
-            throw new IllegalArgumentException("Missing quest definition: " + id);
-        }
-        instanceId = UUID.fromString(section.getString("instance-id", ""));
-        acceptedAt = section.getLong("accepted-at");
+        instanceId = data.instanceId();
         this.definition = definition;
-        String prefix = definition.catalogKey() + "/";
-        season = definition.growth() ? section.getString("season", id.startsWith(prefix)
-                ? id.substring(prefix.length()) : "") : definition.season();
-        if (!season.isEmpty() && !season.matches("[a-z0-9_-]+")) {
-            throw new IllegalArgumentException("Invalid saved season: " + id);
-        }
-        ConfigurationSection savedWindow = section.getConfigurationSection("season-time");
-        seasonWindow = savedWindow == null ? initialWindow(definition, season) : TimeWindow.read(savedWindow);
-        source = section.getString("source", "normal");
-        sourceId = section.getString("source-id", "");
-        cycle = section.getString("cycle", "");
-        expiresAt = section.getLong("expires-at", 0L);
-        rewardKeys = section.contains("reward-keys") ? readRewardKeys(section, "reward-keys") : null;
-        if (rewardKeys == null && RewardManager.rewardManager.hasRandom(definition.rewards())) {
-            throw new IllegalArgumentException("Missing saved reward keys: " + id);
-        }
+        acceptedAt = data.acceptedAt();
+        season = data.season();
+        seasonWindow = data.seasonWindow();
+        source = data.source();
+        sourceId = data.sourceId();
+        cycle = data.cycle();
+        expiresAt = data.expiresAt();
+        rewardKeys = data.rewardKeys();
+        state = data.state();
+        progress.putAll(data.progress());
+        total = data.total();
+        premium = data.premium();
+        booster = data.booster();
+        boosterUntil = data.boosterUntil();
+        stages.putAll(data.stages());
         validateSource();
-        if (!key().equals(id)) {
-            throw new IllegalArgumentException("Quest instance key does not match its definition: " + id);
+        if (!key().equals(data.questKey())) {
+            throw new IllegalArgumentException("Quest key does not match its definition: " + data.questKey());
         }
-        state = section.getString("state", "");
-        if (!STATES.contains(state)) {
-            throw new IllegalArgumentException("Unknown quest state: " + state);
+        if (rewardKeys == null && RewardManager.rewardManager.hasRandom(definition.rewards())) {
+            throw new IllegalArgumentException("Missing saved reward choices: " + key());
         }
-        if (!definition.growth()) {
-            for (QuestObjective objective : definition.objectives()) {
-                long value = section.getLong("progress." + objective.getId(), 0L);
-                if (value < 0L) {
-                    throw new IllegalArgumentException("Invalid progress for " + id + "/" + objective.getId());
-                }
-                value = Math.min(value, objective.required());
-                progress.put(objective.getId(), value);
-                BigDecimal remainder = FractionalProgress.readRemainder(
-                        section.getString("progress-remainders." + objective.getId(), "0"));
-                if (value == objective.required()) {
-                    remainder = BigDecimal.ZERO;
-                }
-                if (remainder.signum() > 0) {
-                    progressRemainders.put(objective.getId(), remainder);
-                }
-            }
-        }
-        total = section.getLong("total", 0L);
-        totalRemainder = FractionalProgress.readRemainder(section.getString("total-remainder", "0"));
-        premium = section.getBoolean("premium", false);
-        booster = section.getDouble("booster.multiplier", 1D);
-        boosterUntil = section.getLong("booster.expires-at", 0L);
-        if (!Double.isFinite(booster) || booster < 1D || boosterUntil < 0L) {
-            throw new IllegalArgumentException("Invalid saved booster");
-        }
-        if (total < 0L || total == Long.MAX_VALUE && totalRemainder.signum() > 0) {
-            throw new IllegalArgumentException("Invalid progression total: " + id);
-        }
-        ConfigurationSection stages = section.getConfigurationSection("stage-states");
-        ConfigurationSection savedRewards = section.getConfigurationSection("stage-rewards");
-        if (stages != null) {
-            for (String key : stages.getKeys(false)) {
-                String value = stages.getString(key, "");
-                ConfigurationSection reward = savedRewards == null ? null : savedRewards.getConfigurationSection(key);
-                if (!key.matches("(?:free|premium|default)/[1-9][0-9]*")
-                        || !Set.of("AVAILABLE", "CLAIMING", "CLAIMED", "REVIEW").contains(value) || reward == null) {
-                    throw new IllegalArgumentException("Invalid progression reward state: " + key);
-                }
-                Integer.parseInt(key.split("/")[1]);
-                long required = QuestDefinition.positiveLong(reward, "required", 0L);
-                if (!definition.growth() || !definition.tracks().contains(key.split("/")[0])
-                        || required > Math.max(total, section.getLong("highest-total", total))) {
-                    throw new IllegalArgumentException("Invalid progression reward: " + key);
-                }
-                stageStates.put(key, value);
-                stageRewardKeys.put(key, readRewardKeys(reward, "reward-keys"));
-                stageRequirements.put(key, required);
-            }
-        }
-        if (savedRewards != null && !savedRewards.getKeys(false).equals(stageStates.keySet())) {
-            throw new IllegalArgumentException("Progression rewards do not match reward states: " + id);
-        }
-        if (definition.growth()) {
-            unlockStages();
-        } else if (Set.of("ACTIVE", "COMPLETED").contains(state)) {
-            state = complete() ? "COMPLETED" : "ACTIVE";
+        if (!definition.growth() && !stages.isEmpty()) {
+            throw new IllegalArgumentException("Ordinary task contains progression stages");
         }
     }
 
@@ -258,22 +181,6 @@ public final class QuestInstance {
         return RewardManager.rewardManager.drawKeys(rewards);
     }
 
-    private static List<String> readRewardKeys(ConfigurationSection section, String path) {
-        if (!(section.get(path) instanceof List<?> keys)) {
-            throw new IllegalArgumentException("Invalid saved reward keys: " + path);
-        }
-        for (Object key : keys) {
-            if (!(key instanceof String text) || text.isBlank()) {
-                throw new IllegalArgumentException("Invalid saved reward key: " + key);
-            }
-        }
-        List<String> result = section.getStringList(path);
-        if (result.stream().distinct().count() != result.size()) {
-            throw new IllegalArgumentException("Duplicate saved reward keys: " + path);
-        }
-        return List.copyOf(result);
-    }
-
     public ConfigurationSection rewards() {
         if (rewardKeys == null) {
             return definition.rewards();
@@ -289,7 +196,7 @@ public final class QuestInstance {
             if (!sourceId.isEmpty() || !cycle.isEmpty() || expiresAt != 0L) {
                 throw new IllegalArgumentException("Unexpected ordinary quest source metadata");
             }
-        } else if (definition.growth() || !sourceId.matches("[a-z0-9_-]+")
+        } else if (definition.growth() || !source.equals("scroll") && !sourceId.matches("[a-z0-9_-]+")
                 || (source.equals("period") && (!cycle.matches("(?:daily|weekly|monthly|scheduled)_-?[0-9]+") || expiresAt == 0L))
                 || (source.equals("challenge") && !cycle.matches("[a-z0-9_-]+"))
                 || (source.equals("scroll") && !cycle.isEmpty())) {
@@ -349,7 +256,7 @@ public final class QuestInstance {
     }
 
     public long progress(QuestObjective objective) {
-        return progress.getOrDefault(objective.getId(), 0L);
+        return progressAmount(objective).longValue();
     }
 
     public boolean advance(QuestObjective objective, long amount) {
@@ -357,25 +264,21 @@ public final class QuestInstance {
     }
 
     public BigDecimal progressAmount(QuestObjective objective) {
-        return BigDecimal.valueOf(progress(objective)).add(progressRemainders.getOrDefault(objective.getId(), BigDecimal.ZERO));
+        return progress.getOrDefault(objective.getId(), BigDecimal.ZERO);
     }
 
     public boolean advance(QuestObjective objective, BigDecimal amount) {
-        long previous = progress(objective);
-        if (definition.growth() || !state.equals("ACTIVE") || amount.signum() <= 0 || previous >= objective.required()) {
+        BigDecimal previous = progressAmount(objective);
+        if (definition.growth() || !state.equals("ACTIVE") || amount.signum() <= 0
+                || previous.compareTo(BigDecimal.valueOf(objective.required())) >= 0) {
             return false;
         }
-        BigDecimal remainder = progressRemainders.getOrDefault(objective.getId(), BigDecimal.ZERO);
-        var result = FractionalProgress.add(previous, remainder, amount, objective.required());
-        if (result.whole() == previous && result.remainder().compareTo(remainder) == 0) {
+        BigDecimal updated = QuestInstanceData.amount(previous.add(amount).setScale(6, RoundingMode.HALF_UP)
+                .min(BigDecimal.valueOf(objective.required())));
+        if (updated.compareTo(previous) == 0) {
             return false;
         }
-        progress.put(objective.getId(), result.whole());
-        if (result.remainder().signum() == 0) {
-            progressRemainders.remove(objective.getId());
-        } else {
-            progressRemainders.put(objective.getId(), result.remainder());
-        }
+        progress.put(objective.getId(), updated);
         if (complete()) {
             state = "COMPLETED";
         }
@@ -387,11 +290,11 @@ public final class QuestInstance {
     }
 
     public long total() {
-        return total;
+        return total.longValue();
     }
 
     public BigDecimal totalAmount() {
-        return BigDecimal.valueOf(total).add(totalRemainder);
+        return total;
     }
 
     public boolean premium(Player player) {
@@ -422,14 +325,12 @@ public final class QuestInstance {
         if (!definition.growth() || value.signum() < 0) {
             throw new IllegalArgumentException("Invalid progression total");
         }
-        var result = FractionalProgress.add(0L, BigDecimal.ZERO, value, definition.maximumTotal());
-        total = result.whole();
-        totalRemainder = result.remainder();
+        total = QuestInstanceData.amount(value.min(BigDecimal.valueOf(definition.maximumTotal())));
         unlockStages();
     }
 
     public int level() {
-        return definition.level(total);
+        return definition.level(total());
     }
 
     public boolean addTotal(long amount) {
@@ -440,13 +341,12 @@ public final class QuestInstance {
         if (!definition.growth() || amount.signum() <= 0) {
             return false;
         }
-        long maximum = Math.max(total, definition.maximumTotal());
-        var result = FractionalProgress.add(total, totalRemainder, amount, maximum);
-        if (result.whole() == total && result.remainder().compareTo(totalRemainder) == 0) {
+        BigDecimal maximum = total.max(BigDecimal.valueOf(definition.maximumTotal()));
+        BigDecimal updated = QuestInstanceData.amount(total.add(amount).setScale(6, RoundingMode.HALF_UP).min(maximum));
+        if (updated.compareTo(total) == 0) {
             return false;
         }
-        total = result.whole();
-        totalRemainder = result.remainder();
+        total = updated;
         unlockStages();
         return true;
     }
@@ -457,7 +357,7 @@ public final class QuestInstance {
             throw new IllegalArgumentException("Cannot replace a different progression definition");
         }
         TimeWindow updatedWindow = initialWindow(updated, season);
-        if ((definition == updated || definition.snapshot().equals(updated.snapshot())) && seasonWindow.equals(updatedWindow)) {
+        if (definition == updated && seasonWindow.equals(updatedWindow)) {
             return false;
         }
         definition = updated;
@@ -468,102 +368,61 @@ public final class QuestInstance {
 
     private void unlockStages() {
         for (Map.Entry<Integer, Long> stage : definition.thresholds().entrySet()) {
-            if (total < stage.getValue()) {
+            if (total.compareTo(BigDecimal.valueOf(stage.getValue())) < 0) {
                 continue;
             }
             for (String track : definition.tracks()) {
                 String key = track + "/" + stage.getKey();
-                if (!stageRewardKeys.containsKey(key)) {
+                if (!stages.containsKey(key)) {
                     ConfigurationSection configured = definition.stageRewards(stage.getKey(), track);
-                    stageRewardKeys.put(key, RewardManager.rewardManager.drawKeys(configured));
-                    stageRequirements.put(key, stage.getValue());
-                    stageStates.put(key, "AVAILABLE");
+                    stages.put(key, new QuestStageData(track, stage.getKey(), "AVAILABLE", stage.getValue(),
+                            RewardManager.rewardManager.drawKeys(configured)));
                 }
             }
         }
     }
 
     public Map<String, String> stageStates() {
-        return Map.copyOf(stageStates);
+        Map<String, String> result = new LinkedHashMap<>();
+        stages.forEach((key, stage) -> result.put(key, stage.state()));
+        return Map.copyOf(result);
     }
 
     public String stageState(String key) {
-        return stageStates.getOrDefault(key, "LOCKED");
+        QuestStageData stage = stages.get(key);
+        return stage == null ? "LOCKED" : stage.state();
     }
 
     public void stageState(String key, String value) {
-        if (!stageRewardKeys.containsKey(key) || !Set.of("AVAILABLE", "CLAIMING", "CLAIMED", "REVIEW").contains(value)) {
-            throw new IllegalArgumentException("Invalid stage state: " + key);
+        QuestStageData stage = stages.get(key);
+        if (stage == null) {
+            throw new IllegalArgumentException("Stage is locked: " + key);
         }
-        stageStates.put(key, value);
+        stages.put(key, stage.withState(value));
     }
 
     public ConfigurationSection stageReward(String key) {
-        List<String> keys = stageRewardKeys.get(key);
-        if (keys == null) {
+        QuestStageData stage = stages.get(key);
+        if (stage == null) {
             throw new IllegalArgumentException("Stage is locked: " + key);
         }
-        String[] parts = key.split("/");
-        ConfigurationSection configured = definition.stageRewards(Integer.parseInt(parts[1]), parts[0]);
-        return RewardManager.rewardManager.resolveKeys(configured, keys).getConfigurationSection("rewards");
+        ConfigurationSection configured = definition.stageRewards(stage.level(), stage.track());
+        return RewardManager.rewardManager.resolveKeys(configured, stage.rewardKeys()).getConfigurationSection("rewards");
     }
 
     public long stageRequired(String key) {
-        Long required = stageRequirements.get(key);
-        if (required != null) {
-            return required;
+        QuestStageData stage = stages.get(key);
+        if (stage != null) {
+            return stage.required();
         }
         String[] parts = key.split("/");
         return definition.thresholds().getOrDefault(Integer.parseInt(parts[1]), 0L);
     }
 
-    public void write(ConfigurationSection section) {
-        section.set("instance-id", instanceId.toString());
-        section.set("template-id", definition.catalogKey());
-        section.set("accepted-at", acceptedAt);
-        if (definition.growth()) {
-            section.set("season", season);
-            section.set("season-time", null);
-            ConfigurationSection savedWindow = section.createSection("season-time");
-            savedWindow.set("starts-at", startsAt() == null ? null : startsAt().toString());
-            savedWindow.set("ends-at", endsAt() == null ? null : endsAt().toString());
-            savedWindow.set("claim-grace-seconds", seasonWindow.claimGraceSeconds());
-        }
-        if (source.equals("scroll")) {
-            section.set("objective-ids", definition.objectives().stream().map(QuestObjective::getId).toList());
-        }
-        section.set("rewards-snapshot", null);
-        section.set("reward-keys", rewardKeys);
-        section.set("stage-snapshots", null);
-        section.set("stage-rewards", null);
-        if (definition.growth()) {
-            stageRewardKeys.forEach((key, keys) -> {
-                section.set("stage-rewards." + key + ".required", stageRequirements.get(key));
-                section.set("stage-rewards." + key + ".reward-keys", keys);
-            });
-        }
-        section.set("state", state);
-        if (!source.equals("normal")) {
-            section.set("source", source);
-            section.set("source-id", sourceId);
-            section.set("cycle", cycle);
-            section.set("expires-at", expiresAt);
-        }
-        progress.forEach((key, value) -> section.set("progress." + key, value));
-        section.set("progress-remainders", null);
-        progressRemainders.forEach((key, value) -> section.set("progress-remainders." + key, value.toPlainString()));
-        if (definition.growth()) {
-            section.set("total", total);
-            section.set("total-remainder", totalRemainder.toPlainString());
-            long highest = total;
-            for (String key : stageRewardKeys.keySet()) {
-                highest = Math.max(highest, stageRequired(key));
-            }
-            section.set("highest-total", highest);
-            section.set("premium", premium);
-            section.set("booster.multiplier", booster);
-            section.set("booster.expires-at", boosterUntil);
-            stageStates.forEach((key, value) -> section.set("stage-states." + key, value));
-        }
+    public QuestInstanceData data() {
+        return new QuestInstanceData(instanceId, key(), definition.catalogKey(), acceptedAt, source, sourceId,
+                cycle, expiresAt, season, seasonWindow, state, progress, total, premium, booster, boosterUntil,
+                rewardKeys, stages, source.equals("scroll")
+                        ? definition.objectives().stream().map(QuestObjective::getId).toList() : List.of());
     }
 }

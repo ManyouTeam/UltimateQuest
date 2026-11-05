@@ -1,0 +1,22 @@
+enabled: true
+categories:
+- craftsmanship
+name: '{lang:defaults.objectives.worn_shears}'
+icon:
+  material: SHEARS
+trigger: item_broken
+amount: 1
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  output:
+    type: match_item
+    item: TRIGGER_ITEM
+    match:
+      material:
+      - SHEARS

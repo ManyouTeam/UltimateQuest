@@ -1,0 +1,16 @@
+enabled: true
+categories:
+- adventure
+name: '{lang:defaults.objectives.level_training}'
+icon:
+  material: EXPERIENCE_BOTTLE
+trigger: gain_level
+amount: 5
+count: levels
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE

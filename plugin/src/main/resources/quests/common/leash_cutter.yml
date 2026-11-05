@@ -1,0 +1,16 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.objectives.leash_cutter}'
+icon:
+  material: LEAD
+trigger: cut_leash
+amount: 4
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE

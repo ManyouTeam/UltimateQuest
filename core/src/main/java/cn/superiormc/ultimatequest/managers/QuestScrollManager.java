@@ -1,14 +1,11 @@
 package cn.superiormc.ultimatequest.managers;
 
-import static cn.superiormc.ultimatequest.managers.CacheManager.cacheManager;
-
 import cn.superiormc.ultimatequest.UltimateQuest;
 import cn.superiormc.ultimatequest.objects.caches.ObjectCache;
 import cn.superiormc.ultimatequest.objects.quests.ObjectScroll;
 import cn.superiormc.ultimatequest.objects.quests.ObjectScrollRecord;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
 import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
-import cn.superiormc.ultimatequest.objects.quests.QuestPlayerData;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.SchedulerUtil;
 import java.util.HashSet;
@@ -17,11 +14,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.random.RandomGenerator;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import static cn.superiormc.ultimatequest.managers.CacheManager.cacheManager;
 
 public final class QuestScrollManager extends AbstractManager {
 
@@ -56,14 +53,14 @@ public final class QuestScrollManager extends AbstractManager {
 
     public void give(Player player, String profile, String rarity, String difficulty) {
         ObjectScroll scroll = ConfigManager.configManager.getScroll(profile);
-        YamlConfiguration record = scroll.createRecord(rarity, difficulty, RandomGenerator.getDefault());
-        ItemStack item = scroll.buildItem(player, record.getString("rarity"), record.getString("difficulty"));
         UUID token = UUID.randomUUID();
+        ObjectScrollRecord record = scroll.createRecord(token, rarity, difficulty, RandomGenerator.getDefault());
+        ItemStack item = scroll.buildItem(player, record.rarity(), record.difficulty());
         ItemMeta meta = item.getItemMeta();
         meta.getPersistentDataContainer().set(itemKey, PersistentDataType.STRING, token.toString());
         rememberRecord(meta, record);
         item.setItemMeta(meta);
-        cacheManager.saveScroll(new QuestPlayerData(token, "", 1L, record.saveToString())).whenComplete((ignored, failure) -> {
+        cacheManager.saveScroll(record).whenComplete((ignored, failure) -> {
             if (cacheManager.isStopping()) {
                 return;
             }
@@ -99,19 +96,13 @@ public final class QuestScrollManager extends AbstractManager {
         return token.equals(token(offHand)) ? offHand : null;
     }
 
-    private boolean missingRecord(QuestPlayerData snapshot, YamlConfiguration record) {
-        return snapshot == null || snapshot.revision() == 0L
-                && (record.getKeys(false).isEmpty() || record.getKeys(false).equals(Set.of("schema-version"))
-                && record.getInt("schema-version") == 4);
+    private void rememberRecord(ItemMeta meta, ObjectScrollRecord record) {
+        meta.getPersistentDataContainer().set(profileKey, PersistentDataType.STRING, record.profile());
+        meta.getPersistentDataContainer().set(rarityKey, PersistentDataType.STRING, record.rarity());
+        meta.getPersistentDataContainer().set(difficultyKey, PersistentDataType.STRING, record.difficulty());
     }
 
-    private void rememberRecord(ItemMeta meta, YamlConfiguration record) {
-        meta.getPersistentDataContainer().set(profileKey, PersistentDataType.STRING, record.getString("profile", ""));
-        meta.getPersistentDataContainer().set(rarityKey, PersistentDataType.STRING, record.getString("rarity", "common"));
-        meta.getPersistentDataContainer().set(difficultyKey, PersistentDataType.STRING, record.getString("difficulty", "normal"));
-    }
-
-    private void rememberRecord(Player player, UUID token, YamlConfiguration record) {
+    private void rememberRecord(Player player, UUID token, ObjectScrollRecord record) {
         ItemStack[] items = player.getInventory().getStorageContents();
         for (int slot = 0; slot < items.length; slot++) {
             ItemStack item = items[slot];
@@ -130,24 +121,6 @@ public final class QuestScrollManager extends AbstractManager {
             item.setItemMeta(meta);
             player.getInventory().setItemInOffHand(item);
         }
-    }
-
-    private YamlConfiguration recoverRecord(Player player, UUID token) {
-        ItemStack item = findToken(player, token);
-        if (item == null) {
-            throw new IllegalArgumentException("Missing scroll item while rebuilding its record");
-        }
-        ItemMeta meta = item.getItemMeta();
-        return recoverRecord(meta);
-    }
-
-    private YamlConfiguration recoverRecord(ItemMeta meta) {
-        String profile = meta.getPersistentDataContainer().get(profileKey, PersistentDataType.STRING);
-        if (profile == null) {
-            throw new IllegalArgumentException("Scroll item is missing its profile metadata");
-        }
-        return ConfigManager.configManager.getScroll(profile).createRecord(meta.getPersistentDataContainer().get(rarityKey, PersistentDataType.STRING),
-                meta.getPersistentDataContainer().get(difficultyKey, PersistentDataType.STRING), RandomGenerator.getDefault());
     }
 
     public void activate(Player player, UUID token) {
@@ -196,7 +169,7 @@ public final class QuestScrollManager extends AbstractManager {
     }
 
     private void reserve(Player player, ObjectCache cache, UUID operation, UUID token,
-            QuestPlayerData snapshot, Throwable failure) {
+            ObjectScrollRecord snapshot, Throwable failure) {
         if (failure != null) {
             fail(cache, operation, token, failure);
             LanguageManager.languageManager.sendStringText(player, "scroll.read-failed");
@@ -208,10 +181,9 @@ public final class QuestScrollManager extends AbstractManager {
                 release(cache, operation, token);
                 return;
             }
-            ItemMeta metadata = item.getItemMeta();
-            YamlConfiguration record = readRecord(snapshot, metadata);
-            List<QuestDefinition> drawn = new ObjectScrollRecord(record).readQuests();
-            if (!Set.of("ISSUED", "ACTIVE").contains(record.getString("state", ""))) {
+            ObjectScrollRecord record = readRecord(snapshot);
+            List<QuestDefinition> drawn = record.readQuests();
+            if (!Set.of("ISSUED", "ACTIVE").contains(record.state())) {
                 cacheManager.deferScroll(cache.playerId(), token, true);
                 LanguageManager.languageManager.sendStringText(player, "scroll.used");
                 release(cache, operation, token);
@@ -223,17 +195,15 @@ public final class QuestScrollManager extends AbstractManager {
                 release(cache, operation, token);
                 return;
             }
-            String playerName = player.getName();
             cacheManager.editScroll(token, current -> {
                 try {
-                    YamlConfiguration latest = readRecord(current, metadata);
-                    new ObjectScrollRecord(latest).readQuests();
-                    if (!Set.of("ISSUED", "ACTIVE").contains(latest.getString("state", ""))) {
+                    ObjectScrollRecord latest = readRecord(current).copy();
+                    if (!Set.of("ISSUED", "ACTIVE").contains(latest.state())) {
                         throw new IllegalStateException("Scroll is no longer available");
                     }
-                    latest.set("state", "ACTIVE");
-                    latest.set("owner", cache.playerId().toString());
-                    return new QuestPlayerData(token, playerName, Math.addExact(current.revision(), 1L), latest.saveToString());
+                    latest.state("ACTIVE");
+                    latest.owner(cache.playerId());
+                    return latest;
                 } catch (Exception exception) {
                     throw new IllegalArgumentException("Invalid scroll record", exception);
                 }
@@ -250,33 +220,32 @@ public final class QuestScrollManager extends AbstractManager {
         }
     }
 
-    private YamlConfiguration readRecord(QuestPlayerData snapshot, ItemMeta metadata) throws Exception {
-        YamlConfiguration record = new YamlConfiguration();
-        record.loadFromString(snapshot.payload());
-        return missingRecord(snapshot, record) ? recoverRecord(metadata) : record;
+    private ObjectScrollRecord readRecord(ObjectScrollRecord record) {
+        if (record == null) {
+            throw new IllegalStateException("Missing scroll record");
+        }
+        return record;
     }
 
-    private void install(Player player, ObjectCache cache, UUID operation, UUID token, QuestPlayerData reserved) {
+    private void install(Player player, ObjectCache cache, UUID operation, UUID token, ObjectScrollRecord reserved) {
         try {
             if (!hasToken(player, token)) {
                 throw new IllegalStateException("Reserved scroll was moved before installation");
             }
-            YamlConfiguration record = new YamlConfiguration();
-            record.loadFromString(reserved.payload());
-            List<QuestDefinition> drawn = new ObjectScrollRecord(record).readQuests();
-            QuestInstance restored = record.isConfigurationSection("instance")
-                    ? new QuestInstance(record.getString("instance-key", ""), record.getConfigurationSection("instance")) : null;
+            ObjectScrollRecord record = readRecord(reserved);
+            List<QuestDefinition> drawn = record.readQuests();
+            QuestInstance restored = record.instance() == null ? null : new QuestInstance(record.instance(), drawn.get(0));
             rememberRecord(player, token, record);
-            long seconds = ObjectScroll.readDuration(record);
+            long seconds = record.durationSeconds();
             long expiresAt = seconds == 0L ? 0L : Math.addExact(System.currentTimeMillis(), Math.multiplyExact(seconds, 1000L));
             String playerName = player.getName();
             QuestManager.questManager.installScroll(player, token, drawn, restored, expiresAt).whenComplete((success, failure) -> {
                 boolean installed = failure == null && Boolean.TRUE.equals(success);
                 cacheManager.updateScroll(token, playerName, latest -> {
-                    if (!latest.getString("owner", "").equals(cache.playerId().toString())) {
+                    if (!cache.playerId().equals(latest.owner())) {
                         throw new IllegalStateException("Scroll owner changed during installation");
                     }
-                    latest.set("state", installed ? "ACTIVE" : "REVIEW");
+                    latest.state(installed ? "ACTIVE" : "REVIEW");
                 }).whenComplete((ignored, saveFailure) -> {
                     if (failure != null || saveFailure != null) {
                         fail(cache, operation, token, failure == null ? saveFailure : failure);
@@ -284,7 +253,6 @@ public final class QuestScrollManager extends AbstractManager {
                         schedule(player, cache, operation, token, () -> {
                             QuestInstance quest = cacheManager.scroll(cache.playerId(), token);
                             if (installed && quest != null) {
-                                saveProgress(player, quest);
                                 QuestManager.questManager.sendQuestMessage(player, quest, "scroll.activated");
                             } else {
                                 LanguageManager.languageManager.sendStringText(player, "quests.review-needed");
@@ -336,35 +304,6 @@ public final class QuestScrollManager extends AbstractManager {
         }
     }
 
-    public void saveProgress(Player player, QuestInstance quest) {
-        if (!quest.source().equals("scroll") || cacheManager.isStopping()) {
-            return;
-        }
-        QuestInstance snapshot;
-        ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
-        if (cache == null) {
-            return;
-        }
-        synchronized (cache) {
-            snapshot = new QuestInstance(quest);
-        }
-        UUID token = UUID.fromString(snapshot.sourceId());
-        String playerName = player.getName();
-        cacheManager.updateScroll(token, playerName, record -> {
-            if (!record.getString("owner", "").equals(cache.playerId().toString())
-                    || !record.getString("state", "").equals("ACTIVE")) {
-                return;
-            }
-            record.set("instance", null);
-            record.set("instance-key", snapshot.key());
-            snapshot.write(record.createSection("instance"));
-        }).whenComplete((ignored, failure) -> {
-            if (failure != null) {
-                ErrorManager.errorManager.sendErrorMessage("§cError: Scroll " + token + " failed: " + failure.getMessage());
-            }
-        });
-    }
-
     public void reserveReward(Player player, QuestInstance quest, Runnable success) {
         ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
         if (cache == null) {
@@ -387,11 +326,11 @@ public final class QuestScrollManager extends AbstractManager {
         }
         String playerName = player.getName();
         cacheManager.updateScroll(token, playerName, record -> {
-            if (!record.getString("state", "").equals("ACTIVE")
-                    || !record.getString("owner", "").equals(cache.playerId().toString())) {
+            if (!record.state().equals("ACTIVE")
+                    || !cache.playerId().equals(record.owner())) {
                 throw new IllegalStateException("Scroll is not active for this player");
             }
-            record.set("state", "REDEEMING");
+            record.state("REDEEMING");
         }).whenComplete((ignored, failure) -> {
             if (failure != null) {
                 fail(cache, operation, token, failure);
@@ -418,11 +357,11 @@ public final class QuestScrollManager extends AbstractManager {
         }
         ObjectCache cache = cacheManager.getObjectCache(player.getUniqueId());
         cacheManager.updateScroll(token, "", record -> {
-            if (!record.getString("state", "").equals("REDEEMING")
-                    || !record.getString("owner", "").equals(player.getUniqueId().toString())) {
+            if (!record.state().equals("REDEEMING")
+                    || !cache.playerId().equals(record.owner())) {
                 throw new IllegalStateException("Scroll reward reservation changed");
             }
-            record.set("state", "REDEEMED");
+            record.state("REDEEMED");
         }).whenComplete((ignored, failure) -> {
             cacheManager.endScroll(token, operation);
             if (failure != null) {

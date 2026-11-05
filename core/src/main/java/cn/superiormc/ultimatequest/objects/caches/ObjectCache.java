@@ -1,8 +1,11 @@
 package cn.superiormc.ultimatequest.objects.caches;
 
 import cn.superiormc.ultimatequest.managers.ConfigManager;
+import cn.superiormc.ultimatequest.managers.ErrorManager;
+import cn.superiormc.ultimatequest.managers.QuestManager;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
 import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
+import cn.superiormc.ultimatequest.objects.quests.QuestInstanceData;
 import cn.superiormc.ultimatequest.objects.quests.QuestPlayerData;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,8 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public final class ObjectCache {
@@ -34,6 +35,10 @@ public final class ObjectCache {
 
     private long revision;
 
+    private QuestPlayerData persistedData;
+
+    private final Map<String, QuestInstanceData> unresolved = new LinkedHashMap<>();
+
     private UUID loadingToken;
 
     private boolean ready;
@@ -48,8 +53,11 @@ public final class ObjectCache {
 
     private String bulkClaim;
 
+    private boolean rebindPending;
+
     public ObjectCache(UUID playerId) {
         this.playerId = playerId;
+        persistedData = QuestPlayerData.empty(playerId);
     }
 
     public ObjectCache copy() {
@@ -60,6 +68,8 @@ public final class ObjectCache {
         copy.periodRolls.putAll(periodRolls);
         copy.carriedScrolls.addAll(carriedScrolls);
         copy.revision = revision;
+        copy.persistedData = persistedData;
+        copy.unresolved.putAll(unresolved);
         copy.ready = ready;
         return copy;
     }
@@ -83,6 +93,38 @@ public final class ObjectCache {
     public void finishOperation(UUID token) {
         if (operation(token)) {
             operationToken = null;
+            if (rebindPending) {
+                rebindDefinitions();
+            }
+        }
+    }
+
+    public void rebindDefinitions() {
+        if (pending()) {
+            rebindPending = true;
+            return;
+        }
+        rebindPending = false;
+        Map<String, QuestInstanceData> saved = new LinkedHashMap<>(unresolved);
+        quests.forEach((key, quest) -> saved.put(key, quest.data()));
+        quests.clear();
+        unresolved.clear();
+        saved.forEach((key, entry) -> {
+            try {
+                QuestDefinition definition = ConfigManager.configManager.resolveDefinition(entry);
+                if (definition == null || entry.progress().keySet().stream().anyMatch(objective ->
+                        definition.objectives().stream().noneMatch(candidate -> candidate.getId().equals(objective)))) {
+                    throw new IllegalArgumentException("Missing quest template or objective: " + entry.templateId());
+                }
+                quests.put(key, new QuestInstance(entry, definition));
+            } catch (RuntimeException exception) {
+                unresolved.put(key, entry);
+                ErrorManager.errorManager.sendErrorMessage("§cError: Could not bind quest " + key + " for " + playerId
+                        + "; its progress has been retained: " + exception.getMessage());
+            }
+        });
+        if (QuestManager.questManager != null) {
+            QuestManager.questManager.rebuildIndex(playerId);
         }
     }
 
@@ -94,66 +136,81 @@ public final class ObjectCache {
         saveTail = future;
     }
 
-    public void load(QuestPlayerData snapshot) throws Exception {
+    public void load(QuestPlayerData snapshot) {
         if (!playerId.equals(snapshot.playerUUID())) {
-            throw new IllegalArgumentException("Player snapshot belongs to another player");
+            throw new IllegalArgumentException("Player data belongs to another player");
         }
-        YamlConfiguration config = new YamlConfiguration();
-        config.loadFromString(snapshot.payload());
-        Map<String, QuestInstance> loadedQuests = new LinkedHashMap<>();
-        ConfigurationSection section = config.getConfigurationSection("quests");
-        if (section != null) {
-            for (String key : section.getKeys(false)) {
-                ConfigurationSection saved = section.getConfigurationSection(key);
-                QuestDefinition definition = ConfigManager.configManager.resolveDefinition(key, saved);
-                if (definition != null) {
-                    loadedQuests.put(key, new QuestInstance(key, saved, definition));
+        Map<String, QuestInstance> loaded = new LinkedHashMap<>();
+        unresolved.clear();
+        snapshot.quests().forEach((key, data) -> {
+            try {
+                QuestDefinition definition = ConfigManager.configManager.resolveDefinition(data);
+                if (definition == null || data.progress().keySet().stream().anyMatch(objective ->
+                        definition.objectives().stream().noneMatch(candidate -> candidate.getId().equals(objective)))) {
+                    throw new IllegalArgumentException("Missing quest template or objective: " + data.templateId());
                 }
-            }
-        }
-        Map<String, String> loadedRolls = new HashMap<>();
-        ConfigurationSection savedRolls = config.getConfigurationSection("period-rolls");
-        if (savedRolls != null) {
-            for (String group : savedRolls.getKeys(false)) {
-                String cycle = savedRolls.getString(group, "");
-                if (!group.matches("[a-z0-9_-]+") || !cycle.matches("(?:daily|weekly|monthly|scheduled)_-?[0-9]+")) {
-                    throw new IllegalArgumentException("Invalid saved period cycle");
+                QuestInstance quest = new QuestInstance(data, definition);
+                if (quest.state().equals("CLAIMING")) {
+                    quest.state("REVIEW");
                 }
-                Long.parseLong(cycle.substring(cycle.indexOf('_') + 1));
-                loadedRolls.put(group, cycle);
+                quest.stageStates().forEach((stage, state) -> {
+                    if (state.equals("CLAIMING")) {
+                        quest.stageState(stage, "REVIEW");
+                    }
+                });
+                loaded.put(key, quest);
+            } catch (RuntimeException exception) {
+                unresolved.put(key, data);
+                ErrorManager.errorManager.sendErrorMessage("§cError: Could not load quest " + key + " for " + playerId
+                        + "; its progress has been retained: " + exception.getMessage());
             }
-        }
+        });
         quests.clear();
-        quests.putAll(loadedQuests);
+        quests.putAll(loaded);
         periodRolls.clear();
-        periodRolls.putAll(loadedRolls);
-        revision = snapshot.revision();
+        periodRolls.putAll(snapshot.periodRolls());
+        persistedData = snapshot;
+        revision = 0L;
         ready = true;
-        dirty = false;
+        dirty = !snapshot().quests().equals(snapshot.quests());
+    }
+
+    public boolean unresolved(String key) {
+        return unresolved.containsKey(key);
     }
 
     public QuestPlayerData snapshot() {
         if (!ready) {
             throw new IllegalStateException("Player cache is not loaded");
         }
-        YamlConfiguration config = new YamlConfiguration();
-        config.set("schema-version", 4);
-        periodRolls.forEach((group, cycle) -> config.set("period-rolls." + group, cycle));
-        for (QuestInstance quest : quests.values()) {
-            quest.write(config.createSection("quests." + quest.key()));
+        Map<String, QuestInstanceData> data = new LinkedHashMap<>(unresolved);
+        quests.forEach((key, quest) -> {
+            if (unresolved.containsKey(key)) {
+                throw new IllegalStateException("Cannot overwrite unresolved quest: " + key);
+            }
+            data.put(key, quest.data());
+        });
+        return new QuestPlayerData(playerId, playerName, persistedData.revision(), data, periodRolls);
+    }
+
+    public QuestPlayerData persistedData() {
+        return persistedData;
+    }
+
+    public long changeSequence() {
+        return revision;
+    }
+
+    public void saved(QuestPlayerData snapshot, long sequence) {
+        persistedData = snapshot.withRevision(Math.addExact(snapshot.revision(), 1L));
+        if (revision == sequence) {
+            dirty = false;
         }
-        return new QuestPlayerData(playerId, playerName, revision, config.saveToString());
     }
 
     public void changed() {
         revision = Math.addExact(revision, 1L);
         dirty = true;
-    }
-
-    public void saved(long savedRevision) {
-        if (revision == savedRevision) {
-            dirty = false;
-        }
     }
 
     public UUID playerId() {

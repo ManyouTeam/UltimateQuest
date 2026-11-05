@@ -7,19 +7,18 @@ import cn.superiormc.ultimatequest.methods.BuildItem;
 import cn.superiormc.ultimatequest.objects.rewards.ObjectReward;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.ConfigurationFileUtil;
-
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.random.RandomGenerator;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public final class ObjectScroll {
 
@@ -69,7 +68,7 @@ public final class ObjectScroll {
         new ObjectReward(config.getConfigurationSection("rewards")).validateTargets(definitions);
     }
 
-    public YamlConfiguration createRecord(String rarity, String difficulty, RandomGenerator random) {
+    public ObjectScrollRecord createRecord(UUID token, String rarity, String difficulty, RandomGenerator random) {
         YamlConfiguration config = this.config;
         if (config == null) {
             throw new IllegalArgumentException("Unknown scroll id: " + id);
@@ -90,16 +89,8 @@ public final class ObjectScroll {
         }
         objectiveIds.addAll(this.source.draw(random));
         createDefinition(List.copyOf(objectiveIds));
-        YamlConfiguration record = new YamlConfiguration();
-        record.set("schema-version", 3);
-        record.set("kind", "scroll");
-        record.set("state", "ISSUED");
-        record.set("profile", id);
-        record.set("rarity", rarity);
-        record.set("difficulty", difficulty);
-        record.set("duration-seconds", readDuration(config));
-        record.set("objective-ids", List.copyOf(objectiveIds));
-        return record;
+        return new ObjectScrollRecord(token, id, rarity, difficulty, readDuration(config),
+                List.copyOf(objectiveIds), 0L, null, "ISSUED", null);
     }
 
     public QuestDefinition createDefinition(List<String> objectiveIds) {

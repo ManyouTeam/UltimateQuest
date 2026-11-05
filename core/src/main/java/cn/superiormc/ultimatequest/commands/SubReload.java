@@ -42,6 +42,7 @@ public final class SubReload extends AbstractCommand {
                 throw new IllegalStateException("Configuration reload failed", exception);
             }
         }
+        CacheManager.cacheManager.rebindDefinitions();
         CacheManager.cacheManager.configureAutoSave();
     }
 }

@@ -1,0 +1,16 @@
+enabled: true
+categories:
+- adventure
+name: '{lang:defaults.objectives.level_mastery}'
+icon:
+  material: ENCHANTING_TABLE
+trigger: gain_level
+amount: 15
+count: levels
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE

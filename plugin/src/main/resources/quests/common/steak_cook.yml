@@ -1,0 +1,22 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.objectives.steak_cook}'
+icon:
+  material: COOKED_BEEF
+trigger: cook
+amount: 16
+count: items
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  output:
+    type: match_item
+    item: COUNTED_ITEM
+    match:
+      material:
+      - COOKED_BEEF

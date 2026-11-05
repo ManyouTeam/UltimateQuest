@@ -2,6 +2,7 @@ package cn.superiormc.ultimatequest.managers;
 
 import cn.superiormc.ultimatequest.database.DatabaseExecutor;
 import cn.superiormc.ultimatequest.objects.caches.ObjectCache;
+import cn.superiormc.ultimatequest.objects.quests.ObjectScrollRecord;
 import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
 import cn.superiormc.ultimatequest.objects.quests.QuestPlayerData;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
@@ -21,7 +22,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public final class CacheManager extends AbstractManager {
@@ -374,24 +374,30 @@ public final class CacheManager extends AbstractManager {
         if (cache == null) {
             return CompletableFuture.failedFuture(new IllegalStateException("Player cache is not loaded"));
         }
-        ObjectCache copy;
+        QuestPlayerData captured;
+        long sequence;
         CompletableFuture<Void> previous;
         CompletableFuture<Void> result = new CompletableFuture<>();
         synchronized (cache) {
             if (!isCurrent(cache) || !cache.ready()) {
                 return CompletableFuture.failedFuture(new IllegalStateException("Player cache is not loaded"));
             }
-            copy = cache.copy();
+            captured = cache.snapshot();
+            sequence = cache.changeSequence();
             previous = cache.saveTail();
             cache.saveTail(result);
             writes.add(result);
         }
         previous.handle((ignored, failure) -> null).thenComposeAsync(ignored -> {
-            QuestPlayerData snapshot = copy.snapshot();
-            return QuestStorage.questStorage.saveCritical(snapshot).thenRun(() -> {
+            QuestPlayerData base;
+            synchronized (cache) {
+                base = cache.persistedData();
+            }
+            QuestPlayerData snapshot = captured.withRevision(base.revision());
+            return QuestStorage.questStorage.saveCritical(snapshot, base).thenRun(() -> {
                 synchronized (cache) {
                     if (isCurrent(cache)) {
-                        cache.saved(snapshot.revision());
+                        cache.saved(snapshot, sequence);
                     }
                 }
             });
@@ -430,19 +436,23 @@ public final class CacheManager extends AbstractManager {
                 if (!isCurrent(cache) || !cache.operation(operation)) {
                     return;
                 }
-                cache.finishOperation(operation);
                 if (failure == null) {
+                    cache.finishOperation(operation);
                     success.run();
                 } else {
                     error("Quest save failed for " + id, failure);
-                    failureHandler.run();
+                    try {
+                        failureHandler.run();
+                    } finally {
+                        cache.finishOperation(operation);
+                    }
                 }
             }
             discardOffline(id);
         });
     }
 
-    public CompletableFuture<Void> editOffline(UUID id, Consumer<YamlConfiguration> editor) {
+    public CompletableFuture<Void> editOffline(UUID id, Function<QuestPlayerData, QuestPlayerData> editor) {
         ObjectCache cache = playerCacheMap.computeIfAbsent(id, ObjectCache::new);
         UUID operation;
         CompletableFuture<Void> result = new CompletableFuture<>();
@@ -457,11 +467,8 @@ public final class CacheManager extends AbstractManager {
         }
         QuestStorage.questStorage.load(id).thenComposeAsync(snapshot -> {
             try {
-                YamlConfiguration data = new YamlConfiguration();
-                data.loadFromString(snapshot.payload());
-                editor.accept(data);
-                return QuestStorage.questStorage.saveCritical(new QuestPlayerData(id, snapshot.playerName(),
-                        Math.addExact(snapshot.revision(), 1L), data.saveToString()));
+                QuestPlayerData edited = editor.apply(snapshot);
+                return QuestStorage.questStorage.saveCritical(edited.withRevision(snapshot.revision()), snapshot);
             } catch (Exception exception) {
                 return CompletableFuture.failedFuture(exception);
             }
@@ -487,6 +494,16 @@ public final class CacheManager extends AbstractManager {
             }
         });
         return result;
+    }
+
+    public void rebindDefinitions() {
+        for (ObjectCache cache : List.copyOf(playerCacheMap.values())) {
+            synchronized (cache) {
+                if (isCurrent(cache) && cache.ready()) {
+                    cache.rebindDefinitions();
+                }
+            }
+        }
     }
 
     public void configureAutoSave() {
@@ -566,35 +583,35 @@ public final class CacheManager extends AbstractManager {
         });
     }
 
-    public CompletableFuture<QuestPlayerData> loadScroll(UUID token) {
+    public CompletableFuture<ObjectScrollRecord> loadScroll(UUID token) {
         return QuestStorage.questStorage.loadScroll(token);
     }
 
-    public CompletableFuture<Void> saveScroll(QuestPlayerData snapshot) {
-        return writeScroll(snapshot.playerUUID(), () -> QuestStorage.questStorage.saveScroll(snapshot));
+    public CompletableFuture<Void> saveScroll(ObjectScrollRecord data) {
+        return writeScroll(data.token(), () -> QuestStorage.questStorage.saveScroll(data));
     }
 
-    public CompletableFuture<Void> updateScroll(UUID token, String playerName, Consumer<YamlConfiguration> update) {
-        return writeScroll(token, () -> loadScroll(token).thenCompose(snapshot -> {
-            try {
-                YamlConfiguration record = new YamlConfiguration();
-                record.loadFromString(snapshot.payload());
-                update.accept(record);
-                return QuestStorage.questStorage.saveScroll(new QuestPlayerData(token,
-                        playerName.isEmpty() ? snapshot.playerName() : playerName,
-                        Math.addExact(snapshot.revision(), 1L), record.saveToString()));
-            } catch (Exception exception) {
-                return CompletableFuture.failedFuture(exception);
+    public CompletableFuture<Void> updateScroll(UUID token, String playerName, Consumer<ObjectScrollRecord> update) {
+        return editScroll(token, current -> {
+            if (current == null) {
+                throw new IllegalStateException("Missing scroll: " + token);
             }
-        }));
+            ObjectScrollRecord next = current.copy();
+            update.accept(next);
+            return next;
+        }).thenApply(ignored -> null);
     }
 
-    public CompletableFuture<QuestPlayerData> editScroll(UUID token, Function<QuestPlayerData, QuestPlayerData> editor) {
-        AtomicReference<QuestPlayerData> edited = new AtomicReference<>();
+    public CompletableFuture<ObjectScrollRecord> editScroll(UUID token,
+            Function<ObjectScrollRecord, ObjectScrollRecord> editor) {
+        AtomicReference<ObjectScrollRecord> edited = new AtomicReference<>();
         return writeScroll(token, () -> loadScroll(token).thenCompose(snapshot -> {
-            QuestPlayerData next = editor.apply(snapshot);
-            edited.set(next);
-            return QuestStorage.questStorage.saveScroll(next);
+            ObjectScrollRecord next = editor.apply(snapshot);
+            next.revision(snapshot == null ? 0L : snapshot.revision());
+            return QuestStorage.questStorage.saveScroll(next).thenRun(() -> {
+                next.revision(Math.addExact(next.revision(), 1L));
+                edited.set(next);
+            });
         })).thenApply(ignored -> edited.get());
     }
 

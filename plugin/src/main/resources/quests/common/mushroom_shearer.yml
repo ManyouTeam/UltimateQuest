@@ -1,0 +1,22 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.objectives.mushroom_shearer}'
+icon:
+  material: RED_MUSHROOM
+trigger: shear
+amount: 1
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  animal:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - MOOSHROOM

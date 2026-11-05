@@ -1,0 +1,22 @@
+enabled: true
+categories:
+- craftsmanship
+name: '{lang:defaults.objectives.sword_grinder}'
+icon:
+  material: IRON_SWORD
+trigger: grindstone_item
+amount: 1
+count: items
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  output:
+    type: match_item
+    item: COUNTED_ITEM
+    match:
+      material:
+      - IRON_SWORD

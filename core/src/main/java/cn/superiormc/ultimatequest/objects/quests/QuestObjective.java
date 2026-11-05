@@ -1,28 +1,28 @@
 package cn.superiormc.ultimatequest.objects.quests;
 
 import cn.superiormc.ultimatequest.managers.AntiAbuseManager;
-import cn.superiormc.ultimatequest.objects.counting.CountMode;
-import cn.superiormc.ultimatequest.objects.counting.TriggerCounter;
-import cn.superiormc.ultimatequest.managers.EventConditionsManager;
 import cn.superiormc.ultimatequest.managers.ConfigManager;
+import cn.superiormc.ultimatequest.managers.EventConditionsManager;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
 import cn.superiormc.ultimatequest.managers.TriggerManager;
 import cn.superiormc.ultimatequest.objects.AbstractConfiguredSection;
 import cn.superiormc.ultimatequest.objects.QuestContext;
+import cn.superiormc.ultimatequest.objects.counting.CountMode;
+import cn.superiormc.ultimatequest.objects.counting.TriggerCounter;
 import cn.superiormc.ultimatequest.objects.triggers.PlaceholderTrigger;
-import org.bukkit.event.Cancellable;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.List;
 import java.util.Locale;
-import java.math.BigDecimal;
+import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 
 public final class QuestObjective extends AbstractConfiguredSection<QuestContext> {
 
@@ -113,15 +113,19 @@ public final class QuestObjective extends AbstractConfiguredSection<QuestContext
             return CommonUtil.parseLang(player, configured);
         }
         String key = trigger.substring(trigger.indexOf(':') + 1);
+        String action = trigger.startsWith("ultimatequest:")
+                ? LanguageManager.languageManager.getStringText(player, "override-lang.objective-action-" + key.replace('_', '-'), "")
+                : "";
+        String defaults = action.isBlank() ? trigger : action + "{target}";
         String format = section.getString("display", ConfigManager.configManager.getString(
                 "objective-display.formats." + trigger, ConfigManager.configManager.getString(
-                        "objective-display.formats." + key, "{lang:objective-action-" + key.replace('_', '-') + "}{target}")));
-        if (!List.of("kill", "block_break", "fish", "consume").contains(key) && !section.contains("display")
-                && !ConfigManager.configManager.config.contains("objective-display.formats." + trigger)
-                && !ConfigManager.configManager.config.contains("objective-display.formats." + key)) {
-            format = trigger;
+                        "objective-display.formats." + key, defaults)));
+        String target = targetName(player);
+        format = CommonUtil.parseLang(player, format);
+        if (target.isBlank()) {
+            format = format.replaceAll("[\\h:：]*\\{target\\}", "");
         }
-        return CommonUtil.modifyString(player, format, "target", targetName(player), "trigger", trigger).strip();
+        return CommonUtil.modifyString(player, format, "target", target, "trigger", trigger).strip();
     }
 
     public long value() {
@@ -149,14 +153,14 @@ public final class QuestObjective extends AbstractConfiguredSection<QuestContext
                 ConfigurationSection rules = condition.getConfigurationSection("match");
                 rules = rules == null ? condition : rules;
                 List<String> targets = new ArrayList<>();
-                if (key.equals("kill") && type.equals("match_entity")
+                if (type.equals("match_entity")
                         && condition.getString("target", "TARGET").equalsIgnoreCase("TARGET")) {
                     targets = translatedTargets(rules.getStringList("entity-types"), "entity");
-                } else if (key.equals("block_break") && type.equals("block_type")) {
+                } else if (type.equals("block_type")) {
                     targets = translatedTargets(new ArrayList<>(CommonUtil.values(condition, "types", "type-name")), "block");
-                } else if ((key.equals("consume") && type.equals("match_item")
-                        && condition.getString("item.selector", condition.getString("item", "CONTEXT")).equalsIgnoreCase("CONTEXT"))
-                        || (key.equals("fish") && type.equals("catch_match_item"))) {
+                } else if (type.equals("match_item") && List.of("COUNTED_ITEM", "CONTEXT").contains(
+                        condition.getString("item.selector", condition.getString("item", "CONTEXT")).toUpperCase(Locale.ROOT))
+                        || key.equals("fish") && type.equals("catch_match_item")) {
                     targets = translatedTargets(rules.getStringList("material"), "item");
                 }
                 if (!targets.isEmpty()) {

@@ -1,0 +1,22 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.objectives.wool_collector}'
+icon:
+  material: SHEARS
+trigger: shear
+amount: 8
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  animal:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - SHEEP

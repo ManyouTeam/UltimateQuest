@@ -1,0 +1,28 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.objectives.dairy_farmer}'
+icon:
+  material: MILK_BUCKET
+trigger: milk_mob
+amount: 8
+count: items
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  output:
+    type: match_item
+    item: COUNTED_ITEM
+    match:
+      material:
+      - MILK_BUCKET
+  cow:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - COW

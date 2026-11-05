@@ -1,0 +1,22 @@
+enabled: true
+categories:
+- adventure
+name: '{lang:defaults.objectives.wolf_companion}'
+icon:
+  material: BONE
+trigger: tame
+amount: 1
+count: events
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  animal:
+    type: match_entity
+    target: TARGET
+    match:
+      entity-types:
+      - WOLF

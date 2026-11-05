@@ -13,6 +13,7 @@ import cn.superiormc.ultimatequest.objects.quests.ObjectTask;
 import cn.superiormc.ultimatequest.objects.quests.ObjectTaskLimits;
 import cn.superiormc.ultimatequest.objects.quests.QuestDefinition;
 import cn.superiormc.ultimatequest.objects.quests.QuestInstance;
+import cn.superiormc.ultimatequest.objects.quests.QuestInstanceData;
 import cn.superiormc.ultimatequest.objects.rewards.ObjectRewardPool;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.TextUtil;
@@ -663,14 +664,12 @@ public class ConfigManager extends AbstractManager {
         return getDefinitions().get(type + "/" + id.toLowerCase(Locale.ROOT));
     }
 
-    public synchronized QuestDefinition resolveDefinition(String key, ConfigurationSection section) {
-        if (section == null) {
-            throw new IllegalArgumentException("Missing quest instance: " + key);
-        }
-        String templateId = section.getString("template-id", "");
-        String source = section.getString("source", "normal");
+    public synchronized QuestDefinition resolveDefinition(QuestInstanceData data) {
+        String key = data.questKey();
+        String templateId = data.templateId();
+        String source = data.source();
         if (source.equals("period")) {
-            String group = section.getString("source-id", "");
+            String group = data.sourceId();
             ConfigurationSection period = getPeriodConfigurations().get(group);
             if (period == null) {
                 return null;
@@ -689,7 +688,7 @@ public class ConfigManager extends AbstractManager {
             if (!getScrollConfigurations().containsKey(templateId)) {
                 return null;
             }
-            return getScroll(templateId).createDefinition(section.getStringList("objective-ids"));
+            return getScroll(templateId).createDefinition(data.objectiveIds());
         }
         QuestDefinition definition = getDefinitions().get(templateId);
         if (definition != null && source.equals("normal")

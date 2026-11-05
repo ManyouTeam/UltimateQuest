@@ -1,0 +1,22 @@
+enabled: true
+categories:
+- farming
+name: '{lang:defaults.objectives.honey_collector}'
+icon:
+  material: HONEY_BOTTLE
+trigger: honey_extract
+amount: 4
+count: items
+conditions:
+  survival:
+    type: game_mode
+    target: PLAYER
+    modes:
+    - SURVIVAL
+    - ADVENTURE
+  output:
+    type: match_item
+    item: COUNTED_ITEM
+    match:
+      material:
+      - HONEY_BOTTLE

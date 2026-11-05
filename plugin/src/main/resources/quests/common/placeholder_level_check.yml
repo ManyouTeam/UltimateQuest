@@ -1,0 +1,11 @@
+enabled: false
+categories:
+- adventure
+name: '{lang:defaults.objectives.placeholder_level_check}'
+icon:
+  material: EXPERIENCE_BOTTLE
+trigger: placeholder
+placeholder: '%player_level%'
+rule: '>='
+value: 10
+amount: 1
