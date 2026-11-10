@@ -1,12 +1,12 @@
 package cn.superiormc.ultimatequest.objects.counting;
 
+import cn.superiormc.ultimatequest.managers.TriggerManager;
 import cn.superiormc.ultimatequest.objects.QuestContext;
 
 import java.math.BigDecimal;
 import java.util.function.Predicate;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.Cancellable;
 
 /** Measures matching event quantities; progress and batch storage belong to the consumer. */
 public final class TriggerCounter {
@@ -26,7 +26,7 @@ public final class TriggerCounter {
         if (context == null || context.player() == null || context.triggerData() == null) {
             return BigDecimal.ZERO;
         }
-        if (context.event() instanceof Cancellable cancelled && cancelled.isCancelled()) {
+        if (TriggerManager.isEventCancelled(context.event())) {
             return BigDecimal.ZERO;
         }
         if (mode == CountMode.BLOCKS) {

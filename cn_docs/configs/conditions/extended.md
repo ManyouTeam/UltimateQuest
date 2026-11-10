@@ -641,6 +641,14 @@ _没有此类型专用的字段。_
 | `owner` | `SOURCE` | 拥有该冷却的实体选择器。 |
 | `per-target` | `false` | 是否为每个 `TARGET` 分别记录冷却。 |
 
+`meet-message` 和 `not-meet-message` 支持 `{remaining}`，表示当前冷却剩余秒数，向上取整到一位小数；成功获取冷却后显示新一轮冷却的剩余时间。
+
+```yaml
+type: cooldown
+seconds: 5
+not-meet-message: '&c还需等待 {remaining} 秒。'
+```
+
 ## `cooldown_material`
 
 匹配 Paper `PlayerItemCooldownEvent` 中涉及的物品材质。

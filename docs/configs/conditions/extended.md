@@ -641,6 +641,14 @@ Passes on the first check after the cooldown expires, then starts the next coold
 | `owner` | `SOURCE` | Entity selector that owns the cooldown. |
 | `per-target` | `false` | Keep an independent cooldown for each `TARGET`. |
 
+`meet-message` and `not-meet-message` support `{remaining}` for the current cooldown's remaining seconds, rounded up to one decimal place. After acquiring a cooldown, this shows the remaining time of the new cooldown.
+
+```yaml
+type: cooldown
+seconds: 5
+not-meet-message: '&cPlease wait {remaining} seconds.'
+```
+
 ## `cooldown_material`
 
 Matches the material involved in Paper `PlayerItemCooldownEvent`.

@@ -85,6 +85,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 public final class TriggerManager extends AbstractManager {
 
@@ -271,10 +274,20 @@ public final class TriggerManager extends AbstractManager {
         get(key).ifPresent(trigger -> trigger.dispatch(event, runtime));
     }
 
+    public static boolean isEventCancelled(Object event) {
+        if (event instanceof PlayerInteractEvent interaction) {
+            Action action = interaction.getAction();
+            if (action == Action.LEFT_CLICK_AIR || action == Action.RIGHT_CLICK_AIR) {
+                return interaction.useItemInHand() == Event.Result.DENY;
+            }
+        }
+        return event instanceof Cancellable cancellable && cancellable.isCancelled();
+    }
+
     public <E> void dispatch(Class<E> eventClass, E event) {
         Objects.requireNonNull(eventClass, "eventClass");
         eventClass.cast(Objects.requireNonNull(event, "event"));
-        if (closed || (event instanceof Cancellable cancellable && cancellable.isCancelled())) {
+        if (closed || isEventCancelled(event)) {
             return;
         }
         List<AbstractTrigger<?>> selected;
@@ -287,7 +300,7 @@ public final class TriggerManager extends AbstractManager {
     }
 
     public void fire(AbstractTrigger<?> trigger, TriggerData data) {
-        if (closed || (data.event() instanceof Cancellable cancellable && cancellable.isCancelled())) {
+        if (closed || isEventCancelled(data.event())) {
             return;
         }
         if (UltimateQuest.isFolia && Bukkit.getServer() != null && !Bukkit.isOwnedByCurrentRegion(data.player())) {

@@ -22,7 +22,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 
 public final class QuestObjective extends AbstractConfiguredSection<QuestContext> {
 
@@ -215,7 +214,7 @@ public final class QuestObjective extends AbstractConfiguredSection<QuestContext
 
     public BigDecimal contribution(QuestContext context, String scope) {
         if (context == null || context.trigger() == null || !trigger.equals(context.trigger().key().toString())
-                || context.event() instanceof Cancellable cancelled && cancelled.isCancelled()) {
+                || TriggerManager.isEventCancelled(context.event())) {
             return BigDecimal.ZERO;
         }
         BigDecimal amount;

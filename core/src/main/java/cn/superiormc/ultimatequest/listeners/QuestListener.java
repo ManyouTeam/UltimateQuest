@@ -18,7 +18,6 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Piglin;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -85,11 +84,11 @@ public class QuestListener implements Listener, AutoCloseable {
     }
 
     protected boolean ignoreCancelled(Class<? extends Event> eventClass) {
-        return true;
+        return eventClass != PlayerInteractEvent.class;
     }
 
     protected boolean accepted(Class<? extends Event> eventClass, Event event) {
-        if (ignoreCancelled(eventClass) && event instanceof Cancellable cancellable && cancellable.isCancelled()) {
+        if (TriggerManager.isEventCancelled(event)) {
             return false;
         }
         if (event instanceof PlayerFishEvent fishing && fishing.getState() != PlayerFishEvent.State.CAUGHT_FISH) {

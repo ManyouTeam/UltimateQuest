@@ -33,7 +33,11 @@ public abstract class AbstractEventCondition {
             return;
         }
         String path = matched ? "meet-message" : "not-meet-message";
-        TextUtil.sendMessage(player, condition.getString(path, player, condition.getContext()));
+        TextUtil.sendMessage(player, getResultMessage(condition, path));
+    }
+
+    protected String getResultMessage(ObjectSingleCondition condition, String path) {
+        return condition.getString(path, condition.player(), condition.getContext());
     }
 
     protected abstract boolean onMatch(ObjectSingleCondition condition);
