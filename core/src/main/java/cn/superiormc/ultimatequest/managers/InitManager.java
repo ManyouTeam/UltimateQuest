@@ -108,10 +108,4 @@ public final class InitManager extends AbstractManager {
     public boolean isFirstLoad() {
         return firstLoad;
     }
-
-    @Override
-    public void onPluginReload() {
-        firstLoad = false;
-        init();
-    }
 }

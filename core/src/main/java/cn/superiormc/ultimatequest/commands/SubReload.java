@@ -1,9 +1,8 @@
 package cn.superiormc.ultimatequest.commands;
 
-import cn.superiormc.ultimatequest.managers.CacheManager;
+import cn.superiormc.ultimatequest.UltimateQuest;
+import cn.superiormc.ultimatequest.managers.AbstractManager;
 import cn.superiormc.ultimatequest.managers.ConfigManager;
-import cn.superiormc.ultimatequest.managers.ErrorManager;
-import cn.superiormc.ultimatequest.managers.EventConditionsManager;
 import cn.superiormc.ultimatequest.managers.ItemManager;
 import cn.superiormc.ultimatequest.managers.LanguageManager;
 import org.bukkit.entity.Player;
@@ -30,19 +29,10 @@ public final class SubReload extends AbstractCommand {
     }
 
     private void reload() {
-        synchronized (ConfigManager.configManager) {
-            try {
-                ConfigManager.configManager.reloadMainConfig();
-                new LanguageManager();
-                ItemManager.itemManager.initSavedItems();
-                ConfigManager.configManager.onInit();
-                EventConditionsManager.eventConditions.onPluginReload();
-            } catch (Exception exception) {
-                ErrorManager.errorManager.sendErrorMessage("§cError: Could not reload plugin configurations: " + exception.getMessage());
-                throw new IllegalStateException("Configuration reload failed", exception);
-            }
-        }
-        CacheManager.cacheManager.rebindDefinitions();
-        CacheManager.cacheManager.configureAutoSave();
+        UltimateQuest.instance.reloadConfig();
+        new ConfigManager();
+        new LanguageManager();
+        new ItemManager();
+        AbstractManager.reloadManagers();
     }
 }

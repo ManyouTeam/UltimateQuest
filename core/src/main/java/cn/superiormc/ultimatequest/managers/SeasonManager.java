@@ -17,7 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public final class SeasonManager {
+public final class SeasonManager extends AbstractManager {
 
     public static SeasonManager seasonManager;
 
@@ -37,6 +37,24 @@ public final class SeasonManager {
 
     public SeasonManager() {
         seasonManager = this;
+    }
+
+    @Override
+    public void onInit() {
+        try {
+            beginReload();
+            prepareDefinitions();
+            commitReload();
+        } catch (Exception exception) {
+            cancelReload();
+            ErrorManager.errorManager.sendErrorMessage("§cError: Could not prepare quest seasons: " + exception.getMessage());
+            throw new IllegalStateException("Could not prepare quest seasons", exception);
+        }
+    }
+
+    @Override
+    public void onPluginReload() {
+        onInit();
     }
 
     public void editSeason(CommandSender sender, String type, String id,

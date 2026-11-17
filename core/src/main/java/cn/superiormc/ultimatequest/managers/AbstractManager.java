@@ -47,7 +47,7 @@ public abstract class AbstractManager {
     }
 
     public static void reloadManagers() {
-        for (AbstractManager manager : snapshot(true)) {
+        for (AbstractManager manager : snapshot(false)) {
             manager.onPluginReload();
         }
     }

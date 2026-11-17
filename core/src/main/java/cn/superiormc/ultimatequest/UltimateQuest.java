@@ -83,6 +83,9 @@ public final class UltimateQuest extends JavaPlugin {
         }
         new ErrorManager();
         new InitManager();
+        new EventConditionsManager();
+        new TriggerManager();
+        new RewardManager();
         new SeasonManager();
         new ConfigManager();
         new HookManager();
@@ -91,11 +94,8 @@ public final class UltimateQuest extends JavaPlugin {
         new MatchEntityManager();
         new MatchItemManager();
         new ChangesManager();
-        new EventConditionsManager();
         new AntiAbuseManager();
-        new TriggerManager();
         new QuestStorage();
-        new RewardManager();
         new QuestPoolManager();
         new QuestPeriodManager();
         new QuestScrollManager();

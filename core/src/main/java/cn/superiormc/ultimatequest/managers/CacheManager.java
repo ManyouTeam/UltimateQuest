@@ -56,6 +56,12 @@ public final class CacheManager extends AbstractManager {
         configureAutoSave();
     }
 
+    @Override
+    public void onPluginReload() {
+        rebindDefinitions();
+        configureAutoSave();
+    }
+
     private <T> T read(UUID id, T fallback, Function<ObjectCache, T> reader) {
         while (true) {
             ObjectCache cache = playerCacheMap.get(id);

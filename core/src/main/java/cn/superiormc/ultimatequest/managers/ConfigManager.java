@@ -18,7 +18,6 @@ import cn.superiormc.ultimatequest.objects.rewards.ObjectRewardPool;
 import cn.superiormc.ultimatequest.utils.CommonUtil;
 import cn.superiormc.ultimatequest.utils.TextUtil;
 import java.io.File;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -63,26 +62,21 @@ public class ConfigManager extends AbstractManager {
 
     public ConfigManager() {
         configManager = this;
-        try {
-            reloadMainConfig();
-        } catch (Exception exception) {
-            ErrorManager.errorManager.sendErrorMessage("§cError: Could not load configurations: " + exception.getMessage());
-            throw new IllegalStateException("Could not load configurations", exception);
-        }
-    }
-
-    public synchronized void reloadMainConfig() {
-        UltimateQuest.instance.reloadConfig();
-        reloadMenus();
-        config = UltimateQuest.instance.getConfig();
-    }
-
-    public synchronized void reloadMenus() {
+        this.config = UltimateQuest.instance.getConfig();
         initMenuConfigs();
-    }
-
-    public synchronized void reloadMenuConfigs() {
-        initMenuConfigs();
+        initCategoryConfigs();
+        initQuestConfigs();
+        loadQuestConfigs();
+        initQuestPoolConfigs();
+        initRewardPoolConfigs();
+        loadRewardPoolConfigs();
+        initTaskConfigs();
+        initBattlePassConfigs();
+        initMilestoneConfigs();
+        initPeriodConfigs();
+        initScrollConfigs();
+        loadTaskConfigs();
+        initTaskLimits();
     }
 
     private void initMenuConfigs() {
@@ -119,60 +113,6 @@ public class ConfigManager extends AbstractManager {
             } catch (Throwable throwable) {
                 ErrorManager.errorManager.sendErrorMessage("§cError: Failed to load menu " + resource + ": " + throwable.getMessage());
             }
-        }
-    }
-
-    @Override
-    public synchronized void onInit() {
-        Map<String, ObjectCategory> previousCategories = categoryConfigs;
-        Map<String, ObjectQuest> previousQuests = questConfigs;
-        Map<String, ObjectQuestPool> previousQuestPools = questPoolConfigs;
-        Map<String, ObjectRewardPool> previousRewardPools = rewardPoolConfigs;
-        Map<String, ObjectTask> previousTasks = taskConfigs;
-        Map<String, ObjectBattlePass> previousBattlePasses = battlePassConfigs;
-        Map<String, ObjectMilestone> previousMilestones = milestoneConfigs;
-        Map<String, ObjectPeriod> previousPeriods = periodConfigs;
-        Map<String, ObjectScroll> previousScrolls = scrollConfigs;
-        ObjectTaskLimits previousTaskLimits = taskLimits;
-        SeasonManager seasons = SeasonManager.seasonManager;
-        try {
-            seasons.beginReload();
-            initCategoryConfigs();
-            initQuestConfigs();
-            loadQuestConfigs();
-            initQuestPoolConfigs();
-            initRewardPoolConfigs();
-            loadRewardPoolConfigs();
-            initTaskConfigs();
-            initBattlePassConfigs();
-            initMilestoneConfigs();
-            initPeriodConfigs();
-            initScrollConfigs();
-            loadTaskConfigs();
-            initTaskLimits();
-            for (QuestDefinition definition : getDefinitions().values()) {
-                if (definition.growth()) {
-                    seasons.prepare(definition, Instant.now());
-                }
-            }
-            seasons.commitReload();
-        } catch (Exception | Error exception) {
-            categoryConfigs = previousCategories;
-            questConfigs = previousQuests;
-            questPoolConfigs = previousQuestPools;
-            rewardPoolConfigs = previousRewardPools;
-            taskConfigs = previousTasks;
-            battlePassConfigs = previousBattlePasses;
-            milestoneConfigs = previousMilestones;
-            periodConfigs = previousPeriods;
-            scrollConfigs = previousScrolls;
-            taskLimits = previousTaskLimits;
-            seasons.cancelReload();
-            if (exception instanceof Error error) {
-                throw error;
-            }
-            ErrorManager.errorManager.sendErrorMessage("§cError: Could not load quest configurations: " + exception.getMessage());
-            throw new IllegalStateException("Could not load quest configurations", exception);
         }
     }
 
