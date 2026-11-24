@@ -524,8 +524,9 @@ public final class CacheManager extends AbstractManager {
                 autosave = SchedulerUtil.runTaskTimerAsynchronously(() -> {
                     if (!stopping) {
                         if (!ConfigManager.configManager.getBoolean("auto-save.hide-message", false)) {
-                            TextUtil.sendMessage(null, CommonUtil.parseLang(null,
-                                    ConfigManager.configManager.getString("auto-save.message", "")));
+                            TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fAuto saving data...");
+                            TextUtil.sendMessage(null, TextUtil.pluginPrefix() + " §fIf this lead to server TPS drop, " +
+                                    "you should consider disable auto save feature at config.yml!");
                         }
                         flush(false);
                     }

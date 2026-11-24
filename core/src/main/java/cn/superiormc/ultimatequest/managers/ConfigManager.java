@@ -387,10 +387,6 @@ public class ConfigManager extends AbstractManager {
 
     private void initTaskLimits() {
         taskLimits = new ObjectTaskLimits(getSection("task-limits"), categoryConfigs.keySet());
-        Object savePeriod = config.get("auto-save.period-tick", 6000);
-        if (!(savePeriod instanceof Integer || savePeriod instanceof Long) || ((Number) savePeriod).longValue() < 1L) {
-            throw new IllegalArgumentException("auto-save.period-tick must be a positive integer");
-        }
     }
 
     public synchronized ObjectTaskLimits getTaskLimits() {

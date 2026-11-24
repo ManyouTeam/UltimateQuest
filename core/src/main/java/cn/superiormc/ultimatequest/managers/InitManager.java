@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -46,18 +45,37 @@ public final class InitManager extends AbstractManager {
     }
 
     private void migrateRewardPools() {
-        Path dataFolder = UltimateQuest.instance.getDataFolder().toPath();
-        Path previous = dataFolder.resolve("reward-pools");
-        Path current = dataFolder.resolve("reward_pools");
-        if (!Files.isDirectory(previous) || Files.exists(current)) {
+        File dataFolder = UltimateQuest.instance.getDataFolder();
+        migrate(new File(dataFolder, "reward-pools"), new File(dataFolder, "reward_pools"));
+    }
+
+    private void migrate(File source, File target) {
+        if (!source.exists()) {
             return;
         }
         try {
-            Files.move(previous, current);
+            if (source.isDirectory()) {
+                Files.createDirectories(target.toPath());
+                File[] children = source.listFiles();
+                if (children == null) {
+                    throw new IOException("Cannot list directory " + source);
+                }
+                for (File child : children) {
+                    migrate(child, new File(target, child.getName()));
+                }
+                File[] remaining = source.listFiles();
+                if (remaining != null && remaining.length == 0) {
+                    Files.delete(source.toPath());
+                }
+            } else if (target.exists()) {
+                ErrorManager.errorManager.sendErrorMessage("§cError: Cannot migrate " + source + ": " + target
+                    + " already exists. The old file was preserved; merge it manually into the new location.");
+            } else {
+                Files.createDirectories(target.toPath().getParent());
+                Files.move(source.toPath(), target.toPath());
+            }
         } catch (IOException exception) {
-            ErrorManager.errorManager.sendErrorMessage("§cError: Could not migrate reward-pools to reward_pools: "
-                    + exception.getMessage());
-            throw new IllegalStateException("Could not migrate reward pool directory", exception);
+            ErrorManager.errorManager.sendErrorMessage("§cError: Cannot migrate " + source + " to " + target + ": " + exception.getMessage());
         }
     }
 

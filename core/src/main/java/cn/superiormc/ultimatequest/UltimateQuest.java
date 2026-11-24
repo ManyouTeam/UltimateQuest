@@ -111,8 +111,6 @@ public final class UltimateQuest extends JavaPlugin {
     @Override
     public void onDisable() {
         AbstractManager.disableManagers();
-        QuestManager.questManager = null;
-        CacheManager.cacheManager = null;
         if (methodUtil != null) {
             Bukkit.getOnlinePlayers().forEach(methodUtil::clearBossBars);
         }

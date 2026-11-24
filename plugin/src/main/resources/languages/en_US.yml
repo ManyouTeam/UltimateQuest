@@ -259,8 +259,6 @@ override-lang:
   objective-action-lunge: 'Lunge'
   objective-action-attempt-smash-attack: 'Attempt smash attack'
   quest-progress: '&b{quest} &8| &a+{gained} &7({progress}/{required}) &e{percent}%'
-  auto-save:
-    message: '&#98FB98[UltimateQuest] Automatically saving player quest data...'
   task-admin-only: '&cAssigned by administrators only'
   category:
     all: '&fAll tasks'

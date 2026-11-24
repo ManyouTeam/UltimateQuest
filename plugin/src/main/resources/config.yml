@@ -39,7 +39,6 @@ auto-save:
   enabled: true
   hide-message: false
   period-tick: 6000
-  message: '{lang:auto-save.message}'
 
 # Task slots per player. -1 = unlimited; 0 = disabled.
 # Completed tasks waiting for reward claims still occupy slots.
